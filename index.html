@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta name="generator" content="Hugo 0.91.2" />
+
+  <title>
+      
+      Jeff Triplett&#39;s Micro.blog
+      
+  </title>
+
+</head>
+
+
+  <body>
+
+    
+
+	
+<div class="h-feed">
+
+	
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/13/on-environment-variables.html">On environment variables and dotenv files</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/13/on-environment-variables.html" class="u-url"><time class="dt-published" datetime="2024-03-13 21:23:26 -0500">Mar 13, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Brett Cannon recently vented some frustrations about <code>.env</code> files.</p>
+<blockquote>
+<p>I still hate .env files and their lack of a standard</p>
+<p><a href="https://mastodon.social/@brettcannon@fosstodon.org/112056455108582204">https://mastodon.social/@brettcannon@fosstodon.org/112056455108582204</a></p>
+</blockquote>
+<p>Brett&rsquo;s thread and our conversation reminded me that my rule for working with dotenv files is to have my environment load them instead of my Python app trying to read from the <code>.env</code> file directly.</p>
+<h2 id="what-is-a-env-dotenv-file">What is a <code>.env</code> (dotenv) file?</h2>
+<p>A <code>.env</code> (aka dotenv) is a file that contains a list of key-value pairs in the format of <code>{key}=value</code>.</p>
+<p>At a basic level, this is what a bare minimum <code>.env</code> file might look for in a Django project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># .env</span>
+DEBUG<span style="color:#f92672">=</span>true
+SECRET_KEY<span style="color:#f92672">=</span>you need to change this
+</code></pre></div><p>My go-to library for reading ENV variables is <a href="https://github.com/sloria/environs"><code>environs</code></a>. While the <code>environs</code> library can read directly from a dotenv file, don&rsquo;t do that. I never want my program to read from a file in production because I don&rsquo;t want a physical file with all of my API keys and secrets.</p>
+<p>Most hosting providers, like <a href="https://fly.io">Fly.io</a>, have a command line interface for setting these key-value pairs in production to avoid needing a physical dotenv file.</p>
+<p>Instead, we should default to assuming that the ENV variables will bet in our environment, and we should fall back to either a reasonable default value or fail loudly.</p>
+<p>Using the <code>environs</code> library, my Django <code>settings.py</code> file tends to look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># settings.py</span>
+<span style="color:#f92672">import</span> environs
+
+env <span style="color:#f92672">=</span> environs<span style="color:#f92672">.</span>Env()
+
+<span style="color:#75715e"># this will default to False if not set.</span>
+DEBUG <span style="color:#f92672">=</span> env<span style="color:#f92672">.</span>bool(<span style="color:#e6db74">&#34;DJANGO_DEBUG&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+
+<span style="color:#75715e"># this will error loudly if not set</span>
+SECRET_KEY <span style="color:#f92672">=</span> env<span style="color:#f92672">.</span>str(<span style="color:#e6db74">&#34;SECRET_KEY&#34;</span>)
+
+<span style="color:#75715e"># everything else... </span>
+</code></pre></div><p>I lean on Docker Compose for local development when I&rsquo;m building web apps because I might have three to five services running. Compose can read a dotenv file and register them into environment variables.</p>
+<h2 id="envrc-files-arent-env-files"><code>.envrc</code> files aren&rsquo;t <code>.env</code> files</h2>
+<p>On my macOS, when I&rsquo;m not developing in a container, I use the <a href="https://direnv.net"><code>direnv</code></a> application to read an <code>.envrc</code> file which is very similar to a dotenv file.</p>
+<p>A <code>.envrc</code> is very similar to a <code>.env</code> file, but to register the values into memory, you have to use Bash&rsquo;s <code>export</code> convention. If you don&rsquo;t specify <code>export</code>, the environment variables won&rsquo;t be available in your existing Bash environment.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># .envrc</span>
+export DEBUG<span style="color:#f92672">=</span>true
+export SECRET_KEY<span style="color:#f92672">=</span>you need to change this
+</code></pre></div><p>I&rsquo;m a fan of <code>direnv</code> because the utility ensures that my environment variables are only set while I am in the same folder or sub-folders that contain the <code>.envrc</code> file. If I move to a different folder location or project, <code>direnv</code> will automatically unload every environment variable that was previously set.</p>
+<p>This has saved me numerous times over the years when I have run a command that might upload a file to s3 and ensure that I&rsquo;m not uploading to the wrong account because an environment variable is still set from another project.</p>
+<p>Clients are generally understanding, but overriding static media for one client with another client&rsquo;s files is not a conversation I want to have with any client.</p>
+<p><code>direnv</code> is excellent insurance against forgetting to unset an environment variable.</p>
+<h2 id="seeding-a-env-file">Seeding a <code>.env</code> file</h2>
+<p>I prefer to ship an example <code>.env.example</code> file in my projects with reasonable defaults and instructions for copying them over.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># .env.example</span>
+DEBUG<span style="color:#f92672">=</span>true
+SECRET_KEY<span style="color:#f92672">=</span>you need to change this
+</code></pre></div><p>If you are a <a href="https://github.com/casey/just"><code>casey/just</code></a> <code>justfile</code> user, I like to ship a <code>just bootstrap</code> recipe that checks if a <code>.env</code> file already exists. If the <code>.env</code> file does not exist, it will copy the example in place.</p>
+<p>My <code>bootstrap</code> recipe typically looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># justfile</span>
+<span style="color:#f92672">bootstrap *ARGS</span>:
+    <span style="color:#75715e">#!/usr/bin/env bash</span>
+    <span style="color:#ae81ff">set -euo pipefail</span>
+
+    <span style="color:#ae81ff">if [ ! -f &#34;.env&#34; ]; then</span>
+        <span style="color:#ae81ff">echo &#34;.env created&#34;</span>
+        <span style="color:#ae81ff">cp .env.example .env</span>
+    <span style="color:#ae81ff">fi</span>
+</code></pre></div><h2 id="how-do-we-keep-dotenv-files-in-sync">How do we keep dotenv files in sync?</h2>
+<p>One pain point when working with dotenv files is keeping new environment variables updated when a new variable has been added.</p>
+<p>Thankfully, <a href="https://github.com/kurtbuilds/modenv">modenv</a> is an excellent utility that can do precisely this. I run <code>modenv check</code> and will compare the <code>.env*</code> files in the existing folder. It will tell us which files are missing an environment variable when it exists in one but not one of the other files.</p>
+<p>I use <code>modenv check -f</code> to sync up any missing keys with a blank value. This works well to sync up any new environment variables added to our <code>.env.example</code> file with our local <code>.env</code> file.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>I recently wrote about <a href="https://micro.webology.dev/2024/02/21/using-chamber-with.html">Using Chamber with Django and managing environment variables</a>, which dives into using Chamber, another tool for managing environment variables.</p>
+<p>If you are working with a team, the <a href="https://developer.1password.com/docs/cli/secrets-environment-variables/">1Password CLI</a>&rsquo;s <code>op run</code> command is an excellent way to share environment variables securely. The tool is straightforward and can be integrated securely with local workflows and CI with just a few steps.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/12/completed-finished-or.html">Completed, finished, or done</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/12/completed-finished-or.html" class="u-url"><time class="dt-published" datetime="2024-03-12 23:26:10 -0500">Mar 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p><em>Completed</em> means to have all the necessary parts or elements and lack nothing.</p>
+<p><em>Finished</em> means it&rsquo;s over and done with.</p>
+<p><em>Done</em> means finished or fully baked.</p>
+<p>Eventually, development will <em>stop</em> on a project, and everything around the project will slowly continue to move and change.</p>
+<p>When software development stops, the project begins to rot.</p>
+<p>It could be a new operating system release.</p>
+<p>It could be a new programming language release or paradigm shift.</p>
+<p>It could be a new framework release that has a security update.</p>
+<p>It could be a third-party library on which your project depends.</p>
+<p>It could be a drive fills up from database records or logs overflowing it.</p>
+<p>It could be the machine the software runs on that gets powered off, and no one notices.</p>
+<p>People could stop using the project because it is no longer needed.</p>
+<p>Maybe no one understands how to keep the program running.</p>
+<p>Eventually, the project will stop running because we turn it off or no longer understand how to keep it running.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/11/my-python-roots.html">My Python Roots</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/11/my-python-roots.html" class="u-url"><time class="dt-published" datetime="2024-03-11 19:49:57 -0500">Mar 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Last week, during office hours, I shared the two libraries that were my gateways to learning Python.</p>
+<h2 id="cog">Cog</h2>
+<p>I stumbled on Ned Batchelder&rsquo;s <a href="https://nedbatchelder.com/code/cog/">Cog</a> while running an ISP in SWMO in the mid-00s. At the time, I was writing lots of PHP code and had a few layers of ORM code that I could generate with Cog&rsquo;s help. This code was mainly boilerplate, and Cog was great at templating code. Thankfully, I didn&rsquo;t need to know Python with Cog to make it work.</p>
+<p>In recent years, I have still used Cog to update docs and to document Justfiles, Click, Typer,  and console apps by grabbing the output and embedding it into docs.</p>
+<h2 id="beautiful-soup">Beautiful Soup</h2>
+<p><a href="https://www.crummy.com/software/BeautifulSoup/">Beautiful Soup</a> is the library that pushed me to learn Python. 
+Beautiful Soup motivated me to learn Python and even more advanced feats like installing LXML and processing unparseable HTML or XML. 
+I have always liked writing web scrapers and processing HTML documents, which is a weird hobby of mine.</p>
+<h2 id="my-first-python-app">My first Python app</h2>
+<p>My friends and I worked in our first post-college dot com job, and Dell was running an incredible deal on their 20&quot; widescreen monitors over the Christmas holiday.</p>
+<p>Dell ran a daily Dell Elf (Delf) contest where you gave them your email address, and they would give you a discount code for their various products.</p>
+<p>The best code was 50% off of their 20&quot; widescreen displays, which was an incredible deal then. The display retailed for $499, so getting one for $249.50 was great. These codes were random, and the odds were 1 in 25 to get one.</p>
+<p>Using Python and having an email catchall, I wrote my first script to submit a series of email addresses until we found the daily 50% off code. At least four or five of my friends and I stocked up on these monitors that fall, and I have been a fan of Dell displays ever since.</p>
+<h2 id="today">Today</h2>
+<p>I still use Cog and Beautiful Soup 4 in several projects, including a few daily drivers. Last year, during their end-of-year sale, I picked three Dell 27-inch displays, and I still have fond memories of Dell&rsquo;s displays.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/10/weeknotes-w.html">Weeknotes 2024 W10</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/10/weeknotes-w.html" class="u-url"><time class="dt-published" datetime="2024-03-10 20:06:03 -0500">Mar 10, 2024</time></a>
+
+		<div class="e-content">
+			 <p>We were reminded that Winter is still here this week, starting with warmer weather and ending with colder.</p>
+<h2 id="family">Family</h2>
+<p>My oldest was out two days this week at parent-teacher conferences, and next week, he has off for Spring Break. He missed his last basketball practice and game because he&rsquo;s had a bug for a few days with a runny nose and a low fever that keeps coming back.</p>
+<p>My youngest child is firmly in the four to six-word sentence phase. We are up to our eyeballs in potty training, and my daughter&rsquo;s new favorite phrase is, &ldquo;No, not yet,&rdquo; when you suggest we try again.</p>
+<p>The kid&rsquo;s grandfather drove down from Chicago to spend the weekend with us.</p>
+<p>I picked up Oliver&rsquo;s bug on Saturday and spent it more down than up, so my new compound miter saw sat in the box all weekend.</p>
+<h2 id="work">Work</h2>
+<p>We are a few weeks into a new client project, and that&rsquo;s led to several refactors and working with newer tools, including Pydantic and Django Ninja for Model Schemas. I also expect to spend much time in Tailwind CSS land soon.</p>
+<h2 id="community">Community</h2>
+<p>We had our monthly DEFNA meeting, elected officers, and discussed upcoming announcements.</p>
+<p>I had a PSF Code of Conduct WG meeting that conflicted with morning kid drop-offs, but I could join for the last 15 to 20 minutes to help them make a quorum so we could vote to pass a few things.</p>
+<p>I only had time to join the first half of one <a href="https://wiggle.work/">Wiggle Work</a> event this week over lunch.</p>
+<p>This week, I hosted <a href="https://mastodon.social/@webology/112049364089333842">Office Hours</a>.</p>
+<h2 id="side-projects">Side projects</h2>
+<p>I spent most of my side project time on <a href="https://django-news.com">Django News</a>, <a href="https://jobs.django-news.com">Django News Jobs</a>, and <a href="https://djangopackages.org">Django Packages</a> and upgraded several projects to the latest Django 5.0.x security release and Python 3.12 releases. I also moved several projects to use <a href="https://github.com/astral-sh/uv">uv</a> Python package manager, including <a href="https://djangopackages.org">Django Packages</a> and <a href="https://jobs.django-news.com">Django News Jobs</a>, which shaves minutes off of build times.</p>
+<p><strong>Django News Newsletter:</strong> We shipped issue <a href="https://django-news.com/issues/222#start">#222</a>.</p>
+<p>I started on a Bootstrap to Tailwind CSS conversion tool after noticing that several popular tools last updated 3 to 6 years ago. I can brute force about 90% of it, but I have also meant to play around with <a href="https://pypi.org/project/cssutils/"><code>cssutils</code></a> for a while. With <code>cssutils</code>, I think it might be possible to read from the various Bootstrap CSS versions and match up to some Tailwind CSS classes by comparing them via their CSS output.</p>
+<h2 id="writing">Writing</h2>
+<p>I wrote and published every day.</p>
+<p><a href="https://micro.webology.dev/2024/03/09/bootstrap-to-tailwind.html">2024-03-09</a>: <strong>Bootstrap to Tailwind CSS</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/08/dave-the-diver.html">2024-03-08</a>: <strong>🎮 Dave the Diver</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/07/how-to-test.html">2024-03-07</a>: <strong>How to test with Django, parametrize, and lazy fixtures</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/06/importing-data-with.html">2024-03-06</a>: <strong>Importing data with Django Ninja&rsquo;s ModelSchema</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/04/updating-python-from.html">2024-03-05</a>: <strong>Upgrading Python from 3.11 to 3.12 notes</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/04/pip-isolation.html">2024-03-04</a>: <strong>On pip isolation</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/03/the-weekend-woodworker.html">2024-03-03</a>: <strong>The Weekend Woodworker</strong> 🪚</p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>🏀 I watched two Kansas Basketball games, a bunch of random men&rsquo;s and primarily women&rsquo;s games.</p>
+<h2 id="next-week">Next week</h2>
+<p>I have more rot repair, and I now have a compound miter saw to make cutting wood for framing much more manageable.</p>
+<p>My oldest is off with spring break, so our morning routines start 10 minutes later and last about 40 minutes longer.</p>
+<p>Next week also starts the Big 12 Men&rsquo;s tournament, a sign that the second and third basketball seasons are beginning. I usually take a day off for the start of the Big 12 tournament, and I take a few days off for March Madness.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/09/bootstrap-to-tailwind.html">Bootstrap to Tailwind CSS</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/09/bootstrap-to-tailwind.html" class="u-url"><time class="dt-published" datetime="2024-03-09 23:14:27 -0500">Mar 9, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I spent a few hours tonight weighing my options to port a few websites from Bootstrap to Tailwind CSS.</p>
+<p>I started with what seems to be the original <a href="https://github.com/awssat/tailwindo"><code>awssat/tailwindo</code></a> project is a PHP console app whose goal was to convert any Bootstrap to Tailwind CSS and was last updated three years ago. I couldn&rsquo;t get it to work from the console or via Docker, so I punted and looked at other options.</p>
+<p>This led me to the <a href="https://github.com/riazXrazor/node-tailwindo"><code>node-tailwindo</code></a> project, which did install successfully for me. <code>node-tailwindo</code> project hadn&rsquo;t been updated in six years, so much has changed in both projects.</p>
+<p>Since <code>node-tailwindo</code> was installed successfully and seemed to run OK, I ran it on a few projects, including <a href="https://djangopackages.org">Django Packages</a>, and the results were not terrible. They were not amazing, but things worked.</p>
+<p>I looked at commercial options, and they fall into either Browser Extensions that let you view an existing website with a copy/convert to Tailwind CSS option or tools that rewrite your existing CSS. Neither felt like a good option to me.</p>
+<p>I finally did what any Python developer would and installed <a href="https://beautiful-soup-4.readthedocs.io/en/latest/">BeautifulSoup4</a>. Next, I wrote a script to read all the files in a template folder, and it extracted all the class attributes from the existing HTML. One hundred seventy-six unique classes later, I had my answer.</p>
+<p>Writing my upgrade tool felt like a bigger project that I wanted to take on, but it helped me spot a few issues that <code>node-tailwindo</code> would struggle with.</p>
+<p>This is where BeautifulSoup4 shines, and I could quickly swap out a few classes before I fed them into <code>node-tailwindo</code>, and it fixes several bugs where the project was confused by <code>{% block %}</code> and  <code>&amp;#123;&amp;#123; variable }}</code> tags/blocks.</p>
+<p>This might be a project; I slowly update as I get bored since I can probably add and test 10 to 20 tests over lunch. For a brief minute, I debated if this would be my first Rust app. Spoiler: It is not.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/08/dave-the-diver.html">🎮 Dave the Diver</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/08/dave-the-diver.html" class="u-url"><time class="dt-published" datetime="2024-03-08 21:31:17 -0500">Mar 8, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Dave the Diver is a fun game for such a random, quirky, and so many game-styles / mini-games all mashed together. In the game, you play Dave, who dives and explores the sea by day, and you run a sushi restaurant by night.</p>
+<p>It&rsquo;s one of the few games where I pushed to get the endgame out of the way to resume running my sushi restaurant, maxing out my employees, and completing my dive adventures/collecting. Even after a few months, I still enjoy playing day-to-day activities.</p>
+<p>If you are looking for a fun 2D video game to dive into, I have thoroughly enjoyed Dave the Diver.</p>
+<p><a href="https://www.backloggd.com/games/dave-the-diver/">www.backloggd.com/games/dav&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/07/how-to-test.html">How to test with Django, parametrize, and lazy fixtures</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/07/how-to-test.html" class="u-url"><time class="dt-published" datetime="2024-03-07 20:53:36 -0500">Mar 7, 2024</time></a>
+
+		<div class="e-content">
+			 <p>This article is a follow-up to my post on <a href="https://micro.webology.dev/2024/02/05/how-to-test.html">How to test with Django and pytest fixtures</a>.</p>
+<p>Here are some notes on how I prefer to test views for a Django application with authentication using <a href="https://github.com/TvoroG/pytest-lazy-fixture">pytest-lazy-fixture</a>.</p>
+<h2 id="fixtures">Fixtures</h2>
+<p><code>pytest-django</code> has a <a href="https://pytest-django.readthedocs.io/en/latest/helpers.html#django-user-model"><code>django_user_model</code></a> fixture/shortcut, which I recommend using to create valid Django user accounts for your project.</p>
+<p>This example assumes that there are four levels of users. We have anonymous (not authenticated), &ldquo;user,&rdquo; staff, and superuser levels of permission to work with. Both staff and superusers follow the Django default pattern and have the <code>is_staff</code> and <code>is_superuser</code> boolean fields set appropriately.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># users/tests/fixtures.py</span>
+<span style="color:#f92672">import</span> pytest
+
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">password</span>(db) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;password&#34;</span>
+
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">staff</span>(db, django_user_model, faker, password):
+    <span style="color:#66d9ef">return</span> django_user_model<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>create_user(
+        email<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;staff@example.com&#34;</span>,
+        first_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>first_name(),
+        is_staff<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+        is_superuser<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+        last_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>last_name(),
+        password<span style="color:#f92672">=</span>password,
+    )
+
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">superuser</span>(db, django_user_model, faker, password):
+    <span style="color:#66d9ef">return</span> django_user_model<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>create_user(
+        email<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;superuser@example.com&#34;</span>,
+        first_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>first_name(),
+        is_staff<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+        is_superuser<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+        last_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>last_name(),
+        password<span style="color:#f92672">=</span>password,
+    )
+
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">user</span>(db, django_user_model, faker, password):
+    <span style="color:#66d9ef">return</span> django_user_model<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>create_user(
+        email<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;user@example.com&#34;</span>,
+        first_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>first_name(),
+        last_name<span style="color:#f92672">=</span>faker<span style="color:#f92672">.</span>last_name(),
+        password<span style="color:#f92672">=</span>password,
+    )
+
+</code></pre></div><h2 id="testing-our-views-with-different-user-roles">Testing our views with different User roles</h2>
+<p>We will assume that our website has some working Category pages that can only viewed by staff or superusers. The <code>lazy_fixture</code> library allows us to pass the name of a fixture using parametrize along with the expected status_code that our view should return.</p>
+<p>If you have never seen <code>parametrize</code>, it is a nice pytest convention that will re-run the same test multiple times while passing a list of parameters into the test to be evaluated.</p>
+<p>The <code>tp</code> function variable is a <a href="https://github.com/revsys/django-test-plus">django-test-plus</a> fixture.</p>
+<p><code>user</code>, <code>staff</code>, and <code>superuser</code> are fixtures we created above.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># categories/tests/test_views.py</span>
+<span style="color:#f92672">import</span> pytest
+
+<span style="color:#f92672">from</span> pytest <span style="color:#f92672">import</span> param
+<span style="color:#f92672">from</span> pytest_lazyfixture <span style="color:#f92672">import</span> lazy_fixture
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_category_noauth</span>(db, tp):
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    GET &#39;admin/categories/&#39;
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    url <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>reverse(<span style="color:#e6db74">&#34;admin:category-list&#34;</span>)
+
+    <span style="color:#75715e"># Does this view work with auth?</span>
+    response <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>get(url)
+    tp<span style="color:#f92672">.</span>response_401(response)
+
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>mark<span style="color:#f92672">.</span>parametrize(
+    <span style="color:#e6db74">&#34;testing_user,status_code&#34;</span>,
+    [
+        param(lazy_fixture(<span style="color:#e6db74">&#34;user&#34;</span>), <span style="color:#ae81ff">403</span>),
+        param(lazy_fixture(<span style="color:#e6db74">&#34;staff&#34;</span>), <span style="color:#ae81ff">200</span>),
+        param(lazy_fixture(<span style="color:#e6db74">&#34;superuser&#34;</span>), <span style="color:#ae81ff">200</span>),
+    ],
+)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_category_with_auth</span>(db, tp, testing_user, password, status_code):
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    GET &#39;admin/categories/&#39;
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    url <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>reverse(<span style="color:#e6db74">&#34;admin:category-list&#34;</span>)
+
+    <span style="color:#75715e"># Does this view work with auth?</span>
+    tp<span style="color:#f92672">.</span>client<span style="color:#f92672">.</span>login(username<span style="color:#f92672">=</span>testing_user<span style="color:#f92672">.</span>email, password<span style="color:#f92672">=</span>password)
+    response <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>get(url)
+    <span style="color:#66d9ef">assert</span> response<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> status_code
+</code></pre></div><h2 id="notes">Notes</h2>
+<p><strong>Please note:</strong> These status codes are more typical for a REST API. So I would adjust any 40x status codes accordingly.</p>
+<p>My goal in sharing these examples is to show that you can get some helpful testing in with a little bit of code, even if the goal isn&rsquo;t to dive deep and cover everything.</p>
+<h2 id="updates">Updates</h2>
+<p>To make my example more consistent, I updated <code>@pytest.mark.django_db()</code> to use a <code>db</code> fixture. Thank you, <a href="https://mastodon.social/@bennylope@social.benlopatin.com/112060829098386312">Ben Lopatin</a>, for the feedback.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/06/importing-data-with.html">Importing data with Django Ninja&#39;s ModelSchema</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/06/importing-data-with.html" class="u-url"><time class="dt-published" datetime="2024-03-06 22:54:11 -0500">Mar 6, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have recently been playing with <a href="https://github.com/vitalik/django-ninja">Django Ninja</a> for small APIs and for leveraging Schema. Specifically, <a href="https://django-ninja.dev/guides/response/django-pydantic/">ModelSchema</a> is worth checking out because it&rsquo;s a hidden gem for working with Django models, even if you aren&rsquo;t interested in building a Rest API.</p>
+<blockquote>
+<p>Schemas are very useful to define your validation rules and responses, but sometimes you need to reflect your database models into schemas and keep changes in sync.
+<a href="https://django-ninja.dev/guides/response/django-pydantic/">https://django-ninja.dev/guides/response/django-pydantic/</a></p>
+</blockquote>
+<p>One challenge we face is importing data from one legacy database into a new database with a different structure. While we can map old fields to new fields using a Python dictionary, we also need more control over what the data looks like coming back out.</p>
+<p>Thankfully, ModelSchema is built on top of <a href="%5BPydantic%5D(https://docs.pydantic.dev/latest/)">Pydantic</a>&rsquo;s <a href="https://docs.pydantic.dev/2.6/api/base_model/">BaseModel</a> and supports Pydantic&rsquo;s <a href="https://docs.pydantic.dev/latest/api/fields/#pydantic.fields.Field">Field alias</a> feature.</p>
+<p>This allows us to create a ModelSchema based on a LegacyCategory model, and we can build out <code>Field(alias=&quot;...&quot;)</code> types to change the shape of how the data is returned.</p>
+<p>We can then store the result as a Python dictionary and insert it into our new model. We can also log a JSON representation of the instance to make debugging easier. See <a href="https://django-ninja.dev/guides/response/#serializing-outside-of-views">Serializing Outside of Views</a> for an overview of how the <code>from_orm</code> API works.</p>
+<p>To test this, I built a proof of concept Django management command using <a href="https://github.com/GaretJax/django-click">django-click</a>, which loops through all our legacy category models and prints them.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># management/commands/demo_model_schema.py</span>
+<span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
+
+<span style="color:#f92672">from</span> ninja <span style="color:#f92672">import</span> ModelSchema
+<span style="color:#f92672">from</span> pydantic <span style="color:#f92672">import</span> Field
+
+<span style="color:#f92672">from</span> legacy.models <span style="color:#f92672">import</span> LegacyCategory
+<span style="color:#f92672">from</span> future.models <span style="color:#f92672">import</span> Category
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LegacyCategorySchema</span>(ModelSchema):
+    name: str <span style="color:#f92672">=</span> Field(alias<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cat_name&#34;</span>)
+    description: str <span style="color:#f92672">=</span> Field(alias<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cat_description&#34;</span>)
+    active: bool <span style="color:#f92672">=</span> Field(alias<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cat_is_active&#34;</span>)
+
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Meta</span>:
+        fields <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;id&#34;</span>]
+        model <span style="color:#f92672">=</span> Category
+
+
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>command()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    categories <span style="color:#f92672">=</span> LegacyCategory<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>all()
+    <span style="color:#66d9ef">for</span> category <span style="color:#f92672">in</span> categories:
+        data <span style="color:#f92672">=</span> LegacyCategorySchema<span style="color:#f92672">.</span>from_orm(category)<span style="color:#f92672">.</span>dict()
+        print(data)
+        <span style="color:#75715e"># save to a database or do something useful here</span>
+</code></pre></div><h2 id="more-resources">More resources</h2>
+<p>If you are curious about what Django Ninja is about, I recommend starting with their <a href="https://django-ninja.dev/tutorial/other/crud/#final-code">CRUD example: Final Code</a>, and working backward. This will give you a good idea of what a finished CRUD Rest API looks like with Django Ninja.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/04/updating-python-from.html">Upgrading Python from 3.11 to 3.12 notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/04/updating-python-from.html" class="u-url"><time class="dt-published" datetime="2024-03-05 10:15:40 -0500">Mar 5, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Recently, I have been slowly moving several of my side projects and client projects from various Python versions to Python 3.12.</p>
+<p>I never see people write about this, so it might be nice to write and share some notes.</p>
+<h2 id="where-to-start">Where to start</h2>
+<p>The first thing we do with a relatively simple upgrade is figure out what Python version we use. Thankfully, the project we picked mentioned in the README.md that it was using Python 3.11.</p>
+<p>Once we know which version of Python we are using, we can open up iTerm and get a git checkout of the project.</p>
+<p>Next, we will run <code>git grep 11</code>, where &ldquo;11&rdquo; is the shortened form of the Python version that we are running. There are so many variations of <code>3.11</code> and <code>311</code> that using the minor version tends to be about right.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git grep <span style="color:#ae81ff">11</span>
+... really long list...
+.github/workflows/actions.yml:      - name: Set up Python 3.11
+.github/workflows/actions.yml:          python-version: <span style="color:#e6db74">&#39;3.11&#39;</span>
+.github/workflows/actions.yml:      - name: Set up Python 3.11
+.github/workflows/actions.yml:          python-version: <span style="color:#e6db74">&#39;3.11&#39;</span>
+.pre-commit-config.yaml:  python: python311
+.pre-commit-config.yaml:        args: <span style="color:#f92672">[</span>--py311-plus<span style="color:#f92672">]</span>
+README.md:This project will use Python 3.11, Docker, and Docker Compose.
+README.md:Make a Python 3.11.x virtualenv.
+docker/Dockerfile:FROM python:3.11-slim as builder-py
+docker/Dockerfile:FROM python:3.11-slim AS release
+pyproject.toml:requires-python <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&gt;= 3.11&#34;</span>
+pyproject.toml:# Assume Python &gt;<span style="color:#f92672">=</span>3.11.
+pyproject.toml:target-version <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;py311&#34;</span>
+requirements.txt:# This file is autogenerated by pip-compile with Python 3.11
+... lots and lots of files...
+</code></pre></div><p>This output will give us a long list of files. Usually, this is 100s or 1000s of files we will pipe or copy into our code editor. We will make a few passes to remove all of the CSS, SVG, and HTML files in the list, and that pairs down the results to half a dozen or a dozen files.</p>
+<h2 id="create-a-new-git-branch">Create a new git branch</h2>
+<p>Next, we will create a new git branch called <code>upgrade-to-python-3.12</code>, and we will open each file one by one, and replace every &ldquo;3.11&rdquo; and &ldquo;311&rdquo; reference with &ldquo;3.12&rdquo; and &ldquo;312&rdquo; respectively.</p>
+<h2 id="lintformat-our-code-base">Lint/format our code base</h2>
+<p>Once we have all of our files updated, we will commit everything. Then we will note special files like <code>.pre-commit-config.yaml</code> and <code>pyproject.toml</code>, impacting how my Python files are linted and formatted. Then, we will run <code>pre-commit</code> immediately after and commit any formatting changes.</p>
+<h2 id="rebuild-our-docker-image">Rebuild our Docker image</h2>
+<p>Since this project contains <code>docker/Dockerfile</code> that tells us the project uses Docker, we will need to rebuild our container image and note anything that breaks.</p>
+<h2 id="re-pinfreeze-our-python-dependencies">Re-pin/freeze our Python dependencies</h2>
+<p>Next, we will run <code>pip-tools</code> <code>compile</code> from within our newly rebuilt Docker container to build a new <code>requirements.txt</code> using Python 3.12.</p>
+<h2 id="re-rebuild-our-docker-image-again">Re-rebuild our Docker image (again)</h2>
+<p><strong>&ldquo;Insert Xzibit Yo Dawg meme.&quot;</strong> Next, we rebuild our Docker image using the newly pinned <code>requirements.txt</code> file, and this should be our final image.</p>
+<h2 id="did-our-tests-pass">Did our tests pass?</h2>
+<p>Assuming Docker builds cleanly, we will run my test suite using <code>pytest</code>. Once our tests pass, we&rsquo;ll commit any uncommitted changes, <code>git push</code> our branch to GitHub, and open a Pull Request for review.</p>
+<h2 id="did-our-tests-pass-in-ci">Did our tests pass in CI?</h2>
+<p>If our tests pass on GitHub Actions in CI, then we know our upgrade was successful, and we are reasonably confident that</p>
+<h2 id="when-things-dont-just-work">When things don&rsquo;t &ldquo;just work.&rdquo;</h2>
+<p>If you keep up with your upgrades, most of the time, everything works. Half a dozen projects did work for me, but I had one that did not work on Monday. There was a sub-dependency issue, so I closed my branch and opened a new issue to revisit this upgrade once the next version of Python 3.12.3 is released.</p>
+<p>Even though this wasn&rsquo;t a Python 3.12.2 bug, it takes the Python ecosystem time to catch up with newer versions. Since Python 3.11 is still supported for another <a href="https://endoflife.date/python">3 years and 7 months</a> (as of this writing), it won&rsquo;t hurt to wait a few weeks or months and revisit these changes.</p>
+<p>If you are curious about how I decide when to adopt a new version, I wrote about that last month: <a href="https://micro.webology.dev/2024/02/01/choosing-the-right.html">Choosing the Right Python and Django Versions for Your Projects</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/04/pip-isolation.html">On pip isolation</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/04/pip-isolation.html" class="u-url"><time class="dt-published" datetime="2024-03-04 09:50:39 -0500">Mar 4, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I saw this <a href="https://mastodon.social/@treyhunner/112032637878747686">post</a> by <a href="https://mastodon.social/@treyhunner">Trey Hunner</a> about pip isolation, and I wanted to share a third method.</p>
+<blockquote>
+<p>I&rsquo;ve just updated my ~/.config/pip/pip.conf &amp; my dotfiles repo to disallow pip installing outside virtual environments! 🎉</p>
+<p>TIL 2 things about #Python&rsquo;s pip:</p>
+<ol>
+<li>
+<p>pip has a config file. If I ever knew this, I&rsquo;d forgotten.</p>
+</li>
+<li>
+<p>pip has an option that stops it from working outside of a virtual environment!</p>
+</li>
+</ol>
+<p><a href="https://mastodon.social/@treyhunner/112032637878747686">https://mastodon.social/@treyhunner/112032637878747686</a></p>
+</blockquote>
+<p>To Trey&rsquo;s point, I never pip to install to easily install anything globally. If I want something installed globally, I can jump through a few hoops to avoid polluting my global pip cache.</p>
+<p>My preferred way of disallowing pip installation outside virtual environments is to use the <code>PIP_REQUIRE_VIRTUALENV</code> environment variable.</p>
+<p>I have <code>export PIP_REQUIRE_VIRTUALENV=true</code> set in my <code>.bash_profile</code>, which is part of my <a href="https://github.com/jefftriplett/dotfiles"><code>dotfiles</code></a>. I prefer the ENV approach because I share my files over many computers, and it&rsquo;s one less file to keep up with.</p>
+<p>When I want to <code>pip install</code> something globally, I use <a href="https://pipx.pypa.io/stable/"><code>pipx</code></a>, which installs each Python application into its isolated environment.</p>
+<p>For the few times that I do need to install a Python application globally, I use:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">PIP_REQUIRE_VIRTUALENV<span style="color:#f92672">=</span>false python -m pip install <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --upgrade <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    pip <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    pipx
+</code></pre></div><p>I have this recipe baked into my <a href="https://github.com/jefftriplett/dotfiles/blob/f59e2884daace42be404c1f028ea7312fed0bab2/home/justfile#L159-L168">global justfile</a> so I can quickly apply upgrades.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/03/the-weekend-woodworker.html">The Weekend Woodworker</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/03/the-weekend-woodworker.html" class="u-url"><time class="dt-published" datetime="2024-03-03 14:39:03 -0500">Mar 3, 2024</time></a>
+
+		<div class="e-content">
+			 <p>🪚 It&rsquo;s that time of year when I dust off my copy of &ldquo;Equip Your Woodworking Shop For Less Than $1000&rdquo; by Steve Ramsey, <a href="https://theweekendwoodworker.com">The Weekend Woodworker</a>, appreciate all ten of my fingers, and print a fresh copy.</p>
+<p>One set of my grandparents lived next door to me when I was a kid, and they had a fantastic wood shop. Everything is quick work when you have the right tool.</p>
+<p>When starting from scratch, every project feels like it should be easy until you hit a wall of existential dread because you don&rsquo;t have the right power tool, saw blade, or shop essential to complete it.</p>
+<p>Steve&rsquo;s guide is approachable, and I already have a few recommended tools, which takes the edge off. I need a good miter saw and, eventually, a table saw, for which Steve provides recommendations and links.</p>
+<p>So here goes nothing. I just ordered my first compound miter saw and combination square. This is the one time I am okay with someone making an Amazon affiliate sale off of my clicking a link.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/02/new-djangostartproject-update.html">New `django-startproject` update</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/02/new-djangostartproject-update.html" class="u-url"><time class="dt-published" datetime="2024-03-02 23:27:42 -0500">Mar 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I updated my <a href="https://github.com/jefftriplett/django-startproject"><code>django-startproject</code></a> project today to support the latest versions of Django, Python, Compose, and other tools I&rsquo;m a fan of. I use <code>django-startproject</code> to spin up projects that need some batteries quickly, but not every battery.</p>
+<p>Features:</p>
+<ul>
+<li>Django 5.0</li>
+<li>Python 3.12</li>
+<li>Docker Compose 3</li>
+<li>Adds <a href="https://github.com/casey/just">casey/just</a> recipes/workflows (Just is a command runner, not a build tool)</li>
+<li>Adds <a href="https://github.com/astral-sh/uv">uv</a> support</li>
+</ul>
+<p><code>uv</code> is the newest addition, which is a Python package installer and <a href="https://github.com/jazzband/pip-tools/">pip-tools</a> replacement. It&rsquo;s not a 100% drop-in replacement for pip and pip-tools, but it cuts my build times in half, and I have yet to hit any significant show-stoppers.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/03/01/spaceman-i-am.html" class="u-url"><time class="dt-published" datetime="2024-03-01 21:28:10 -0500">Mar 1, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Spaceman - I am walking into this with ZERO expectations, and yet my gut is telling me that even that might be too high. 😄</p>
+<p><a href="https://trakt.tv/movies/spaceman-2024">trakt.tv/movies/sp&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/01/we-did-it.html">We did it, and what&#39;s next</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/01/we-did-it.html" class="u-url"><time class="dt-published" datetime="2024-03-01 21:07:26 -0500">Mar 1, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My February goal was to publish an article every day for the entire month, and I&rsquo;m happy to have completed it.</p>
+<p>Shout out to the wonderful <a href="https://wiggle.work">Wiggle Work</a> community who started this Winter Writing Workshop. As someone who prides themself on never succumbing to peer pressure, the joke is on me! I finished and only used my <strong>phone a friend</strong> lifeline once.</p>
+<p>Shoutout to my Wiggle Work friends, and thank you to everyone who joined this month and everyone who cheered us on from the Discord. Your emojis of support were the true friends we made along the way.</p>
+<p>The other four who finished:</p>
+<ul>
+<li><a href="https://www.breakfastletters.com/archives">Joni</a></li>
+<li><a href="https://garden.mattstein.com/notes">Matt</a></li>
+<li><a href="https://nicksimson.com/posts/">Nick</a></li>
+<li><a href="https://www.sarahgebauer.com/post/">Sarah</a></li>
+</ul>
+<h2 id="writing-tools">Writing tools</h2>
+<p>Every year, I put &ldquo;write more&rdquo; on my list of goals, and every year, I look back and realize some invisible barrier gets in my way. I get easily frustrated with every writing tool I have ever used, and my brain obsesses over the platform&rsquo;s limitations.</p>
+<p>I had a little bit of new writing tool productivity with both <a href="https://obsidian.md">Obsidian</a> and <a href="https://micro.blog">Micro.blog</a> which were both invaluable to me.</p>
+<p>Writing every day in February instilled in me that Obsidian is the best writing platform for me. I even paid for a <a href="https://help.obsidian.md/Licenses+and+payment/Catalyst+license">Catalyst license</a> to support Obsidian&rsquo;s development.</p>
+<p><a href="https://micro.blog">Micro.blog</a> also made it easy to post every day, and I suspect it will shape and heavily influence my blog platform going forward. I&rsquo;m still annoyed that I can&rsquo;t upload images or edit my social media posts with it, but once I understood the service&rsquo;s limitations, it never got in my way.</p>
+<h2 id="going-forward">Going forward</h2>
+<p>My existing blog uses GitHub Pages and Jekyll, but I&rsquo;m ready to return to Django with a basic REST API for posting new blog posts and links.</p>
+<p>My existing blog is built with Frontmatter, Markdown, and Yaml, which makes importing and editing everything doable with Python and a text editor.</p>
+<p>I plan to use a mix of Obsidian with a custom Python script that can publish and sync to my website until I find a nice JS writing interface that I like.</p>
+<p>Now that Obsidian supports <a href="https://help.obsidian.md/Editing+and+formatting/Properties">Properties</a> via Frontmatter, I can store my Post metadata between my text files and my blog to sync between the two.</p>
+<p>I also want a slick <a href="https://typefully.com">Typefully</a>-like experience for quick posts. Just one big markdown-friendly writing area that can handle dragging and dropping images to it. I want to pick where I am publishing when I choose to publish.</p>
+<p>That&rsquo;s where I plan to go next.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/29/pythons-uv-tool.html">Python&#39;s UV tool is actually pretty good</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/29/pythons-uv-tool.html" class="u-url"><time class="dt-published" datetime="2024-02-29 14:31:04 -0500">Feb 29, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I carved out some time recently to start playing with the new Python package installer and resolver, <a href="https://github.com/astral-sh/uv"><code>uv</code></a>.</p>
+<p><code>uv</code> makes big promises and claims to be 10-100x faster than pip and pip-tools. From my experiments over the last few weeks, it lives up to this promise.</p>
+<p>I&rsquo;m using it locally for my virtual environments, in my Dockerfiles to rebuild my containers, and for CI using GitHub Actions. Across the board, anything I do with <code>pip</code> or <code>pip-tools</code> is remarkably faster.</p>
+<p>My average GitHub Actions CI workflows dropped from ~2 minutes to 50 seconds. This cuts the minutes I use in half and, in theory, my monthly bill in half.</p>
+<p>My goal in sharing my configs is more &ldquo;show&rdquo; than &ldquo;tell' because I will copy and paste these for weeks and months to come.</p>
+<h2 id="local-development">local development</h2>
+<p>Every one of my projects has a <code>justfile</code> (it&rsquo;s like Make but works the same everywhere) with &ldquo;bootstrap&rdquo; and &ldquo;lock&rdquo; recipes. My &ldquo;bootstrap&rdquo; recipe installs everything I need to work with the project locally. I use my &ldquo;lock&rdquo; recipe to lock my requirements.txt file so that I&rsquo;m using the exact requirements locally and in production.</p>
+<h3 id="justfile-before"><code>justfile</code> before</h3>
+<p>My <code>justfile</code> might look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">@<span style="color:#ae81ff">bootstrap</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade pip</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade --requirement requirements.in</span>
+    
+<span style="color:#f92672">@lock *ARGS</span>:
+    <span style="color:#ae81ff">python -m piptools compile {{ ARGS }} ./requirements.in \</span>
+        --<span style="color:#ae81ff">resolver=backtracking \</span>
+        --<span style="color:#ae81ff">output-file ./requirements.txt</span>
+</code></pre></div><h3 id="justfile-after"><code>justfile</code> after</h3>
+<p>For the most part, <code>uv</code> shares most of the same syntax as <code>pip</code> so you can start  by changing your <code>pip</code> references to <code>uv pip</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">@<span style="color:#ae81ff">bootstrap</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade pip uv</span>
+    <span style="color:#ae81ff">python -m uv pip install --upgrade --requirement requirements.in</span>
+    
+<span style="color:#f92672">@lock *ARGS</span>:
+    <span style="color:#ae81ff">python -m uv pip compile {{ ARGS }} ./requirements.in \</span>
+        --<span style="color:#ae81ff">resolver=backtracking \</span>
+        --<span style="color:#ae81ff">output-file ./requirements.txt</span>
+</code></pre></div><h2 id="dockerfiles">Dockerfiles</h2>
+<p>Everyone&rsquo;s container setup is going to be different, but I use <a href="https://www.docker.com">Docker</a> and <a href="https://orbstack.dev">Orbstack</a>, which use a Dockerfile.</p>
+<h2 id="dockerfile-before"><code>Dockerfile</code> before</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.12-slim-bookworm</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PIP_DISABLE_PIP_VERSION_CHECK <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONDONTWRITEBYTECODE <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONPATH /srv<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONUNBUFFERED <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --upgrade pip<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --requirement /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /src/</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="dockerfile-after"><code>Dockerfile</code> after</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.12-slim-bookworm</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PATH /venv/bin:$PATH. <span style="color:#75715e"># this is new</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PIP_DISABLE_PIP_VERSION_CHECK <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONDONTWRITEBYTECODE <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONPATH /srv<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONUNBUFFERED <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --upgrade pip uv  <span style="color:#75715e"># this is updated</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> python -m uv venv /venv  <span style="color:#75715e"># this is new</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> uv pip install --requirement /src/requirements.txt  <span style="color:#75715e"># this is updated</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /src/</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="github-actions">GitHub Actions</h2>
+<p>GitHub Actions are a little harder to explain, but my workflows started off similar to this before I made the switch to <code>uv</code>:</p>
+<h3 id="mainyml-before"><code>main.yml</code> before</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set up Python 3.12</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-python@v5</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">python-version</span>: <span style="color:#e6db74">&#39;3.12&#39;</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install dependencies</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      </span>      <span style="color:#ae81ff">python -m pip install --requirement requirements.in</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Collect Static Assets</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      </span>      <span style="color:#ae81ff">python -m manage collectstatic --noinput</span>
+</code></pre></div><h3 id="mainyml-after"><code>main.yml</code> after</h3>
+<p>The biggest pain point that I ran into along the way was related to GitHub Issue <a href="https://github.com/astral-sh/uv/issues/1386">#1386</a>, which has a useable workaround.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set up Python 3.12</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-python@v5</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">python-version</span>: <span style="color:#e6db74">&#39;3.12&#39;</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install dependencies</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      python -m pip install uv
+</span><span style="color:#e6db74">      python -m uv venv .venv
+</span><span style="color:#e6db74">      echo &#34;VIRTUAL_ENV=.venv&#34; &gt;&gt; $GITHUB_ENV
+</span><span style="color:#e6db74">      echo &#34;$PWD/.venv/bin&#34; &gt;&gt; $GITHUB_PATH
+</span><span style="color:#e6db74">      python -m uv pip install --requirement requirements.in</span>      
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Collect Static Assets</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      . .venv/bin/activate
+</span><span style="color:#e6db74">      python -m manage collectstatic --noinput</span>      
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>I hope this was helpful to anyone who is considering making the switch to <code>uv</code>. I love to hear about how much time it saves you.</p>
+<h2 id="updates">Updates</h2>
+<p>2024-03-08 - I modified the ENV PATH statement to prepend instead of replacing the value.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/28/the-definition-of.html">The definition of digital chaos</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/28/the-definition-of.html" class="u-url"><time class="dt-published" datetime="2024-02-28 16:35:54 -0500">Feb 28, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A few months ago, PayPal reached out to me via my backup email address to let me know that my primary email address no longer worked.</p>
+<p>I knew fixing this would be painful, so I wrote down the steps as I walked through it.</p>
+<h2 id="checks-fastmail">Checks Fastmail</h2>
+<ul>
+<li>Logs in via 1Password</li>
+<li>Uses YubiKey</li>
+</ul>
+<h2 id="checks-cloudflare">Checks Cloudflare</h2>
+<ul>
+<li>Logs in via 1Password</li>
+<li>Uses Auth app</li>
+<li>After logging in, I realized my domain was not hosted here.</li>
+</ul>
+<h2 id="checks-dynadot">Checks Dynadot</h2>
+<ul>
+<li>Logs in via 1Password</li>
+<li>Uses Auth app</li>
+<li>After logging in and checking my DNS settings, I realized my DNS was hosted with AWS.</li>
+</ul>
+<h2 id="checks-aws">Checks AWS</h2>
+<ul>
+<li>Logs in via 1Password (fails three times for Amazon security reasons)</li>
+<li>Uses Auth app because YubiKey fails</li>
+<li>Everything seems normal</li>
+</ul>
+<h2 id="back-to-gmail">Back to Gmail</h2>
+<ul>
+<li>Sends a few test emails from Gmail</li>
+</ul>
+<h2 id="back-to-fastmail">Back to Fastmail</h2>
+<p>After poking around, I noticed that Fastmail dropped my alias for &ldquo;I can&rsquo;t find with search reasons.&rdquo;</p>
+<p>I re-added my alias and double check that <code>*@domain.com</code> was still set to forward email.</p>
+<p>I send a few more test emails, get a few failures, and I notice it&rsquo;s back up and working again.</p>
+<h2 id="back-to-paypal">Back to PayPal</h2>
+<ul>
+<li>I return to PayPal to re-add my email address, which triggers another test SMS/email.</li>
+<li>I pull the code and re-enter into PayPal to verify my email address works again.</li>
+</ul>
+<h2 id="fastmail-support">Fastmail support</h2>
+<ul>
+<li>I contacted Fastmail&rsquo;s support, who told me this email address had never existed in their system. I have used it every month, dating back over 14 years, and it has existed since the late 90s.</li>
+<li>I re-create the email address.</li>
+</ul>
+<h2 id="back-to-gmail-1">Back to Gmail</h2>
+<ul>
+<li>I tested sending an email from Gmail again, and it works.</li>
+</ul>
+<h2 id="back-to-paypal-1">Back to PayPal</h2>
+<ul>
+<li>I re-try the email address from PayPal, and it works again.</li>
+</ul>
+<h2 id="back-to-fastmail-1">Back to Fastmail</h2>
+<ul>
+<li>I re-tested from Fastmail, and now everything is working again.</li>
+</ul>
+<h2 id="fin">Fin</h2>
+<p>This should have ended with me throwing everything away and quitting the Internet, but here we are months later.</p>
+<p>Instead, I have consolidated more of my DNS and domain services so that everything is easier to find and manage, but what a mess.</p>
+<p>I lost a ton of faith in Fastmail, but I also needed more patience to push back on support to understand how and why my email forwarders and backup catchall were deleted.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/27/using-django-q.html">Using Django Q2</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/27/using-django-q.html" class="u-url"><time class="dt-published" datetime="2024-02-27 23:23:33 -0500">Feb 27, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I&rsquo;m long overdue to write about how <a href="https://github.com/django-q2/django-q2">Django Q2</a> has become part of my development toolkit. As the maintained successor to <a href="https://github.com/Koed00/django-q">Django Q</a>, Django Q2 extends Django to handle background tasks and scheduled jobs.</p>
+<p>Django Q2 is flexible in managing tasks, whether sending out daily emails or performing hourly tasks like checking RSS feeds. The project works seamlessly with Django, making it one of the more straightforward background task solutions to integrate into your projects.</p>
+<p>Using Django Q2 involves passing a method or a string reference to a method to an <a href="https://django-q2.readthedocs.io/en/master/tasks.html#async-task"><code>async_task()</code></a> function, which will run in the background.</p>
+<p>One feature of Django Q2 that particularly impresses me is its adaptability to various databases. Whether your project uses the default Django database or something more scalable like Redis, Django Q2 fits perfectly. This flexibility means that a database queue suffices without any hiccups for most of my projects, even those that are small to medium.</p>
+<p>Unlike other task queues that require managing multiple processes or services, Django Q2 keeps it simple. The only necessity is to have the <code>qcluster</code> management command running, which is a breeze compared to other task queues because you only need to run one service to handle everything.</p>
+<p>Django Q2&rsquo;s flexibility, ease of use, and seamless integration with Django make it an excellent tool to reach for when you need background tasks.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/26/things-i-do.html">Things I do every time I start a Django project</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/26/things-i-do.html" class="u-url"><time class="dt-published" datetime="2024-02-26 20:15:29 -0500">Feb 26, 2024</time></a>
+
+		<div class="e-content">
+			 <p>In the spirit of Brenton Cleeland&rsquo;s <a href="https://brntn.me/blog/six-things-i-do-every-time-i-start-a-django-project/">Six things I do every time I start a Django project</a>, my goal is to document and share my process since this often comes up.</p>
+<p>Like Brenton, I have a lot of projects, and their scope may range from quick one-offs that might last a few hours to projects I have worked on for a decade or more.</p>
+<h2 id="overview-and-upfront-notes">Overview and upfront notes</h2>
+<p>I use <a href="https://github.com/pyenv/pyenv">pyenv</a> to manage my Python versions, but I don&rsquo;t go into any details here.</p>
+<p>I use <a href="https://github.com/pyenv/pyenv-virtualenvwrapper">pyenv-virtualenvwrapper</a> to manage what Python calls a &ldquo;virtual environment,&rdquo; which copies and symlinks files and folders where they need to be so that your Python projects are isolated from one another.</p>
+<p><code>pyenv-virtualenvwrapper</code> is also a <code>pyenv</code>-friendly fork of <a href="https://github.com/python-virtualenvwrapper/virtualenvwrapper">virtualenvwrapper</a>.</p>
+<p><strong>Please note:</strong> To avoid even more confusion, please assume that at any time in this article, when I mention <code>virtualenvwrapper</code> or its various commands, I mean the <code>pyenv-virtualenvwrapper</code> version of these tools.</p>
+<p>For more detail, see my article <a href="https://micro.webology.dev/2024/02/10/python-development-on.html">Python Development on macOS Notes: pyenv and pyenv-virtualenvwrapper</a>.</p>
+<h2 id="creating-a-new-project">Creating a new project</h2>
+<p>First, I need a folder to store all my project files. One nice feature of <code>virtualenvwrapper</code> is it can manage both my virtualenvs and where my projects live.</p>
+<p>So my first step for a new project is to run <code>mkvirtualenv {project_name}</code>, where <code>project_name</code> is the name of the domain name or client that I&rsquo;m working with. <code>mkvirtualenv</code> will then create a new virtual environment (<code>virtualenv</code> or <code>venv</code> is fine too) for me, make a new project folder for me to put my files into, and then transport me to this new project folder.</p>
+<p><code>virtualenvwrapper</code> also supports custom hooks, which is a fancy way of saying it runs a series of commands I tell it I want to run after it creates a <code>virtualenv</code>. These are a few of the custom steps that I run for my projects:</p>
+<ul>
+<li>Create a <a href="https://www.sublimetext.com/blog/articles/sublime-text-4">Sublime Text</a> project file so <a href="https://www.alfredapp.com/">Alfred</a> can detect it.</li>
+<li>Create a <a href="https://www.sublimetext.com/blog/articles/sublime-text-4">Sublime Text</a> <code>pyrightconfig.json</code> file, which enables LSP support for the project so that my code autocompletion works.</li>
+<li>Create a <a href="https://syncthing.net">Syncthing</a> <code>.stignore</code>  file.</li>
+<li>Create a <a href="https://direnv.net">direnv</a> <code>.envrc</code> file that loads my project&rsquo;s environment variables.</li>
+<li>Transports me into my projects folder.</li>
+<li>Activate the new <code>virtualenv</code>, so Python is ready.</li>
+<li>Install the latest version of <code>pip</code>, Python&rsquo;s package manager.</li>
+<li>Install the latest version of <a href="https://github.com/jazzband/pip-tools/">pip-tools</a>, which I like to use for managing my project Python requirements.</li>
+<li><strong>Soon:</strong> Install the latest version of <a href="https://github.com/astral-sh/uv">uv</a>, which will soon replace pip-tools for me.</li>
+</ul>
+<p>Even though most of my projects use Docker Compose, I still install my Python dependencies outside of Docker in the virtual environment so that my text editors and <a href="https://github.com/microsoft/pyright">pyright</a> can read them.</p>
+<h2 id="create-my-django-app">Create my Django app</h2>
+<p>Once I have a project folder and <code>virtualenv</code> set up, I must create a Django project.
+I use either my <a href="https://github.com/jefftriplett/django-startproject">django-startproject</a> or <a href="https://revsys.com">REVSYS</a>&rsquo;s Django starter template, which we call AlphaKit.
+Both projects aim to start jumpstart development and spend zero time configuring projects.
+Since my stater project is public, I will run this snippet to jumpstart it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">django-admin startproject <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --extension<span style="color:#f92672">=</span>ini,py,yml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --template<span style="color:#f92672">=</span>https://github.com/jefftriplett/django-startproject/archive/main.zip <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    config
+</code></pre></div><p>I landed on <code>config</code> for my projects because I like consistency when switching between projects, and over a decade and a half, I have never had a naming collision with config. The name config tends to sort to the top of my folder listings, making copying and pasting configs from project to project easier.</p>
+<h2 id="setup-git">Setup Git</h2>
+<ol>
+<li>Now that I have my project started, I will run <code>git init</code> inside the project folder.</li>
+<li><code>bunx gitignore python</code> to set standard files to ignore</li>
+<li>I will create a new repo on Git(Hub|Lab) and set it as a remote source for my project</li>
+<li>I will run <code>gittower .</code>, select which files I&rsquo;m ready to commit, and write my initial commit message.</li>
+<li>I will <code>git push</code> from my terminal or <a href="https://www.git-tower.com/mac">GitTower</a> and confirm that my new project is set up.</li>
+</ol>
+<h2 id="switching-projects">Switching projects</h2>
+<p>When I want to work on an existing project, I use <code>virtualenv</code>&rsquo;s <code>workon</code> command to switch projects. <code>workon {project_name}</code> will transport me to the correct project folder and will activate my Python virtual environment so that I&rsquo;m ready to work.</p>
+<h2 id="do-i-need-templates">Do I need templates?</h2>
+<p>If my project needs templates, I&rsquo;ll use a starter <code>templates/base.html</code> and the <a href="https://tailwindcss.com/docs/installation/play-cdn">Tailwind CSS Play CDN</a>.</p>
+<p>I am a few years into using Tailwind CSS, and it&rsquo;s my first choice for quickly bootstrapping a project. Despite the masto-hate, Tailwind CSS works for me and is vanilla CSS-friendly.</p>
+<p>I like their Play CDN because I can start fiddling with Tailwind CSS with zero runtime and only one script tag to include in my HTML docs head.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/25/weeknotes-w.html">Weeknotes 2024 W08</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/25/weeknotes-w.html" class="u-url"><time class="dt-published" datetime="2024-02-25 20:42:20 -0500">Feb 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>It warmed up this week, and we started our mornings out in the 30s and ended them in the 60s and even 70s all week. Our neighbors started putting their furniture back out on their porches, which is a local sign that winter is almost over.</p>
+<h2 id="family">Family</h2>
+<p>We found a small gas leak in our &gt;100-year-old house and hired someone to fix it. If you ever smell gas, friends, please call and have it fixed as soon as possible.</p>
+<p>I have been working with my son every day on his basketball skills. He missed his first game Saturday because of a stomach bug but bounced back enough Sunday to join me at the gym to practice. He went from zero dribbling skills to leading the team in dribbling drills, which he is pretty proud of.</p>
+<p>My youngest child is firmly in the three to four-word sentence phase. My other half returned to work this week after being off for a procedure.</p>
+<h2 id="work">Work</h2>
+<p>I started a new client project this week, which involved spinning up a new green field project, taking a bunch of CSV files, and importing millions of records. The goal is to use Django, HTMX, and a lot of neat tech to build a vast parts catalog.</p>
+<h2 id="community">Community</h2>
+<p>We met to discuss our <a href="https://2024.djangocon.us">DjangoCon US</a> website options as we try to figure out what we want in a new platform. We had a follow-up meeting about our Health and Safety policies, and I also had a meeting to help onboard someone to assist with our automation projects.</p>
+<p>I joined the <a href="https://www.conferencechats.org">Conference Chats</a> meetup this week and spent a few hours discussing conferences with other community organizers.</p>
+<p>I joined two <a href="https://wiggle.work">Wiggle Work</a> events this week over lunch with the same group that had been writing this month.</p>
+<p>I hosted <a href="https://mastodon.social/@webology/111983160101281972">Office Hours</a> again this week.</p>
+<h2 id="side-projects">Side Projects</h2>
+<p>I spent most of my side project time on <a href="https://django-news.com">Django News</a>, <a href="https://jobs.django-news.com">Django News Jobs</a>, and <a href="https://djangopackages.org">Django Packages</a>.</p>
+<p><strong>Django News Jobs:</strong> I fixed several bugs, styled some message notifications, and refactored how various job status states work. We have different workflows for when a human submits a job versus jobs we collect from RSS feeds, APIs, or scraped. Most of these jobs are collected but have yet to be displayed. They should start seeing the light of day once I get a better handle on a moderation queue.</p>
+<p><strong>Django Packages:</strong> The website now runs on <a href="https://github.com/djangopackages/djangopackages/pull/1105">Django 5.0</a> thanks to <a href="https://github.com/saadmk11">Maksudul Haque</a>. I merged in several rounds of dependency updates and pre-commit updates.</p>
+<p><strong>Django News Newsletter:</strong> We shipped issue <a href="https://django-news.com/issues/220#start">#220</a>. I worked on our secret backend project, which helps us collect news and makes updating the newsletter easier. I migrated our Tweet model to a Drafts model and dusted off some code that would post via the <a href="https://typefully.com">Typefully</a> API.</p>
+<p>All three projects received security updates, and I created a new blog app called the Changelog, which we&rsquo;ll slowly roll out over the next few weeks or months. That should help us blog about project updates and release and share thoughts.</p>
+<p>I started using the <a href="https://astral.sh/blog/uv"><code>uv</code></a> project to shave a minute or more off local updates and some Docker rebuilds. I&rsquo;m trying it out for a week and then rolling it out.</p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>I finished <a href="https://trakt.tv/shows/true-detective/seasons/4">True Detective: Season 4: Night Country</a></p>
+<p>I watched the first two seasons of <a href="https://trakt.tv/shows/resident-alien">Resident Alien</a></p>
+<p>I watched two Kansas Basketball games and a bunch of random games.</p>
+<p>I wrote seven blog posts, part of my goal to blog daily in February with the <a href="https://wiggle.work">Wiggle Work</a> Discord community I&rsquo;m part of.</p>
+<p><a href="https://micro.webology.dev/2024/02/24/fetch-the-contents.html">2024-02-24</a>: <strong>Fetch the contents of a URL with Django service</strong> </p>
+<p><a href="https://micro.webology.dev/2024/02/23/three-years-later.html">2024-02-23</a>: <strong>Three years later, email is less of a pain</strong></p>
+<p><a href="https://micro.webology.dev/2024/02/22/scratching-itches-with.html">2024-02-22</a>: <strong>Scratching Itches with Python and ChatGPT</strong> </p>
+<p><a href="https://micro.webology.dev/2024/02/21/using-chamber-with.html">2024-02-21</a>: <strong>Using Chamber with Django and managing environment variables</strong> </p>
+<p><a href="https://micro.webology.dev/2024/02/20/transferred-djangorqemailbackend-found.html">2024-02-20</a>: <strong>Transferred - django-rq-email-backend found a new home</strong> </p>
+<p><a href="https://micro.webology.dev/2024/02/19/django-ninja.html">2024-02-19</a>: <strong>🥷 Django Ninja</strong> </p>
+<p><a href="https://micro.webology.dev/2024/02/18/my-development-setup.html">2024-02-18</a>: <strong>My 2024 Development Setup</strong> </p>
+<h2 id="next-week">Next week</h2>
+<p>I&rsquo;ll finally take down those Christmas lights. I must repair rot damage on the front porch and our back steps. It&rsquo;s almost time to start reseeding our yard and removing the extra sticks that have accumulated over the winter.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/24/fetch-the-contents.html">Fetch the contents of a URL with Django service</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/24/fetch-the-contents.html" class="u-url"><time class="dt-published" datetime="2024-02-24 15:21:43 -0500">Feb 24, 2024</time></a>
+
+		<div class="e-content">
+			 <p>For the last few months, I have been using the <a href="https://cooked.wiki">cooked.wiki</a> recipe-saving website, which initially impressed me because of how easy the website&rsquo;s API is to use.</p>
+<p>To use the service, all one has to do is prepend any website that contains a food recipe with <code>https://cooked.wiki/</code>, and you get the recipe without a coming-of-age discovery story.</p>
+<p>This is a fun pattern, so I wrote my own in Django to illustrate how to build a Django view, which accepts a URL like http://localhost:8000/https://httpbin.org/get/ where <a href="https://httpbin.org/get/">https://httpbin.org/get/</a> will be fetched and the contents stored for processing.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># views.py </span>
+<span style="color:#f92672">import</span> httpx
+
+<span style="color:#f92672">from</span> django.http <span style="color:#f92672">import</span> HttpResponse
+<span style="color:#f92672">from</span> urllib.parse <span style="color:#f92672">import</span> urlparse
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fetch_content_view</span>(request, url: str) <span style="color:#f92672">-&gt;</span> HttpResponse:
+    <span style="color:#75715e"># Ensure the URL starts with http:// or https://</span>
+    parsed_url <span style="color:#f92672">=</span> urlparse(url)
+    <span style="color:#66d9ef">if</span> parsed_url<span style="color:#f92672">.</span>scheme <span style="color:#f92672">in</span> (<span style="color:#e6db74">&#34;http&#34;</span>, <span style="color:#e6db74">&#34;https&#34;</span>):
+        <span style="color:#66d9ef">try</span>:
+            response <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>get(url)
+
+            <span style="color:#75715e"># Check for HTTP request errors</span>
+            httpx<span style="color:#f92672">.</span>raise_for_status()
+            content <span style="color:#f92672">=</span> httpx<span style="color:#f92672">.</span>content
+
+            <span style="color:#75715e"># TODO: do something with content here...</span>
+            <span style="color:#66d9ef">assert</span> content
+            <span style="color:#66d9ef">return</span> HttpResponse(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>url<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+
+        <span style="color:#66d9ef">except</span> httpx<span style="color:#f92672">.</span>RequestException <span style="color:#66d9ef">as</span> e:
+            <span style="color:#66d9ef">return</span> HttpResponse(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Error fetching the requested URL: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>, status<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>)
+
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> HttpResponse(<span style="color:#e6db74">&#34;Invalid URL format.&#34;</span>, status<span style="color:#f92672">=</span><span style="color:#ae81ff">400</span>)
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># urls.py</span>
+
+<span style="color:#f92672">from</span> django.urls <span style="color:#f92672">import</span> path
+<span style="color:#f92672">from</span> . <span style="color:#f92672">import</span> views
+
+urlpatterns <span style="color:#f92672">=</span> [
+    <span style="color:#75715e"># other URL patterns here...</span>
+    <span style="color:#f92672">...</span>
+    
+    path(<span style="color:#e6db74">&#34;&lt;path:url&gt;/&#34;</span>, views<span style="color:#f92672">.</span>fetch_content_view, name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;fetch_content&#34;</span>),
+]
+</code></pre></div><p>If you create your fetch the contents of a URL-like service, please consider putting it behind authentication to avoid someone discovering it and using it to DDOS someone&rsquo;s website. I recommend throttling the view to prevent overloading a website by spamming requests to it.</p>
+<p><strong>Updated:</strong> I updated the example to switch from the python-requests references to the <a href="https://www.python-httpx.org/compatibility/">HTTPX</a> library.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/23/three-years-later.html">Three years later, email is less of a pain</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/23/three-years-later.html" class="u-url"><time class="dt-published" datetime="2024-02-23 14:35:08 -0500">Feb 23, 2024</time></a>
+
+		<div class="e-content">
+			 <p><strong>Disclaimer:</strong> Forward Email did <em>not</em> pay me to write this. </p>
+<p>I wrote about my side projects and how <a href="https://jefftriplett.com/2021/side-projects-email-is-a-pain/">email is a pain</a> a few years ago, and this morning, I saw a <a href="https://mastodon.social/@zrail@hachyderm.io/111981176443853726">Mastodon post</a> that led me back here. </p>
+<p>At the time, I ran into a point with my side projects where they would grow up and eventually need an email address dedicated to them. Instead of trying to manage a dozen email accounts, I stumbled on <a href="https://forwardemail.net">Forward Email</a>, and they solved the problem by allowing me to forward emails to other email accounts. Three years and annual billing cycles later, the service works. </p>
+<p>This morning, I discovered they now support <a href="https://forwardemail.net/en/guides/send-email-with-custom-domain-smtp">outbound SMTP emails</a>, which allowed me to simplify how I configure and send emails for my projects. I used Mailgun and Sendgrid, but my send volume was just low enough that I struggled to keep Sendgrid from closing my account. </p>
+<p>Forward Email also now supports <a href="https://forwardemail.net/en/free-email-webhooks">Email webhooks</a>, and they have an Email API, which could be handy for a few projects. </p>
+<p>If you work on any number of side projects and you find yourself dreading email, as I did, I recommend Forward Email to at least route email to one email account while having the right dials and switches to make the experience not suck.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/22/scratching-itches-with.html">Scratching Itches with Python and ChatGPT</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/22/scratching-itches-with.html" class="u-url"><time class="dt-published" datetime="2024-02-22 20:56:38 -0500">Feb 22, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A few times a week over the last several months, I have paired with ChatGPT to work on Python scripts that solve problems that I would otherwise have spent less time on. Some might feel too niche or even too tedious that I would otherwise not take the time to work on. Most of the time, these are scratching an itch and solving a problem on my mind.</p>
+<p>Because of the time constraint, I have been impressed with the results. I usually spend 10 to 15 minutes prompting ChatGPT, then I spend 10 to 15 minutes refactoring the script, adding <a href="https://typer.tiangolo.com">Typer</a>, and refining the code. Sometimes, this involved copying all or parts of my script and pasting it back into ChatGPT to have it refine or refactor some section of code.</p>
+<h2 id="youtube-playlist-to-markdown-file">YouTube Playlist to Markdown file</h2>
+<p>My <a href="https://gist.github.com/jefftriplett/4bf333453d7cab320aa45767b1949be6">YouTube playlist to markdown script</a> is helpful for quickly getting a list of video URLs and titles back from a YouTube playlist. I have used this for DjangoCon US and a few other conferences to help collect links for social media and a few times for the <a href="https://django-news.com">Django News Newsletter</a>.</p>
+<p>ChatGPT even documented the process, including links for how to set permissions for the YouTube API.</p>
+<h2 id="use-playwright-to-pull-data-out-of-the-django-admin">Use Playwright to pull data out of the Django Admin</h2>
+<p>I have database access for most projects, but I recently needed to export a list of RSS feeds from the admin of a Django website. ChatGPT could quickly write a Playwright script to log in to the website, access a list page, and pull the feed field from the detail page. The script generated a JSON feed and could understand pagination and how to page through the links.</p>
+<h2 id="github-issues-and-pull-request-templates">GitHub Issues and Pull Request templates</h2>
+<p>For the <a href="https://github.com/wsvincent/awesome-django">Awesome Django project</a>, I asked ChatGPT to generate GitHub Issues and Pull Request templates based on my criteria. Once the templates were complete, I prompted ChatGPT to help me write a script that uses the GitHub API to read a pull request and validate the answers filled out while adding some other contextual data that makes it easier to verify the request.</p>
+<h2 id="modeling-html-with-pydantic">Modeling HTML with PyDantic</h2>
+<p>I am still trying to figure out what to do with the project, but I asked ChatGPT to use <a href="https://github.com/pydantic/pydantic">Pydantic</a> to create a class that could represent HTML tags. Once I was happy with the API, I asked ChatGPT to represent all HTML tags. After a few more prompts, I could read, write, and represent an HTML document using this script using Pydantic.</p>
+<h2 id="outro">Outro</h2>
+<p>I&rsquo;m still determining how useful these scripts are, but I have enjoyed these quick sessions to write a one-off script or to solve problems that come up a few times a year that never seemed worth the time spent trying to write it from scratch.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/21/using-chamber-with.html">Using Chamber with Django and managing environment variables</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/21/using-chamber-with.html" class="u-url"><time class="dt-published" datetime="2024-02-21 23:01:19 -0500">Feb 21, 2024</time></a>
+
+		<div class="e-content">
+			 <p>One of my favorite hosting setups is getting a cheap slice from Digital Ocean or your favorite provider, installing <a href="https://docs.docker.com/compose/">Docker Compose</a> and <a href="https://tailscale.com">Tailscale</a>, and then fire-walling everything off except for port 443.</p>
+<p>Whenever I want to host a new project, I copy a <code>docker-compose.yml</code> file to the server, and then I start it with `docker compose up -d'.</p>
+<p>I run <a href="https://github.com/containrrr/watchtower">Watchtower</a> in Docker on the server, which looks for new Docker images from GitHub Packages, pulls them, and restarts any updated containers.</p>
+<p>I can update my projects, <code>git push</code> changes, and GitHub Actions will build and store a new container image for me.</p>
+<p>My main pain point was juggling environment variables until someone pointed out <a href="https://github.com/segmentio/chamber">Chamber</a>, which manages environment variables well.</p>
+<p>Since creating this setup, I have shared several GitHub Gists with curious friends, and my goal of this post is to serve as more of an overview of options than it is to be a comprehensive guide to using Chamber.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>You&rsquo;ll need an AWS account, some essential Docker and Compose knowledge, and to follow <a href="https://github.com/segmentio/chamber#installing">Chamber&rsquo;s Installing</a> instructions.</p>
+<h2 id="setting-up-my-environment">Setting up my environment</h2>
+<p>Ironically, my goal of eliminating individual environment variables led me to need four environment variables to bootstrap Chamber itself.
+The environment variables I&rsquo;m using:</p>
+<ul>
+<li><code>AWS_ACCESS_KEY_ID</code></li>
+<li><code>AWS_REGION</code></li>
+<li><code>AWS_SECRET_ACCESS_KEY</code></li>
+<li><code>CHAMBER_KMS_KEY_ALIAS=aws/ssm</code></li>
+</ul>
+<h2 id="dockerfile-setup">Dockerfile Setup</h2>
+<p>To make running Chamber running more straightforward, I used the <code>segment/chamber</code> Docker image, copied the <code>/bin/chamber</code> binary into my image, and configured it to run it as a <code>ENTRYPOINT</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> segment/chamber:2.14 AS chamber</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.11-slim-buster AS dev</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> dev AS production</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>...<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>chamber /chamber /bin/chamber<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/bin/chamber&#34;</span>, <span style="color:#e6db74">&#34;exec&#34;</span>, <span style="color:#e6db74">&#34;django-news.com/production&#34;</span>, <span style="color:#e6db74">&#34;--&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>I prefer to namespace these variables based on the project and the environment I&rsquo;m referencing, like <code>django-news.com/production</code>.</p>
+<p>I am using a Docker entrypoint so that my secrets/environment variables work by default, whether running the image or overriding the default command, so I may shell into my container.</p>
+<h2 id="docker-compose-setup">Docker Compose Setup</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">services</span>:
+  <span style="color:#f92672">web</span>:
+    <span style="color:#f92672">entrypoint</span>: <span style="color:#ae81ff">/bin/chamber exec django-news.com/production --</span>
+    <span style="color:#f92672">command</span>: <span style="color:#ae81ff">gunicorn config.wsgi --bind 0.0.0.0:8000</span>
+    <span style="color:#ae81ff">...</span>
+</code></pre></div><p>Please note that the <code>entrypoint</code> line is optional if you set it in your <code>ENTRYPOINT</code> setting in your <code>DOCKERFILE</code>.</p>
+<h2 id="using-chamber">Using Chamber</h2>
+<p>Now that you have seen how we use Chamber in Docker and Docker Compose, this is how we get things into Chamber.</p>
+<h3 id="listing-our-projects">Listing our projects</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chamber list-services
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chamber list django-news.com/production
+</code></pre></div><h3 id="write-new-settings">Write new settings</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chamber write django-news.com/production DJANGO_DEBUG true
+</code></pre></div><h3 id="delete-an-existing-setting">Delete an existing setting</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chamber delete django-news.com/production DJANGO_DEBUG
+</code></pre></div><h3 id="export-our-settings-into-a-dotenv-env-file">Export our settings into a dotenv (.env) file</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chamber export --format<span style="color:#f92672">=</span>dotenv django-news.com/production
+</code></pre></div><h3 id="consuming-an-env-variable-from-django">Consuming an env variable from Django</h3>
+<p>The <a href="https://github.com/sloria/environs"><code>environs</code></a> project is my go-to for parsing environment variables. Here is an example of how to toggle Django&rsquo;s debug mode.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># settings.py</span>
+<span style="color:#f92672">import</span> environs
+
+env <span style="color:#f92672">=</span> environs<span style="color:#f92672">.</span>Env()
+
+DEBUG <span style="color:#f92672">=</span> env<span style="color:#f92672">.</span>bool(<span style="color:#e6db74">&#34;DJANGO_DEBUG&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>I&rsquo;m happy to manage my environment variables from the command line without syncing files.
+Using Chamber with KMS increased my monthly AWS bill by $0.01, which is money well spent for the flexibility of using Chamber.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>I had a good experience using the 1Password CLI for a recent client project to share and load secrets into the environment.
+If you are working with a team, consider checking it out for your team in case it&rsquo;s a good fit.
+Check out their <a href="https://developer.1password.com/docs/cli/secrets-environment-variables/">Load secrets into the environment</a> docs.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/20/transferred-djangorqemailbackend-found.html">Transferred - django-rq-email-backend found a new home</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/20/transferred-djangorqemailbackend-found.html" class="u-url"><time class="dt-published" datetime="2024-02-20 17:45:48 -0500">Feb 20, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A decade ago, I created <a href="%5Bhttps://github.com/knyghty/django-rq-email-backend%5D(https://github.com/knyghty/django-rq-email-backend)"><code>django-rq-email-backend</code></a> for a few projects to queue emails to send without blocking one of my web server processes. I used the <a href="%5Bhttps://pypi.org/project/django-rq/%5D(https://pypi.org/project/django-rq/)">Django RQ</a> background queue for a few projects, and it scratched an itch.</p>
+<p>It&rsquo;s a project that worked for a decade+ with only a bug or two over the years. I retired the project I built <code>django-rq-email-backend</code> for, and it&rsquo;s gathered dust ever since. I also stopped using Django RQ.</p>
+<p><a href="%5Bhttps://github.com/knyghty%5D(https://github.com/knyghty)">Tom Carrick</a> reached out to me and asked me if I needed help or was open to giving it a new home. I was thankful to find someone who wanted to continue the project, so I transferred the repo and the <a href="%5Bhttps://pypi.org/project/django-rq-email-backend/%5D(https://pypi.org/project/django-rq-email-backend/)">PyPI</a> publishing rights to Tom.</p>
+<p>Skip forward a few months; Tom has been running with the project and cutting new releases ever since. I felt comfortable transferring the project because I knew Tom from a few of his projects, and the project only appealed to a very niche audience.</p>
+<p>Thank you, Tom, for continuing the project.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/19/django-ninja.html">🥷 Django Ninja</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/19/django-ninja.html" class="u-url"><time class="dt-published" datetime="2024-02-19 17:58:37 -0500">Feb 19, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have heard good things about <a href="https://django-ninja.dev">Django Ninja</a>, and I was looking for an excuse to try it out.</p>
+<p>One pain point is syncing production data to a local Django development website. Most of the time, I can dump a database and restore it locally. Sometimes, creating a REST endpoint and creating a local Django management command to consume that input is easier.</p>
+<p>That&rsquo;s what my example is doing here with Django Ninja.</p>
+<h2 id="schemaspy"><code>schemas.py</code></h2>
+<p>If you have used <a href="https://www.django-rest-framework.org">Django REST framework</a>&rsquo;s <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">ModelSerializer</a> before, you will feel at home with Django Ninja&rsquo;s <a href="https://django-ninja.dev/guides/response/django-pydantic/#modelschema">ModelSchema</a>.</p>
+<p>A ModelSchema class can generate a schema from a Django model and only needs to know which Django model and which fields you want to be exposed to your endpoint.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> ninja <span style="color:#f92672">import</span> ModelSchema
+
+<span style="color:#f92672">from</span> places.models <span style="color:#f92672">import</span> Place
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PlaceSchema</span>(ModelSchema):
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Meta</span>:
+        model <span style="color:#f92672">=</span> Place
+        fields <span style="color:#f92672">=</span> [
+            <span style="color:#e6db74">&#34;name&#34;</span>,
+            <span style="color:#e6db74">&#34;slug&#34;</span>,
+            <span style="color:#e6db74">&#34;active&#34;</span>,
+            <span style="color:#e6db74">&#34;place_id&#34;</span>,
+            <span style="color:#e6db74">&#34;address&#34;</span>,
+            <span style="color:#f92672">...</span>
+        ]
+</code></pre></div><h2 id="viewspy"><code>views.py</code></h2>
+<p>Our Django Ninja view is going to going to query our database and return all of the active records in our <code>Place</code> model with respect to their creation date. Django Ninja will do the heavy lifting for us and apply our <code>PlaceSchema</code> which will return JSON data.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> ninja <span style="color:#f92672">import</span> Router
+<span style="color:#f92672">from</span> ninja.pagination <span style="color:#f92672">import</span> LimitOffsetPagination
+<span style="color:#f92672">from</span> ninja.pagination <span style="color:#f92672">import</span> paginate
+
+<span style="color:#f92672">from</span> places.models <span style="color:#f92672">import</span> Place
+<span style="color:#f92672">from</span> places.schemas <span style="color:#f92672">import</span> PlaceSchema
+
+
+router <span style="color:#f92672">=</span> Router()
+
+
+<span style="color:#a6e22e">@router</span><span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;/places/&#34;</span>, response<span style="color:#f92672">=</span>{<span style="color:#ae81ff">200</span>: list[PlaceSchema]})
+<span style="color:#a6e22e">@paginate</span>(LimitOffsetPagination)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">list_places</span>(request):
+    qs <span style="color:#f92672">=</span> Place<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>active()<span style="color:#f92672">.</span>order_by(<span style="color:#e6db74">&#34;-created&#34;</span>)
+    <span style="color:#66d9ef">return</span> qs
+</code></pre></div><h2 id="routerspy"><code>routers.py</code></h2>
+<p>This <code>routers.py</code> file is optional, but I prefer to keep my routers separate from my <code>urls.py</code>, and this felt cleaner. I would keep this code for a small app in my <code>urls.py</code> instead.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> ninja <span style="color:#f92672">import</span> NinjaAPI
+
+<span style="color:#f92672">from</span> places.views <span style="color:#f92672">import</span> router <span style="color:#66d9ef">as</span> places_router
+
+<span style="color:#75715e"># API setup</span>
+api <span style="color:#f92672">=</span> NinjaAPI(csrf<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0.0&#34;</span>)
+api<span style="color:#f92672">.</span>add_router(<span style="color:#e6db74">&#34;&#34;</span>, places_router)
+</code></pre></div><h2 id="urlspy"><code>urls.py</code></h2>
+<p>Our <code>urls.py</code> file is where we expose our router to the Internet so that our <code>/apis/places/</code> URI will be accessible to anyone who knows it&rsquo;s there.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">...</span>
+<span style="color:#f92672">from</span> places.views <span style="color:#f92672">import</span> api
+<span style="color:#f92672">...</span>
+
+
+urlpatterns <span style="color:#f92672">=</span> [
+    <span style="color:#f92672">...</span>
+    path(<span style="color:#e6db74">&#34;apis/&#34;</span>, api<span style="color:#f92672">.</span>urls),
+    <span style="color:#f92672">...</span> 
+]
+</code></pre></div><hr>
+<h2 id="import_from_productionpy"><code>import_from_production.py</code></h2>
+<p>This is a reasonably common Django management command pattern that I write. I prefer to use <a href="https://github.com/GaretJax/django-click">django-click</a> because the <a href="https://palletsprojects.com/p/click/">click</a> simplifies how to write Python command line interfaces.</p>
+<p>We connect to our new endpoint, and if we get a good status code back, we will loop over our results and sync up our database with them.</p>
+<p>Please note: I didn&rsquo;t dive into how to do this security, but you will want to add some protection to your websites unless you are comfortable with it being public.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
+<span style="color:#f92672">import</span> requests
+<span style="color:#f92672">from</span> rich <span style="color:#f92672">import</span> print
+
+<span style="color:#f92672">from</span> places.models <span style="color:#f92672">import</span> Place
+
+<span style="color:#75715e"># Constants</span>
+API_URL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://your-website.com/apis/places/&#34;</span>
+
+
+[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>option(<span style="color:#e6db74">&#34;--limit&#34;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(limit):
+    <span style="color:#75715e"># Start a requests session</span>
+    <span style="color:#66d9ef">with</span> requests<span style="color:#f92672">.</span>Session() <span style="color:#66d9ef">as</span> session:
+        <span style="color:#66d9ef">try</span>:
+            params <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;limit&#34;</span>: limit}
+            response <span style="color:#f92672">=</span> session<span style="color:#f92672">.</span>get(API_URL, params<span style="color:#f92672">=</span>params)
+            response<span style="color:#f92672">.</span>raise_for_status()
+
+            items <span style="color:#f92672">=</span> response<span style="color:#f92672">.</span>json()[<span style="color:#e6db74">&#34;items&#34;</span>]
+            <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> items:
+                <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;name&#34;</span> <span style="color:#f92672">in</span> item:
+                    name <span style="color:#f92672">=</span> item[<span style="color:#e6db74">&#34;name&#34;</span>]
+                    address <span style="color:#f92672">=</span> item[<span style="color:#e6db74">&#34;address&#34;</span>]
+
+                    defaults <span style="color:#f92672">=</span> dict(item)
+					<span style="color:#75715e"># delete foreign keys	</span>
+                    <span style="color:#66d9ef">del</span> defaults[<span style="color:#e6db74">&#34;cuisines&#34;</span>]
+                    <span style="color:#66d9ef">del</span> defaults[<span style="color:#e6db74">&#34;neighborhood&#34;</span>]
+
+                    <span style="color:#66d9ef">try</span>:
+                        place, created <span style="color:#f92672">=</span> Place<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>update_or_create(
+                            name<span style="color:#f92672">=</span>name, address<span style="color:#f92672">=</span>address, defaults<span style="color:#f92672">=</span>defaults
+                        )
+                        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> :: </span><span style="color:#e6db74">{</span>created<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+
+                    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+                        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;[red]</span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">=}</span><span style="color:#e6db74">[/red]&#34;</span>)
+
+        <span style="color:#66d9ef">except</span> requests<span style="color:#f92672">.</span>HTTPError <span style="color:#66d9ef">as</span> http_err:
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;HTTP error occurred: </span><span style="color:#e6db74">{</span>http_err<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> err:
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;An error occurred: </span><span style="color:#e6db74">{</span>err<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><h2 id="fin">Fin</h2>
+<p>Overall, I&rsquo;m pretty happy with this pattern and Django Ninja. My only nitpick is that I wish that Django Ninja shipped with some class-based view batteries. I find them to be much easier to extend and work from than function-based views, but I&rsquo;m told some third-party apps are starting to help fill in this space.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/18/my-development-setup.html">My 2024 Development Setup</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/18/my-development-setup.html" class="u-url"><time class="dt-published" datetime="2024-02-18 22:39:06 -0500">Feb 18, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have wanted to document my development setup for a while to revisit it from time to time to see how my setup changes.</p>
+<h2 id="hardware">Hardware</h2>
+<p>I&rsquo;m typing this from my couch on a MacBook Pro Intel/2019 model in Lawrence, KS.</p>
+<p>I&rsquo;m using a Mac Studio (M2/2023 model) at my office.</p>
+<p>I&rsquo;m using a Mac Mini Pro (M2/2023 model) in my home office.</p>
+<p>I&rsquo;m using an Intel Skull NUC (2017) and several Raspberry Pis (3s and 4s) wired to my router.</p>
+<p>After a few decades of working on a laptop, I recently switched to a desktop machine because I wanted to sit down at either machine and work without carrying anything around. With two kids, I&rsquo;m also juggling backpacks, water bottles, and whatever they need at school or preschool that day. Not having to worry about carrying anything is a huge mental weight off my shoulders.</p>
+<p>At home, I run three Dell S2722QC 27-inch 4K USB-C monitors and a 16&quot; portable monitor that I use as a dedicated iTerm display. At work, I use a pair of Monoprice 30&quot; monitors and another 16&quot; portable monitor for iTerm. At some point, I want to pick up the same Dell monitors for work.</p>
+<h2 id="software">Software</h2>
+<p>Since 2007, I have preferred developing on macOS. I&rsquo;m running on macOS Ventura on everything, but I plan to migrate to macOS Sonoma sooner rather than later.</p>
+<p>I use <a href="https://tailscale.com">Tailscale</a>, so I can connect to any of my machines from anywhere. I can even connect from my iPhone or an iPad. If you have more than one machine, even if that machine is a Raspberry Pi, Tailscale is worth the ~5-minute install.</p>
+<p>I use <a href="https://www.alfredapp.com">Alfred</a>, with some custom plugins, as my go-to &ldquo;do everything on macOS&rdquo; tool of choice.</p>
+<h2 id="themes">Themes</h2>
+<p><a href="https://draculatheme.com/">Dracula</a> is my favorite theme because it looks nice, and the community has built a theme for everything.</p>
+<h2 id="home">Home</h2>
+<p>I run <a href="https://www.home-assistant.io">Home Assistant</a> at home and have a love/meh relationship with it. I have a liberal usage of <a href="https://www.wyze.com">Wyze cameras and gear</a>, doubling as kid/baby monitors and external perimeter coverage around our gates and cars.</p>
+<h2 id="backups">Backups</h2>
+<p>Backups should be handled in layers:</p>
+<ul>
+<li>Quick local backups: Every Mac runs TimeMachine and backups to an encrypted, external drive. I built my NVMe backup drive solution that I will write about sometime.</li>
+<li>External, off-sight backups: I store external copies of my data on <a href="https://www.backblaze.com">BackBlaze</a>.</li>
+<li>I keep a few big, noisy 8TB external backup drives for occasional snapshots.</li>
+</ul>
+<h2 id="file-syncing">File Syncing</h2>
+<ul>
+<li>My documents are backed up to iCloud.</li>
+<li>I use <a href="https://syncthing.net">Syncthing</a> to sync my Macs and NUC. I use this to sync projects across machines.</li>
+</ul>
+<h2 id="development">Development</h2>
+<p><a href="https://www.sublimetext.com">SublimeText</a> is my go-to text/code editor. Search is blazingly fast, runs amazingly well on both old and new hardware, and is a stable product.</p>
+<p>Almost every Django project I work on runs in a container using <a href="https://docs.docker.com/compose/">Docker Compose</a> or <a href="https://orbstack.dev">Orbstack</a>. Orbstack is nice and fast, but I have many legacy projects in Docker, and the migration only worked so well.</p>
+<p>I use the <a href="https://github.com/github/scripts-to-rule-them-all">&ldquo;scripts to rule them all&rdquo;</a> pattern because I work on tons of projects, and I never want to think twice about how to start, stop, update, open a console/shell, etc, and it does the job nicely. I will write about this later.</p>
+<p>I prefer to script project workflows using <a href="https://github.com/casey/just">Just</a> because it&rsquo;s a one-file install that doesn&rsquo;t require a large development stack. It runs well both inside and outside of a container.</p>
+<p>I wrote another post about <a href="https://micro.webology.dev/2024/02/10/python-development-on.html">Python Development on macOS Notes: pyenv and pyenv-virtualenvwrapper</a> setup.</p>
+<p>I use <a href="https://direnv.net">direnv</a> to manage my environment variables.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Overall, I&rsquo;m pretty happy with everything. I would like the same Dell monitor setup for the office and a TS4 dock, but everything works.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/17/office-hours.html">Office Hours</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/17/office-hours.html" class="u-url"><time class="dt-published" datetime="2024-02-17 20:51:55 -0500">Feb 17, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Please note: Just so you know, Grammarly told me my writing is fine. So please blame Grammarly and not me for the typos.</p>
+<p>Last summer, I started hosting Office Hours on Friday afternoons. The basic idea around hosting office hours was an excuse to work on various projects and invite people to join to work on whatever projects they wanted to end their week.</p>
+<p>Friday afternoons work well for me because I will have finished every task I wanted for the week, or anything left over will take me longer than an afternoon to complete, so I might as well start those on Monday instead.</p>
+<p>My first session had 3 to 6 people, and then each week started slowly growing, and our last session had ~15 people. While half of the people who join each week I have known and met outside of a computer, more than half of the people who have joined office hours I have never met in person before. We have had people from all over the world, including Africa, the UK, the Netherlands, India, and Alaska, join in to chat while working on projects.</p>
+<p>My humble goals for this time have always been to keep things light and serve as a welcoming space where people can join to discuss Python and Django, work on whatever project they want, and ask questions.</p>
+<p>My goal wasn&rsquo;t to build a community, even if it feels like one from seeing familiar faces week after week. So there is no Discord channel, mailing list, or iCal invite.</p>
+<p>Instead, I have a private GitHub gist with the invite details, the starting date + time, and a Zoom link. I DM people who ask or people find the link from having accessed it before. I have not optimized my process for growth, but it works.</p>
+<p>On weeks when my son has basketball practice, I have the freedom of moving the time around earlier or later, and to my surprise, a friendly group of people always join and trickle in over the time that I have to keep the Zoom meeting up.</p>
+<p>On weeks when I&rsquo;m out of town or need that Friday afternoon to hit a deadline, I update the gist to let people know that we&rsquo;ll meet again in a few weeks. The success of office hours is not forcing them and letting people know that we have them most weeks but not every week when something is up.</p>
+<p>I intentionally created a space where I don&rsquo;t have the pressure to feel &ldquo;on,&rdquo; which is why it works for me, and I hope people will attend, too. There is no agenda, and I do my best to ensure everyone can talk and feel included while hanging out.</p>
+<p>My stretch goal for 2024 might be to add a page on my website with the date of our next open hours that I can share with anyone curious. Maybe I&rsquo;ll even use a nice font for the page, but for now, I think the gist works as well as anything.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/16/more-funding-and.html">More funding and less shaming</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/16/more-funding-and.html" class="u-url"><time class="dt-published" datetime="2024-02-17 00:36:34 -0500">Feb 17, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Note: I deleted &gt;1000 words and decided to post a summary instead.</p>
+<p>Jacob Kaplan Moss slacked me his <a href="https://jacobian.org/2024/feb/16/paying-maintainers-is-good/">article</a> today because he knew I&rsquo;d like it, and we have both had ongoing conversations for years about open-source Funding. 
+It&rsquo;s worth reading.</p>
+<p>I mistakenly submitted the article to the orange website because I assumed someone else already had it.
+<a href="https://news.ycombinator.com/item?id=39402101">Oops.</a></p>
+<p>I support funding open-source projects.
+We are trillions of dollars away from providing enough Funding for open-source software before I have the patience to set through any debates about the right or wrong way to fund them. 
+Let&rsquo;s make a few decades of overfunding mistakes first and then write about how to fix them after there&rsquo;s enough money flowing to make up for three decades of nothing.</p>
+<p>No one owns the term open source despite the good intentions of organizations that were formed to market open source to businesses. 
+While the foundations focused their energies on infighting, shaming companies founded on open source projects, fundraising to big tech companies, and refusing to address developer&rsquo;s real needs, developers kept writing and releasing open source projects, and we all moved on.</p>
+<p>I started releasing and licensing projects as GPL in the 90s, MIT in the 00s, BSD in the 10s, and now I lean more towards PolyForm and the licenses that push back against Cloud companies. 
+As an open-source developer, I have rights and never asked for anything outside of attribution. 
+The organizations that claim to understand what open source is lost their way and lost their right to assert that they know and understand what open source software is and means.</p>
+<p>To wrap this up, because it was a long week, we need less shaming and more funding for open source projects and their maintainers.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/15/the-daco-stack.html">The DACO Stack</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/15/the-daco-stack.html" class="u-url"><time class="dt-published" datetime="2024-02-15 21:36:33 -0500">Feb 15, 2024</time></a>
+
+		<div class="e-content">
+			 <p>For the last few months, I have used the Django + Adam Johnson + Carlton Gibson + Oliver Andrich stack, or what I&rsquo;m calling the DACO stack. Maybe the DjACO stack rolls off the tongue more easily.</p>
+<p>The DACO stack combines new Django tech with wrappers around libraries like Heroicons, TailwindCSS, and htmx, which integrates a nice modern front-end development experience with Django.</p>
+<h2 id="carltongibsonneapolitan"><code>carltongibson/neapolitan</code></h2>
+<p>The <a href="https://github.com/carltongibson/neapolitan">Neapolitan</a> project brings CRUD views to Django in what feels like a marriage between the Django Admin meets Django Rest Framework&rsquo;s model viewsets but focused on the front-end. Neapolitan gives you CRUD views for your application in a few lines of Python code.</p>
+<p>I have used it on several projects where I wanted to quickly build a front end around some data and give a limited number of people access to help maintain it.</p>
+<h2 id="adamchainzdjango-htmx"><code>adamchainz/django-htmx</code></h2>
+<p>Adam&rsquo;s <code>django-htmx</code> adds htmx support to Django.</p>
+<p><a href="https://github.com/adamchainz/django-htmx">https://github.com/adamchainz/django-htmx</a></p>
+<h2 id="carltongibsondjango-template-partials"><code>carltongibson/django-template-partials</code></h2>
+<p>Carlton&rsquo;s <code>django-template-partials</code> project helps create reusable inline template blocks. When paired with <code>django-htmx</code>, we can render a form, search results, and individual table rows without rewriting the web page.</p>
+<p><a href="https://github.com/carltongibson/django-template-partials">https://github.com/carltongibson/django-template-partials</a></p>
+<h2 id="adamchainzheroicons"><code>adamchainz/heroicons</code></h2>
+<p>Adam brings the <a href="https://heroicons.com">Heroicons</a> library to Django, a series of SVG images that are nice for navigation menus and anywhere you might want to embed an icon image quickly. Heroicons is one of my goto libraries for quickly adding extra polish for apps that I might normally fall back to boring text links.</p>
+<p><a href="https://github.com/adamchainz/heroicons">https://github.com/adamchainz/heroicons</a></p>
+<h2 id="oliverandrichdjango-tailwind-cli"><code>oliverandrich/django-tailwind-cli</code></h2>
+<p>Oliver&rsquo;s <code>django-tailwind-cli</code> project integrates Tailwind CSS
+into Django, includes a live reload server, and enables <code>python manage.py tailwind</code> to work.</p>
+<p><a href="https://github.com/oliverandrich/django-tailwind-cli">https://github.com/oliverandrich/django-tailwind-cli</a></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Try the DACO stack and let me know if it saves you time and if you find some new tools to add to it.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/14/unrestricted.html">Unrestricted</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/14/unrestricted.html" class="u-url"><time class="dt-published" datetime="2024-02-14 20:19:09 -0500">Feb 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Content warning: Kansas City mass shooting.</p>
+<p>Today, I worked on a post to keep up my February streak going, and then my phone started buzzing from local friends because there was a mass shooting at a pep rally in Kansas City meant to celebrate our recent Super Bowl victory.</p>
+<p>I live in Lawrence, Kansas, just outside of Kansas City. I have friends who commute to Kansas City for jobs and dozens of friends who were at the parade today. Thankfully, none of them that I am aware of were hurt today.</p>
+<blockquote>
+<p>NAME REMOVED said her hospital enacted its mass casualty alert</p>
+</blockquote>
+<blockquote>
+<p>And children&rsquo;s mercy has taken in victims also 😔</p>
+</blockquote>
+<p>At least <a href="https://www.kansascity.com/news/local/article285484737.html">22 people were injured, and at least one person died today</a> in my home state.</p>
+<p><a href="https://www.kansascity.com/news/local/article285498797.html#storylink=cpy">Mass shooting injures 9 children, ages 6 to 15, at Chiefs Super Bowl rally on Wednesday</a></p>
+<p><a href="https://www.kansascity.com/news/local/crime/article285494757.html">Johnson County mom dies in KC parade shooting.</a></p>
+<p>In 2015, Missouri had the <a href="https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state#2015_data">second-worst murder rate per capita</a> in the United States.</p>
+<p>In 2019, Missouri had the <a href="https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state#2019_data">4th worst murder rate per capita</a> in the United States despite its murder rate increasing in four years.</p>
+<p>Missouri has some of the <a href="https://en.wikipedia.org/wiki/Gun_laws_in_the_United_States_by_state#Missouri">most unrestricted gun laws</a> in the United States.</p>
+<blockquote>
+<p>Seriously, the idea of going to any large gathering is never appealing anymore and this is the reason.</p>
+</blockquote>
+<p>My six-year-old told us tonight that he hoped he never gets shot and killed like the people in Kansas City were today. He heard about it at school and didn&rsquo;t want to play outside tonight.</p>
+<p>What a fucked up world we have created for kids today and ourselves.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/13/over-lunch.html">Over lunch</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/13/over-lunch.html" class="u-url"><time class="dt-published" datetime="2024-02-13 13:16:47 -0500">Feb 13, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I caught up on a few videos over lunch while working on a few drafts for the week and wanted to share them.</p>
+<h2 id="jon-stewart-is-back-on-the-daily-show">Jon Stewart is back on The Daily Show</h2>
+<p>The last time I could watch Jon Stewart on The Daily Show over lunch goes back almost a decade. Somehow, here we are again, yet midway through the episode, nothing has changed. Welcome back, Jon.</p>
+<p><a href="https://www.youtube.com/watch?v=NpBPm0b9deQ">www.youtube.com/watch</a></p>
+<!-- raw HTML omitted -->
+<p>I also liked <a href="https://www.youtube.com/watch?v=zHLLxc2nuNM">this interview</a> with Jon Stewart on why he&rsquo;s back.</p>
+<h2 id="levar-burtons-banned-book-rainbow">Levar Burton&rsquo;s Banned Book Rainbow</h2>
+<p>I never thought I&rsquo;d <a href="https://www.instagram.com/p/C3CJlOtrql7/">share a video post</a> from Instagram, yet here we are.</p>
+<p>Levar Burton continues to be America&rsquo;s voice of reason.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/12/year-in-review.html">Year in review 2023</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/12/year-in-review.html" class="u-url"><time class="dt-published" datetime="2024-02-12 20:39:38 -0500">Feb 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I write one of these posts every year, and I manage never to publish them. Since I&rsquo;m trying to write one post a day for all of February, tonight I was revisiting some of my drafts, and this felt like a very Monday post to dust off and publish.</p>
+<p>If 2023 had a theme, it was stepping down and stepping back.</p>
+<h2 id="family">Family</h2>
+<ul>
+<li>🚙 We took our first family trip with most of my immediate family for the first time in too many years in Surfside Beach, Texas</li>
+<li>🚙 I bought a 2023 Subaru Ascent to replace my 2001 Nissan Pathfinder</li>
+<li>6️⃣ My oldest turned six and started Kindergarten</li>
+<li>2️⃣ My youngest turned two and started preschool</li>
+</ul>
+<h2 id="djangopython">Django/Python</h2>
+<ul>
+<li>✅ <a href="https://www.python.org/psf/board/#id3">PSF Board</a>: I served two terms over five years and did not run for a third term. During my tenure, I served as Treasurer and then Vice Chair. I&rsquo;m still on the Code of Conduct WG but left the Fiscal and PyCon US Committees.</li>
+<li>✅ <a href="https://www.defna.org/about/">DEFNA</a>: I stepped down as president after eight years on the board. I technically stepped down two or three years ago, but I filled in for a year to help out while we transitioned back to running an in-person conference. I&rsquo;m still on the board and helping with DjangoCon US, but I&rsquo;m doing so with fewer balls in the air.</li>
+<li>🚀 <a href="https://2023.djangocon.us">DjangoCon US 2023</a>  We held a successful conference in Durham, North Carolina.</li>
+<li>🚀 Launched <a href="https://jobs.django-news.com">Django News Jobs</a></li>
+</ul>
+<h2 id="community">Community</h2>
+<ul>
+<li>🎙️ Attended/co-hosted dozens of <a href="https://www.conferencechats.org">Conference Chats</a> meetups</li>
+<li>🚀 I started weekly(ish) office hours on Fridays as an excuse to work on projects and hang out with community members.</li>
+<li>🎟️ Attended <a href="https://us.pycon.org/2023/">PyCon US</a> virtually</li>
+<li>🎟️ Attended <a href="https://2023.pygotham.tv">PyGotham</a> virtually</li>
+<li>🎟️ Attended <a href="https://2023.djangocon.us">DjangoCon US</a></li>
+<li>✏️ I joined a weekly writing group</li>
+<li>🎫 I joined a bunch of interesting Discord communities</li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/11/lets-talk-about.html">Let&#39;s Talk About Paying for Open Source</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/11/lets-talk-about.html" class="u-url"><time class="dt-published" datetime="2024-02-11 17:09:46 -0500">Feb 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p><strong>Disclosure:</strong> I wrote this quickly, proofed it via Grammarly, applied a few suggestions from ChatGPT, and revised it several times. The words and typos are still mine.</p>
+<p>Discussing funding within open-source communities is often a minefield of strong opinions, self-proclaimed expertise, and a need for practical, real-world experience. This landscape is fraught with contention and quick escalations, where the mere mention of project monetization can lead to widespread panic and criticism.</p>
+<p>Jacob Kaplan Moss <a href="https://social.jacobian.org/@jacob/111914179201102152">hit the nail on the head with a post</a> that pretty much sums up the dilemma:</p>
+<blockquote>
+<p>&ldquo;Open source should keep going strong, and the folks behind it deserve a paycheck!&rdquo;</p>
+<p>But then when a maintainer tries adding paid features:<br>
+&ldquo;Hold up, not like that.&rdquo;</p>
+<p>Or when they join a big tech company:<br>
+&ldquo;Eh, still not like that.&rdquo;</p>
+<p>Or even when they accept some investment money:<br>
+&ldquo;Nope, not like that either.&rdquo;</p>
+</blockquote>
+<p>Everyone wants developers to get paid, but we are highly critical no matter their path.</p>
+<h2 id="why-im-all-for-paying-developers">Why I&rsquo;m All for Paying Developers</h2>
+<p>Let me be clear: I&rsquo;m totally on board with developers getting paid for their hard work. Why? Because making open-source software is a lot like any other job—it takes time, skill, and a lot of effort. And just like any other job, it should come with some financial reward.</p>
+<p>Some folks worry that bringing money into the equation could change the spirit of open-source work. But here&rsquo;s the thing: anyone can pick up open-source projects. If a project starts going in a direction that doesn&rsquo;t sit right with the community, it can be forked. That&rsquo;s the beauty of open-source. Someone else can take the project and run with it in a new direction, ensuring that the project lives on.</p>
+<h2 id="the-great-thing-about-forks">The Great Thing About Forks</h2>
+<p>This ability to fork a project is like a safety net. If a project starts to lose its way after being funded or commercialized, the community can fork the original code, make their version, and chart a new course.</p>
+<h2 id="finding-a-middle-ground">Finding a Middle Ground</h2>
+<p>Let&rsquo;s not shy away from the money talk. Paying developers isn&rsquo;t just good for them and the entire open-source community. By finding ways to make open-source work financially sustainable, we&rsquo;re ensuring it stays strong, vibrant, and, most importantly, around for the long haul.</p>
+<p>The key is to keep talking about it, to be open to new ideas, and to remember that we all want the same thing: to keep open-source software accessible and sustainable.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/10/python-development-on.html">Python Development on macOS Notes: pyenv and pyenv-virtualenvwrapper</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/10/python-development-on.html" class="u-url"><time class="dt-published" datetime="2024-02-10 21:04:43 -0500">Feb 10, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Here are my notes for using <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a> and <a href="https://github.com/pyenv/pyenv-virtualenvwrapper"><code>pyenv-virtualenvwrapper</code></a> on macOS.</p>
+<p>I use <code>pyenv</code> to install and manage multiple Python versions on the same machine. <code>pyenv</code> makes it possible to upgrade my default version of Python without breaking every project that was created with the older version until I&rsquo;m ready to upgrade them.</p>
+<p>I use <code>pyenv-virtualenvwrapper</code> to manage my projects. <code>pyenv-virtualenvwrapper</code> is a set of tools that make it easier to create, delete, copy, and manage Python virtual environments.</p>
+<h2 id="install-pyenv-through-homebrew">Install pyenv through Homebrew</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">brew update
+brew install pyenv
+brew install pyenv-virtualenvwrapper
+</code></pre></div><h2 id="configuring-pyenv-to-work-with-my-shell">Configuring pyenv to work with my shell</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">## set a variable for finding pyenv</span>
+export PYENV_ROOT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/.pyenv&#34;</span>
+
+<span style="color:#75715e"># 2024-02 Python  pyenv settings</span>
+<span style="color:#66d9ef">if</span> command -v pyenv &gt; /dev/null; <span style="color:#66d9ef">then</span>
+    eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>pyenv init --path<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>;
+    eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>pyenv init -<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>;
+    pyenv virtualenvwrapper_lazy
+<span style="color:#66d9ef">fi</span>
+</code></pre></div><h2 id="install-the-latest-python-versions-using-pyenv">Install the &ldquo;latest&rdquo; Python versions using pyenv</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># install latest Python 3.11</span>
+pyenv install 3.11:latest
+
+<span style="color:#75715e"># to see which version of 3.11 was installed</span>
+pyenv latest 3.11
+&gt; 3.11.7
+
+<span style="color:#75715e"># install latest Python 3.12</span>
+pyenv install 3.12:latest
+
+<span style="color:#75715e"># to see which version of 3.12 was installed</span>
+pyenv latest 3.12
+&gt; 3.12.1
+
+<span style="color:#75715e"># set each version globally to our latest python 3.x version</span>
+pyenv global 3.11.7 3.12.1
+</code></pre></div><h2 id="upgrading-python-versions">Upgrading Python versions</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">pyenv install --skip-existing 3.11:latest
+pyenv install --skip-existing 3.12:latest
+</code></pre></div><h2 id="list-every-version-of-python-that-is-installable">List every version of Python that is installable</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">pyenv install --list
+</code></pre></div><h2 id="list-every-installed-version-of-python">List every installed version of Python</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">pyenv versions
+</code></pre></div>
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/02/10/emphasis-mine-i.html" class="u-url"><time class="dt-published" datetime="2024-02-10 14:20:17 -0500">Feb 10, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Emphasis mine.</p>
+<blockquote>
+<p>I had no free time, and it was another situation where most members were so incredible and energizing, but the <strong>few focused on taking and demanding became a breaking point. It was too much work for anyone not receiving compensation to keep up with.</strong> As an industry, <strong>I wish we were more mindful of the toll it takes to run communities and open-source projects.</strong> Because when we don’t have this insight and empathy, we are left with mega-corp-backed events not grounded in the sense of improving the spaces around us.</p>
+</blockquote>
+<p><a href="https://www.breakfastletters.com/killing-darlings">www.breakfastletters.com/killing-d&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/02/09/fargo-season-i.html" class="u-url"><time class="dt-published" datetime="2024-02-09 22:11:46 -0500">Feb 9, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Fargo Season 5 - I just started the new season this week, and it&rsquo;s already one of my favorite seasons, which is already a huge bar.</p>
+<p><a href="https://trakt.tv/shows/fargo/seasons/5">trakt.tv/shows/far&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/09/my-morning-routine.html">My Daily Routine 2024</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/09/my-morning-routine.html" class="u-url"><time class="dt-published" datetime="2024-02-09 22:04:19 -0500">Feb 9, 2024</time></a>
+
+		<div class="e-content">
+			 <p>It&rsquo;s been a while since I wrote about my daily (previously morning) routine, which is fun to reflect on over the years.</p>
+<p>My morning starts around 6:30 am, and I usually sleep until about 6:45 am.</p>
+<ol>
+<li>make my bed</li>
+<li>pick out clothes</li>
+<li>quick shower</li>
+<li>put in my contacts, brush my teeth, comb my hair, and get dressed</li>
+<li>pour some coffee and milk for my daughter (she&rsquo;s two)</li>
+<li>make sure my son is up (he&rsquo;s six), and tell him the weather so he knows how to dress at 7 am</li>
+<li>get my daughter up and get her dressed</li>
+<li>help my daughter with her teeth and both kids with their hair</li>
+<li>hang out and some iPad time (20 to 30 minutes)</li>
+<li>five-minute warning goes off (young kids do well with timers) at 7:40 am</li>
+<li>put our tablets up, put on shoes, feed the dog, put on jackets or coats, get backpacks, and load the kids in the car at 7:45 am</li>
+<li>drop my son off at school</li>
+<li>drop my daughter off at preschool</li>
+<li>drive to the office or back home</li>
+<li>check email, social media, and see what&rsquo;s on deck for the day</li>
+<li>catch up on email or start client work at 8:30 am</li>
+<li>post my daily REVSYS standup update on Slack at 9 am</li>
+<li>twice a week, client standup meeting at 9:30 am,</li>
+<li>grab or make more coffee around 9:30 am,</li>
+<li>order lunch or make lunch plans at 11 am</li>
+<li>pick up lunch and work on something over lunch</li>
+<li>more client work at 12 pm or 12:30 pm</li>
+<li>head home to see my family at 4:30 pm or 5 pm,</li>
+<li>make dinner and eat between 5:15 pm and 6 pm</li>
+<li>family time and get the kids ready for the next day</li>
+<li>daughter&rsquo;s bedtime at 6 pm</li>
+<li>son&rsquo;s bedtime at 8 pm</li>
+<li>watch sports, stream something (normally Netflix), and I&rsquo;ll work on a side project or occasionally client work</li>
+<li>go to bed around 11 pm or midnight</li>
+</ol>
+<p>Previously: <a href="https://jefftriplett.com/2020/my-morning-routine/">2020</a>,  <a href="https://jefftriplett.com/2018/my-morning-routine/">2018</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/08/200501.html">Semi-Automate Copy-to-Clipboard Case Study</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/08/200501.html" class="u-url"><time class="dt-published" datetime="2024-02-08 21:05:01 -0500">Feb 8, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A &ldquo;copy-to-clipboard&rdquo; automation is a web page with many formatted text and links that are easy to copy and paste into another application.</p>
+<p>My list of links will come from a database, CSV file, JSON file, frontmatter, or a third-party API, depending on what kind of project I am building out.
+Once I have my list of links, my automation builds a nicely formatted message based on my link and a text template.</p>
+<h2 id="django-news">Django News</h2>
+<p>For <a href="https://django-news.com">Django News</a> and <a href="https://jobs.django-news.com">Django News Jobs</a>, I built a few copy-to-clipboard pages to automate writing our weekly tweets for social media and grabbing jobs for our newsletter.</p>
+<p>Each newsletter has a title, issue, and description stored in our database, and I use a template like this snippet to build out our weekly announcements.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">{% raw %}
+🎉 The Django News Newsletter {{ object.issue }}
+
+{{ object.issue.description }}
+
+[django-news.com/issues/](https://django-news.com/issues/){{ object.issue.number }}#start
+{% endraw %}
+</code></pre></div><p>The result, once published on Mastodon, looks like this: <a href="https://mastodon.social/@djangonews/111822690418364462">mastodon.social/@djangone&hellip;</a></p>
+<h2 id="copy-to-clipboard-v2">Copy-to-Clipboard v2</h2>
+<p>For my copy-to-clipboard v2, I added <a href="https://clipboardjs.com/">clipboard.js</a>, a JavaScript library that can copy text with the click of a button instead of having to select text and then manually copy the text.</p>
+<p>I recently added the <a href="https://github.com/cloudfour/elastic-textarea">elastic-textarea</a> web component, which resized the text box to fit the text and improved the visual appearance of the text areas.</p>
+<h2 id="djangocon-us">DjangoCon US</h2>
+<p>For DjangoCon US, we have a half dozen copy-to-clipboard pages, which build messages to announce talks on <a href="https://2023.djangocon.us/speaking/twitter/">social media</a> and build out the metadata we use in our <a href="https://www.youtube.com/playlist?list=PL2NFhrDSOxgX41jqYSi0HmO9Wsf6WDSmf">YouTube videos</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/08/semiautomate-copytoclipboard-case.html">Semi-Automate Copy-to-Clipboard Case Study</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/08/semiautomate-copytoclipboard-case.html" class="u-url"><time class="dt-published" datetime="2024-02-08 20:26:58 -0500">Feb 8, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A &ldquo;copy-to-clipboard&rdquo; automation is a web page with many formatted text and links that are easy to copy and paste into another application.</p>
+<p>My list of links will come from a database, CSV file, JSON file, frontmatter, or a third-party API, depending on what kind of project I am building out.
+Once I have my list of links, my automation builds a nicely formatted message based on my link and a text template I write.</p>
+<p>For <a href="https://django-news.com">Django News</a>, I automate writing our weekly tweets for social media using this technique.
+Each newsletter has a title, issue, and description stored in our database, and I use a template like this snippet to build out our weekly announcements.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">{% raw %}
+🎉 The Django News Newsletter {{ object.issue }}
+
+{{ object.issue.description }}
+
+[django-news.com/issues/](https://django-news.com/issues/){{ object.issue.number }}#start
+{% endraw %}
+</code></pre></div><p>The result, once published on Mastodon, looks like this: <a href="https://mastodon.social/@djangonews/111822690418364462">mastodon.social/@djangone&hellip;</a></p>
+<h2 id="copy-to-clipboard-v2">Copy-to-Clipboard v2</h2>
+<p>My v2 innovation was adding the <a href="https://clipboardjs.com/">clipboard.js</a> JavaScript library to press a button to copy the formatted text to my clipboard instead of selecting all of the text so that I could then copy all of the text inside the text box.</p>
+<p>I recently added the <a href="https://github.com/cloudfour/elastic-textarea">elastic-textarea</a> web component, which resized the text box to grow or shrink around my formatted messages.</p>
+<h2 id="djangocon-us">DjangoCon US</h2>
+<p>For DjangoCon US, we built several copy-to-clipboard pages, which build messages to announce talks on <a href="https://2023.djangocon.us/speaking/twitter/">social media</a> and later help build the metadata we use in our <a href="https://www.youtube.com/playlist?list=PL2NFhrDSOxgX41jqYSi0HmO9Wsf6WDSmf">YouTube videos</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/07/the-power-of.html">The Power of Semi-Automation: Why Less Can Be More</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/07/the-power-of.html" class="u-url"><time class="dt-published" datetime="2024-02-08 00:21:58 -0500">Feb 8, 2024</time></a>
+
+		<div class="e-content">
+			 <p>According to the <a href="https://en.wikipedia.org/wiki/Ninety%E2%80%93ninety_rule">ninety-ninety rule</a>, the final 10 percent of code needed to automate a task completely can take up 90 percent of the development time. This disproportionate effort is why I recommend that everyone consider semi-automating tasks and skipping the last 10%.</p>
+<h2 id="quick-wins">Quick wins</h2>
+<p>My goal with semi-automating tasks is to reduce the scope of a project to make automating the task easier and quicker.
+The more mundane and repetitive the task, the more likely I will prioritize automating it.</p>
+<p>My favorite tasks to automate fall are quick wins or redundant processes.
+We use Toggl at work to log our billable hours and time spent on various projects.
+We have daily stand-ups in Slack, so everyone can keep up with everyone and be on the same page about vacations or might need another set of eyes on a project.</p>
+<p>Using the Toggl API, I wrote a Python script that exports my notes so I can copy and paste them into Slack.
+I wrote a Python stand-up script that I run daily to see my notes from the previous day or week.</p>
+<p>I could have over-engineered my script to attempt to post to Slack for me, but it turns out that all I needed was a better way to copy and paste from Toggl into Slack.</p>
+<h2 id="why-do-i-semi-automate-tasks">Why do I semi-automate tasks?</h2>
+<p><strong>Semi-automation is easier.</strong> The benefit of semi-automating tasks is to reduce the scope to be a quick, productive win.</p>
+<p><strong>Semi-automation saves time.</strong> I often spend 30 minutes writing a Python script, saving me 15 minutes or more daily.</p>
+<p><strong>Semi-automation saves wasted effort.</strong> For my daily stand-up project, I can use an existing Python library to access the Toggl API and display all my entries for a day or range of dates.
+Most of the time, I will copy these notes as they are and paste them into Slack, or I will summarize them.</p>
+<p><strong>Semi-automation takes less maintenance.</strong> Since my Python script is wrapping an existing API, there is little to no maintenance.
+If the author decides they don&rsquo;t want to maintain a Toggl library anymore, switching to another library is less effort and much less complex than if I were trying to maintain my library.</p>
+<p><strong>Semi-automation is often good enough.</strong> I thought about writing a Slackbot to post updates for me, but I quickly learned that it would be a bigger hassle and ultimately not worth the effort.
+My most significant pain point was having to pull up Toggl to get information out of it, and with my stand-up script, I could focus on writing better summaries while logging my hours instead.</p>
+<h2 id="types-of-projects-i-like-to-semi-automate">Types of projects I like to semi-automate</h2>
+<p>The projects I like to semi-automate are repetitive tasks I have to do daily, weekly, and frequent enough to warrant
+The more repetitive a task is, the more likely I will write a Python script or <a href="https://github.com/casey/just">casey/just</a> justfile recipe to automate it.</p>
+<ul>
+<li>&ldquo;copy to clipboard&rdquo; page</li>
+<li>my daily stand-ups and monthly reports, which I pull from Toggl</li>
+<li>use RSS feeds to help automate the collection of articles to review for a weekly newsletter</li>
+<li>use justfile recipes for every project and even system-level macOS updates, so I don&rsquo;t have to remember how to update or run my projects</li>
+</ul>
+<h2 id="migrating-unfinished-projects">Migrating unfinished projects</h2>
+<p>Once I realized that some of my unfinished projects were too ambitious, I started revisiting them to reduce the scope to something I could semi-automate to complete them.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/06/django-queryset-to.html">Django Queryset to Markdown Table</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/06/django-queryset-to.html" class="u-url"><time class="dt-published" datetime="2024-02-06 22:24:25 -0500">Feb 6, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Today, I asked on Mastodon if anyone knew of a good solution for generating a Markdown table from a Django queryset. Typically, people want to convert markdown into HTML, but this was a case where I needed to export data from Django to a static website.</p>
+<p>Not missing a beat, <a href="https://mastodon.social/@glasnt@cloudisland.nz/111886900012564229">Katie McLaughlin</a> recommended the <a href="https://github.com/astanin/python-tabulate">python-tabulate</a> library, which is what I was looking for.</p>
+<p>Since I was short on time tonight, I asked ChatGPT to:</p>
+<ol>
+<li>Write a queryset to markdown function using the Python tabulate library.</li>
+<li>Add Python types support (because it&rsquo;s 2024)</li>
+<li>Rewrite the docstring</li>
+</ol>
+<p>Once the code looked right, I loaded up my local copy of <a href="https://jobs.django-news.com">Django News Jobs</a>, and I created a quick Django management command.</p>
+<p><a href="https://github.com/GaretJax/django-click">django-click</a> is my go-to library for quickly writing CLI apps or what Django calls a management command. django-click reduces the boilerplate needed to write a management command down to one import, one decorator, and one function, and you get the best of the Python <a href="https://click.palletsprojects.com/en/8.1.x/">click</a> library with everything Django has to offer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># management/commands/table.py</span>
+
+<span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
+
+<span style="color:#f92672">from</span> django.db.models.query <span style="color:#f92672">import</span> QuerySet
+<span style="color:#f92672">from</span> tabulate <span style="color:#f92672">import</span> tabulate
+
+<span style="color:#f92672">from</span> jobs.models <span style="color:#f92672">import</span> JobListing
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">queryset_to_markdown</span>(queryset: QuerySet, fields: list[str] <span style="color:#f92672">|</span> <span style="color:#66d9ef">None</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>) <span style="color:#f92672">-&gt;</span> str:
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    Convert a Django queryset to a markdown table using the tabulate library.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    Args:
+</span><span style="color:#e6db74">        queryset (QuerySet): The Django queryset to convert into a markdown table.
+</span><span style="color:#e6db74">        fields (list[str] | None, optional): A list of strings specifying the model fields to include in the table.
+</span><span style="color:#e6db74">            If None, all fields from the model will be included. Defaults to None.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    Returns:
+</span><span style="color:#e6db74">        str: A string representing the markdown table formatted according to GitHub-flavored Markdown.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+
+    <span style="color:#75715e"># If fields are not specified, use all fields from the model</span>
+    <span style="color:#66d9ef">if</span> fields <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+        fields <span style="color:#f92672">=</span> [field<span style="color:#f92672">.</span>name <span style="color:#66d9ef">for</span> field <span style="color:#f92672">in</span> queryset<span style="color:#f92672">.</span>model<span style="color:#f92672">.</span>_meta<span style="color:#f92672">.</span>fields]
+
+    <span style="color:#75715e"># Prepare data for tabulation</span>
+    data <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> queryset:
+        row <span style="color:#f92672">=</span> [getattr(obj, field) <span style="color:#66d9ef">for</span> field <span style="color:#f92672">in</span> fields]
+        data<span style="color:#f92672">.</span>append(row)
+
+    <span style="color:#75715e"># Generate markdown table</span>
+    markdown_table <span style="color:#f92672">=</span> tabulate(data, headers<span style="color:#f92672">=</span>fields, tablefmt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;github&#34;</span>)
+
+    <span style="color:#66d9ef">return</span> markdown_table
+
+
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>command()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>():
+    job_listings <span style="color:#f92672">=</span> JobListing<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>all()<span style="color:#f92672">.</span>active()<span style="color:#f92672">.</span>order_by(<span style="color:#e6db74">&#34;-published&#34;</span>)
+    print(queryset_to_markdown(job_listings, fields<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;title&#34;</span>, <span style="color:#e6db74">&#34;employer_name&#34;</span>]))
+</code></pre></div><p>Running <code>python manage.py table</code> gave me the following table. Please note: I removed the <code>employer_name</code> column to fit the output in my article.</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>Overall, I&rsquo;m happy with this approach. Django is an excellent framework for quickly prototyping and solving these problems.</p>
+<p>I decided to write a management command instead of a view because markdown tables are very readable from the command line. I plan to convert it to a Django view to automate embedding tables like this into other projects.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/05/how-to-test.html">How to test with Django and pytest fixtures</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/05/how-to-test.html" class="u-url"><time class="dt-published" datetime="2024-02-05 23:57:33 -0500">Feb 5, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Here are some notes on how I like to write tests for a Django app that tests a model down to a view.</p>
+<h2 id="django-model--pytest-fixture">Django Model + pytest Fixture</h2>
+<p>This part is a mouthful, but I prefer to use the <a href="https://github.com/model-bakers/model_bakery">Model Bakery</a> library to automatically create instances of Django models (aka a fixture) with good test data instead of manually creating them. This approach saves time and adds some variety to my test data.</p>
+<p>We will also use the pytest fixture function to create and return an instance of a Django model using our Model Bakery fixture. This pytest fixture can be used in multiple test cases, ensuring consistency and reducing boilerplate code.</p>
+<p>Every app in my project contains a <code>fixtures.py</code> file. My news app has a <code>Category</code> and a <code>Post</code> model, and my fixture looks like this.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># news/tests/fixtures.py</span>
+
+<span style="color:#f92672">import</span> pytest
+<span style="color:#f92672">from</span> model_bakery <span style="color:#f92672">import</span> baker
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">category</span>(db):
+    <span style="color:#66d9ef">return</span> baker<span style="color:#f92672">.</span>make(<span style="color:#e6db74">&#34;news.Category&#34;</span>, name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Category Name&#34;</span>)
+
+<span style="color:#a6e22e">@pytest</span><span style="color:#f92672">.</span>fixture()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">post</span>(db, category):
+    <span style="color:#66d9ef">return</span> baker<span style="color:#f92672">.</span>make(<span style="color:#e6db74">&#34;news.Post&#34;</span>, title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Post Title&#34;</span>, category<span style="color:#f92672">=</span>category)
+</code></pre></div><p>Please note that a <code>post</code> fixture can accept <code>category</code> fixture as an argument.</p>
+<h2 id="configuration">Configuration</h2>
+<p>At the top of my project, we will have a <code>conftest.py</code> file. This is where we tell pytest to look for our fixtures so they may be automatically loaded.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># conftest.py</span>
+pytest_plugins <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;news.tests.fixtures&#34;</span>]
+</code></pre></div><h2 id="testing-our-models">Testing our models</h2>
+<p>Next, we write a very basic test to ensure our fixture can create an instance of a model.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># news/tests/test_models.py</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_get_category</span>(category):
+    <span style="color:#66d9ef">assert</span> category<span style="color:#f92672">.</span>name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Category Name&#34;</span>
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_get_post</span>(post):
+    <span style="color:#66d9ef">assert</span> post<span style="color:#f92672">.</span>title <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Post Title&#34;</span>
+</code></pre></div><h2 id="testing-our-views">Testing our views</h2>
+<p>I prefer working with <a href="https://github.com/revsys/django-test-plus"><code>django-test-plus</code></a> because it helps make writing tests cleaner and more straightforward. Then, for every view we have, we will write a test to ensure that our URL patterns match our expected routes and that we return a predicted status code.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># news/tests/test_views.py</span>
+<span style="color:#f92672">import</span> pytest
+
+<span style="color:#75715e"># test that our view resolves to the right uri path</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_post_uri</span>(tp):
+    expected_url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/&#34;</span>
+    reversed_url <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>reverse(<span style="color:#e6db74">&#34;post-list&#34;</span>)
+    <span style="color:#66d9ef">assert</span> expected_url <span style="color:#f92672">==</span> reversed_url
+
+<span style="color:#75715e"># test that our view works</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_post_get</span>(db, tp):
+	response <span style="color:#f92672">=</span> tp<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;post-list&#34;</span>)
+    tp<span style="color:#f92672">.</span>assert_http_200_ok(response)
+</code></pre></div><h2 id="running-tests">Running tests</h2>
+<p>To run our tests, we can run pytest.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">pytest
+</code></pre></div>
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/04/the-django-apps.html">The Django apps I actually use (rough cut)</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/04/the-django-apps.html" class="u-url"><time class="dt-published" datetime="2024-02-05 00:20:30 -0500">Feb 5, 2024</time></a>
+
+		<div class="e-content">
+			 <p>This is an updated version of my response to the <a href="https://forum.djangoproject.com/t/top-5-3rd-party-packages/391">Top 5 3rd party packages</a> from the Django Forum.</p>
+<p>I plan on writing something more in-depth, but life, family, and getting the kids ready for the week got away from me today. Here is my list in case anyone finds them to be helpful.</p>
+<ul>
+<li><code>django-allauth</code></li>
+<li><code>django-click</code></li>
+<li><code>django-htmx</code></li>
+<li><code>django-q2</code></li>
+<li><code>django-test-plus</code></li>
+<li><code>django-tailwind-cli</code></li>
+<li><code>django-template-partials</code></li>
+<li><code>environs[django]</code></li>
+<li><code>heroicons[django]</code></li>
+<li><code>neapolitan</code></li>
+<li><code>python-slugify</code></li>
+<li><code>ruff</code> via <code>pre-commit</code> but previously was <code>black</code></li>
+<li><code>whitenoise</code></li>
+</ul>
+<h2 id="projects-i-no-longer-use">Projects I no longer use</h2>
+<ul>
+<li><code>django-dbbackup</code> I dropped this app for <code>DSLR</code> and then I more recently dropped I dropped them both because I didn&rsquo;t want to install the extra Postgres files in my containers. I use <code>pg_backup</code>, <code>pg_restore</code>, and <code>psql</code> via the official</li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/03/whats-your-goto.html">What’s Your Go-to Comfort Media? [rough cut]</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/03/whats-your-goto.html" class="u-url"><time class="dt-published" datetime="2024-02-04 00:17:54 -0500">Feb 4, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Everyone has unique ways of unwinding and finding comfort after a long day. My comfort media spans a wide range, from the passive consumption of TV shows to more engaging activities like gaming and listening to podcasts. Here&rsquo;s a glimpse into my go-to sources for comfort and relaxation.</p>
+<h2 id="screen-time-netflix-and-more">Screen Time: Netflix and More</h2>
+<p>My comfort viewing typically involves having a series playing in the background from Netflix or another streaming platform. It&rsquo;s a form of passive binge-watching where my eyes might not always be on the screen, but my ears are tuned in, ready to engage fully when something catches my interest. Unlike music I can listen to on repeat, I rarely rewatch anything, seeking instead the familiar background noise of new episodes.</p>
+<h2 id="music-and-podcasts">Music and Podcasts</h2>
+<p>Music has always been a constant companion for me. From the days in college when I discovered, I could write a paper while listening to <em>August and Everything After</em> by Counting Crows to now, having playlists and new artists filling a similar role. My music consumption is repetitive, often sticking to the same album or playlist for weeks.</p>
+<p>Podcasts also significantly influence my daily routine, offering various content from daily updates to weekly deep dives into fascinating subjects. They provide a mix of entertainment and information that fits perfectly into my schedule.</p>
+<h2 id="books-and-audiobooks">Books and Audiobooks</h2>
+<p>Despite wishing I had spent more time reading books, my day is often consumed by reading code, documentation, and messages for work. By the evening, I find my brain craves less intense engagement, making it hard to commit to reading. However, audiobooks have found their place in my routine, especially during tasks like mowing the lawn or doing yard work, where they can offer a narrative escape.</p>
+<h2 id="gaming">Gaming</h2>
+<p>Gaming, particularly on my Switch, offers a unique escapism that lets me shut off my brain from the day&rsquo;s worries. Over the holidays, diving into games like <em>Dave the Diver</em> provides a personal retreat and bonding activity with my son, exploring and completing tasks together.</p>
+<h2 id="sports">Sports</h2>
+<p>Sports, especially basketball and football, serve as another layer of comfort media for me. There&rsquo;s something incredibly soothing about taking a Sunday nap with a football game playing in the background, providing a familiar, comforting backdrop to rest.</p>
+<hr>
+<p>This article was inspired by a post on <a href="https://kottke.org/24/01/whats-your-go-to-comfort-media">Kottke.org</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/02/my-first-mac.html">My First Mac</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/02/my-first-mac.html" class="u-url"><time class="dt-published" datetime="2024-02-02 22:56:07 -0500">Feb 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I saw <a href="https://daringfireball.net/linked/2024/01/22/upgrade-mac-40">Jon Gruber&rsquo;s 40th Anniversary of the Macintosh</a> topic list last week, and I decided to share my own.</p>
+<h2 id="first-mac-owned">First Mac owned</h2>
+<p>My first Mac was a 2005 Mac Mini G4.</p>
+<h2 id="favoritebest-mac">Favorite/best Mac</h2>
+<p>I have always had good luck with my MacBook Pros, but my latest Mac Studio is my favorite. It&rsquo;s low/no-frills but has many ports, CPU cores, memory, and a headphone jack. It&rsquo;s a powerful and fast joy to use.</p>
+<h2 id="favoritebest-mac-software-ever">Favorite/best Mac software ever</h2>
+<p><a href="https://www.macbartender.com">Bartender</a> and <a href="https://www.alfredapp.com">Alfred</a> are two of my favorite Mac apps. Both address shortcomings in macOS.</p>
+<p>The overall quality of most Mac apps is what won me over. My <a href="https://jefftriplett.com/2023/default-apps-2023/">Default Apps 2023</a> article contains many of my favorite apps.</p>
+<h2 id="favoritebest-mac-accessory-or-hardware">Favorite/best Mac accessory or hardware</h2>
+<p>Apple&rsquo;s Magic Keyboards are great. The iPad is a close second because it doubles as an external display.</p>
+<h2 id="hall-of-shame-worst-accessory-mac-or-moment">Hall of Shame: worst accessory, Mac, or moment</h2>
+<p>Hand down my 2005 Mac Mini G4 shipped with Bluetooth support, which meant a Bluetooth keyboard and mouse would be with them. Not so much. I even paid way too much money for Apple&rsquo;s keyboard and mouse.</p>
+<p>My keyboards were PS2 then, so I had to travel to Best Buy to pick one up. Even once I had them working, the Bluetooth input lag was so slow and unresponsive that neither input device was stable. I still hate Apple mice to this day.</p>
+<p>I can&rsquo;t wholly blame the Mac Mini&rsquo;s Bluetooth support because that Mac Mini was so underpowered and had such a slow hard drive that it was barely usable. I wanted to use TextMate on it and have a decent development machine, but that was a challenge.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/02/01/choosing-the-right.html">Choosing the Right Python and Django Versions for Your Projects</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/02/01/choosing-the-right.html" class="u-url"><time class="dt-published" datetime="2024-02-02 00:32:08 -0500">Feb 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>When deciding when to adopt a new <em>major</em> or <em>minor</em> Python or Django version, I prefer to wait until the 3rd or 4th patch release because reliability significantly improves.</p>
+<p>Python and Django <code>{major}.{minor}.{patch&gt;2}</code> releases are always more stable than <code>{patch&lt;3}</code> releases.</p>
+<h3 id="understanding-version-numbers">Understanding Version Numbers</h3>
+<p>Version numbers typically follow a <code>{major}.{minor}.{patch}</code> format. For instance, in Django 5.0.2, &ldquo;5&rdquo; is the major version, &ldquo;0&rdquo; the minor, and &ldquo;2&rdquo; the patch. I&rsquo;ve found that a version reaching its <code>.2</code> or <code>.3</code> patch release (like Django 5.0.2 or 5.0.3) is generally a reliable indicator of stability.</p>
+<h3 id="why-wait-for-the-3rd-or-4th-patch-release">Why Wait for the 3rd or 4th Patch Release?</h3>
+<p>The early releases of any major software version can be unpredictable. Despite Python and Django&rsquo;s commendable track record for quality, the broader ecosystem of packages and tools that integrate with them often requires time to catch up. This adjustment period is critical for ensuring compatibility and stability, reducing the risk of unexpected issues in production environments.</p>
+<h3 id="my-experience">My Experience</h3>
+<p>Through trial and error, I&rsquo;ve observed that holding off until at least the 2nd patch release mitigates around 90% of potential issues. However, waiting for the 3rd or 4th patch guarantees that most significant bugs have been fixed.</p>
+<h3 id="recommendations-for-implementation">Recommendations for Implementation:</h3>
+<ul>
+<li>
+<p><strong>Stay Informed</strong>: Regularly review the release notes for Python and Django. This will help you understand the scope of changes and the introduction of any new features or critical fixes.</p>
+</li>
+<li>
+<p><strong>Use a Testing Matrix</strong>: If your project employs Continuous Integration (CI), include the latest versions of Python and Django in your testing matrix sooner rather than later. This proactive measure can help identify compatibility issues early, saving you time and reducing the risk of deploying unstable code to production.</p>
+</li>
+<li>
+<p><strong>Community Feedback</strong>: Pay attention to feedback from the Python and Django communities. I keep a good feel of the pulse by checking social media to see what developers are having issues with. I also like to check open and recently closed GitHub Issues and Pull Requests for packages I use to see what was broken by a new release and how to fix it.</p>
+</li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/12/for-my-email.html" class="u-url"><time class="dt-published" datetime="2024-01-12 14:09:51 -0500">Jan 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📫 For my email sanity, I just ran &ldquo;label:inbox before:2024/01/01&rdquo; and archived everything.</p>
+<p>✋ If you emailed me and were expecting a reply, please ping me again.</p>
+<p>🔥 This was unsustainable otherwise. 🔥</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/07/for-anyone-who.html" class="u-url"><time class="dt-published" datetime="2024-01-07 21:06:29 -0500">Jan 7, 2024</time></a>
+
+		<div class="e-content">
+			 <p>For anyone who is not prepared for our upcoming USB-C standardization, I had to pick up one of these USB-C cable testers last year to figure out why half of my cables don&rsquo;t work with specific devices despite everything being USB-C.</p>
+<p><a href="https://www.tindie.com/products/petl/usb-c-cable-tester-c2c-caberqu/">www.tindie.com/products/&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/06/barbie-i-had.html" class="u-url"><time class="dt-published" datetime="2024-01-06 21:48:26 -0500">Jan 6, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Barbie - I had no idea what this movie was about and yet it&rsquo;s been a total surprise at every step so far.</p>
+<p><a href="https://trakt.tv/movies/barbie-2023">trakt.tv/movies/ba&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/02/this-morning-i.html" class="u-url"><time class="dt-published" datetime="2024-01-02 10:19:20 -0500">Jan 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>✏️ This morning, I updated my Rustywind pre-commit hook to use the <code>latest</code> tag.</p>
+<p>🙏 Thank you to <a href="https://micro.blog/danjac@masto.ai">@danjac@masto.ai</a> for the mention, which prompted me to update it.</p>
+<p><a href="https://jefftriplett.com/2023/rustywind-pre-commit-hook/">https://jefftriplett.com/2023/rustywind-pre-commit-hook/</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/01/rebel-moon-part.html" class="u-url"><time class="dt-published" datetime="2024-01-02 00:36:19 -0500">Jan 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Rebel Moon - Part One: A Child of Fire - Ya, this is pretty bad, but not 23% Tomatometer bad, but we are definitely in that ballpark.</p>
+<p><a href="https://trakt.tv/movies/rebel-moon-part-one-a-child-of-fire-2023">trakt.tv/movies/re&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/01/01/the-last-of.html" class="u-url"><time class="dt-published" datetime="2024-01-01 23:34:02 -0500">Jan 1, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 The Last of Us - I finished Season 1 tonight, and I was expecting that. I will admit to being a little tired of the zombie series genre, but this is the most un-zombie series I have ever seen. I now understand how the video game was such a hit.</p>
+<p><a href="https://trakt.tv/shows/the-last-of-us/seasons/1">trakt.tv/shows/the&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2023/12/31/testing-out-my.html" class="u-url"><time class="dt-published" datetime="2023-12-31 16:27:25 -0500">Dec 31, 2023</time></a>
+
+		<div class="e-content">
+			 <p>Testing out my new micro-blog: <a href="https://webology.micro.blog">webology.micro.blog</a>, which I&rsquo;m planning on using to cross-post more. The verdict is still out after a really rocky start, but I&rsquo;m hopeful 🤞</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2023/12/31/commander-mark-taught.html" class="u-url"><time class="dt-published" datetime="2023-12-31 16:22:22 -0500">Dec 31, 2023</time></a>
+
+		<div class="e-content">
+			 <p>Commander Mark taught me how to draw with perspective to create 3d drawings as a kid. I used to watch him on PBS as a kid. I didn&rsquo;t know he had a documentary coming out, but I am here for it.</p>
+<p><a href="https://www.npr.org/2023/12/28/1217590736/mark-kistler-secret-city">www.npr.org/2023/12/2&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2023/12/29/im-unsure-if.html" class="u-url"><time class="dt-published" datetime="2023-12-29 15:29:46 -0500">Dec 29, 2023</time></a>
+
+		<div class="e-content">
+			 <p>🤔 I&rsquo;m unsure if or how long I will keep this up in 2024, but I thought I&rsquo;d end my week/year by publishing some Weeknotes.</p>
+<p><a href="https://jefftriplett.com/2023/weeknotes-2023-w52/">jefftriplett.com/2023/week&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+
+</div>
+
+
+    
+    
+
+  </body>
+
+</html>
