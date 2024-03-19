@@ -24,6 +24,289 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/03/19/justfile-alfred-plugin.html">Justfile Alfred Plugin</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/19/justfile-alfred-plugin.html" class="u-url"><time class="dt-published" datetime="2024-03-19 12:49:25 -0500">Mar 19, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A few years back, I had a productivity conversation with <a href="https://kjaymiller.com">Jay Miller</a> about <a href="https://www.alfredapp.com">Alfred</a> plugins, which led to him sharing his <a href="https://github.com/kjaymiller/Bunch_Alfred">Bunch_Alfred</a> plugin. At the time, I played around with the <a href="https://bunchapp.co">Bunch.app</a>, a macOS automation tool, and Alfred&rsquo;s support was interesting.</p>
+<p>I created my Alfred plugin to run <a href="https://github.com/casey/just">Just</a> command runner commands through my Alfred setup. However, I never got around to packing or writing the plugin&rsquo;s documentation.</p>
+<p>My Alfred plugin runs <a href="https://www.alfredapp.com/help/workflows/inputs/script-filter/">Script Filter Input</a>, which reads from a centrally located <code>justfile</code> and generates JSON output of all of the possible options. This will be displayed, and Alfred will run that command, whichever option you select.</p>
+<p>I was always unhappy with how the JSON document was generated from my commands, so I dusted off the project over lunch and re-engineered it by adding <a href="https://github.com/pydantic/pydantic">Pydantic</a> support.</p>
+<p>Alfred just announced support for a new User Interface called <a href="https://www.alfredapp.com/help/workflows/user-interface/text/">Text View</a>, which could make text and markdown output from Python an exciting way to handle snippets and other productive use cases. I couldn&rsquo;t quite figure it out over lunch, but now I know it&rsquo;s possible, and I might figure out how to convert my Justfile Alfred plugin to generate better output.</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/03/18/the-gentlemen-i.html" class="u-url"><time class="dt-published" datetime="2024-03-18 21:45:27 -0500">Mar 18, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 The Gentlemen - I just started episode five, and it has no business being this good.</p>
+<p><a href="https://trakt.tv/shows/the-gentlemen">trakt.tv/shows/the&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/18/weeknotes-for-week.html">Weeknotes for Week 11: March 11 to March 17</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/18/weeknotes-for-week.html" class="u-url"><time class="dt-published" datetime="2024-03-18 19:33:40 -0500">Mar 18, 2024</time></a>
+
+		<div class="e-content">
+			 <h2 id="family">Family</h2>
+<p>This week was Spring Break for both of my kids. My son had all week off, while my daughter had Thursday and Friday off. My son was also sick and hanging out with me the first two days of the week instead of getting to go to day camp.</p>
+<p>I worked on several house projects, including cleaning our smoker and outdoor griddle. I didn&rsquo;t winterize our smoker nearly as well as I thought I had, so it took me much longer to clean than it should have.</p>
+<p>Sunday was cold and windy, so I couldn&rsquo;t do as much outside as I planned.</p>
+<h2 id="work">Work</h2>
+<p>I spent most of my week working on the green field project again.</p>
+<p>I also hosted a rather minute(ish) <a href="https://mastodon.social/@webology/112096980187024682">Office Hours</a> session again.</p>
+<h2 id="community">Community</h2>
+<p>I had two DjangoCon US meetings this week. One is to discuss our online experience, and the other is to kick off our new website and eventual new website framework.</p>
+<h2 id="side-projects">Side projects</h2>
+<p>I spent most of my side project time on <a href="https://django-news.com">Django News</a>, <a href="https://jobs.django-news.com">Django News Jobs</a>, and <a href="https://djangopackages.org">Django Packages</a>. I also upgraded several project configs to use some new <a href="https://github.com/astral-sh/uv">uv</a> options.</p>
+<p><strong>Django Packages:</strong> We updated our profiles to drop support for Google Code and add Bitbucket and GitLab profiles.</p>
+<p><strong>Trailhawks:</strong> My local running club&rsquo;s website has been running on Django since 2009. I upgraded the project from Django 3.2 to 5.0 and to Python 3.1x, including upgrading two outdated third-party packages to Python 3.1x and Django 5. I also changed one of our race websites to Tailwind CSS, which has been in flight for a while.</p>
+<p><strong>Django Packages:</strong> We released an update to our profiles to drop support for Google Code and to add Bitbucket and GitLab profiles. I also broke the website with a wsgi change, which I quickly found a fixed.</p>
+<p>**django-startproject: ** I updated <a href="https://github.com/jefftriplett/django-startproject"><code>django-startproject</code></a> project to have better support for <code>uv</code>.</p>
+<p><strong>Django News Newsletter:</strong> We shipped issue <a href="https://django-news.com/issues/223#start">#223</a>.</p>
+<h2 id="writing">Writing</h2>
+<p>I wrote and published every day.</p>
+<p><a href="https://micro.webology.dev/2024/03/17/on-tortilla-pizza.html">2024-03-17</a>: <strong>🍕 On tortilla pizza</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/16/on-gardening.html">2024-03-16</a>: <strong>🏡 On Gardening</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/15/five-for-friyay.html">2024-03-15</a>: <strong>Five for Friyay</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/14/pythons-uv-tool.html">2024-03-14</a>: <strong>Python&rsquo;s UV tool is even better</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/13/on-environment-variables.html">2024-03-13</a>: <strong>On environment variables and dotenv files</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/12/completed-finished-or.html">2024-03-12</a>: <strong>Completed, finished, or done</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/11/my-python-roots.html">2024-03-11</a>: <strong>My Python Roots</strong> </p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>🏀 I watched Kansas get swept in the first round of the Big 12 tournament because our best two players were out with injuries. I set aside time on Wednesday and Thursday afternoons to watch some conference tournaments, but they were all blowouts.</p>
+<h2 id="next-week">Next week</h2>
+<p>🚸 My kids are back in school, and our schedules return to regular routines.</p>
+<p>🪚 I have more rot repair, and I now have a compound miter saw to cut wood for framing and fixing things. I had to order a portable workbench to attach the miter saw in mid-week.</p>
+<p>🏀 Next week also starts the NCAA tournament, a sign that the third basketball season has begun. I am taking two days off to enjoy the madness, and I suspect this will be most of my weekend, too.</p>
+<p>👟 I should have to get the other half of the Trailhawks website out the door.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/17/on-tortilla-pizza.html">🍕 On tortilla pizza</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/17/on-tortilla-pizza.html" class="u-url"><time class="dt-published" datetime="2024-03-17 13:26:10 -0500">Mar 17, 2024</time></a>
+
+		<div class="e-content">
+			 <p>The algorithm kept telling me to make tortilla pizza, so today, over lunch, I caved and made two from a bunch of leftovers we had from the week.</p>
+<p>The proteins and veggies are entirely up to you. We were out of pepperoni, so I used some leftover taco meat and stir-fried veggies (peppers and onions), which worked incredibly well.</p>
+<h2 id="ingredients">Ingredients</h2>
+<ul>
+<li>1 soft flour tortilla</li>
+<li>olive oil</li>
+<li>garlic powder to taste</li>
+<li>salt and ground black pepper to taste</li>
+<li>Trader Joe&rsquo;s Umami seasoning (optional)</li>
+<li>dried oregano to taste</li>
+<li>tomato sauce</li>
+<li>shredded mozzarella cheese</li>
+<li>some veggies</li>
+<li>some protein</li>
+</ul>
+<h2 id="directions">Directions</h2>
+<ol>
+<li>Preheat oven to 425F</li>
+<li>Brush olive oil on the tortilla</li>
+<li>Sprinkle garlic powder, salt, pepper, and Umami seasoning on top</li>
+<li>Bake for 3 to 5 minutes in the preheated oven until golden</li>
+<li>Remove from oven and spread tomato sauce on top. Add proteins and veggies. Sprinkle cheese and oregano on top.</li>
+<li>Bake in the oven until the cheese has melted (about 5 minutes)</li>
+<li>Remove, slice, and enjoy!</li>
+</ol>
+<h2 id="the-results">The results</h2>
+<!-- raw HTML omitted -->
+<p>Overall, it was good, even if my photo does not reflect the taste. I have historically made my pizza dough, but for a quick fix, this was much better than the pizza dough that comes in a tube.</p>
+<p>Clean-up was easy because I prepared mine on pre-cut parchment paper, which I slid on top of my pizza stone in my oven.</p>
+<h2 id="other-recipes">Other recipes</h2>
+<p>A Kagi search bubbled up several pizza recipes which taught me the gist of what I needed to do:</p>
+<ul>
+<li><a href="https://www.allrecipes.com/recipe/258013/easy-tortilla-pizza/">All Recipes: Easy Tortilla Pizza</a></li>
+<li><a href="https://freshaprilflours.com/5-minute-personal-tortilla-pizza/">Fresh April Flours: Tortilla Pizza</a></li>
+<li><a href="https://www.budgetbytes.com/quick-fix-salad-bar-pizza/">Budget Bytes: Quick Fix Salad Bar Pizza</a></li>
+<li><a href="https://www.budgetbytes.com/quick-fix-broccoli-pesto-pizza/">Budget Bytes: &ldquo;Quick Fix&rdquo; Broccoli Pesto Pizza</a></li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/16/on-gardening.html">🏡 On Gardening</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/16/on-gardening.html" class="u-url"><time class="dt-published" datetime="2024-03-16 22:32:46 -0500">Mar 16, 2024</time></a>
+
+		<div class="e-content">
+			 <p>It&rsquo;s springtime in the Midwest, and I took my car to get it washed earlier today. I had my oldest with me, and we decided to try out a newer car wash that we drive by a lot. When we pulled up, I was surprised the service had an app, one-off pricing, and a monthly rate for &ldquo;unlimited&rdquo; washes with four different service levels. The whole setup gave my gym vibes, and while my car was going down the conveyor belt, I wondered how many people paid for unlimited washes and didn&rsquo;t go more than twice a month to justify the cost.</p>
+<p>After we got home, we did some yard work, and I tried to find care information for two of the Abelia bushes we planted last summer. We couldn&rsquo;t tell if they were dead or supposed to look like they did, but after some searching, I found <a href="https://www.gardenia.net">Gardenia</a>, which does a decent job of filling in info about random plants.</p>
+<p>Years ago, after we bought our house, I started using the <a href="https://www.getsunday.com">Sunday</a> service to help me figure out how to keep our lawn healthy. The subscription service is one part lawn analysis, a soil test, bags of fertilizers that come in the mail, and a ton of information on how to keep your lawn healthy.</p>
+<p>While our lawn is healthy, I still feel underwhelmed trying to keep plants and flowers alive and healthy outside our lawn. After using Sunday, why don&rsquo;t we have a similar garden service?</p>
+<p>I want to find my address using &ldquo;not-Google Maps,&rdquo; pick the areas of my yard from the satellite image of my yard, and use a polygon tool to block off areas of my yard where I can grow plants.</p>
+<p>The service could show me which plants will work best based on shade and the side of my house they are planted on. I would like/star the plants I want in my yard, and the service could give me advice, planting, and care details each week or month. I could visit my local nurseries to buy plants, or I would buy seeds or starter plants through the service.</p>
+<p>While I&rsquo;m not immune to feeling tired of subscription service fatigue, I don&rsquo;t mind paying for services that teach me skills like gardening because I will waste more money failing than being shown at least the right way to start.</p>
+<p>A few friends told me about joining a monthly LEGO subscription service that sends them a box of LEGOs every month. They play music or podcasts, lay out the instructions, and build the LEGO kit. Once they complete the build, they mail everything back and get another one. The beauty of LEGOs is that you follow the directions.</p>
+<p>More recently, I started hearing about this trend on a few podcasts, where people like not having to decide and destress by following directions.</p>
+<p>So why can&rsquo;t Gardening be more like building LEGOs?</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/15/five-for-friyay.html">Five for Friyay</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/15/five-for-friyay.html" class="u-url"><time class="dt-published" datetime="2024-03-15 20:05:35 -0500">Mar 15, 2024</time></a>
+
+		<div class="e-content">
+			 <p>It&rsquo;s been too long since I posted my five favorite links of the week. Continuing that theme for today, here are five links from my Friyay (Friday).</p>
+<h2 id="1-a-new-code-editor">1. A new code editor</h2>
+<p>Tonight, I installed the <a href="https://zed.dev">Zed</a> code editor on a whim, and to my surprise, my LSP was automatically picked up and just worked. Zed was a surprisingly productive experience. I even spotted a bug in one of my projects that I needed help to figure out earlier today.</p>
+<h2 id="2-my-favorite-theme">2. My favorite theme</h2>
+<p>I wasn&rsquo;t impressed with Zed&rsquo;s default theme, so I searched the <a href="https://draculatheme.com">Dracula</a> website and found a <a href="https://draculatheme.com/zed">Dracula Theme for Zed</a>. Dracula is one of my favorite themes, and they have custom-built themes for over 370 different apps.</p>
+<h2 id="3-a-new-to-me-python-library">3. A new to me Python library</h2>
+<p><a href="https://github.com/dgilland/shelmet">shelmet</a> is a nice wrapper around Python&rsquo;s subprocess. The API is clean, and it has a nice wrapper around using temporary environment variables, which has been helpful for me.</p>
+<h2 id="4-the-best-presentation-tool">4. The best presentation tool</h2>
+<p><a href="https://www.deckset.com">Deckset</a> is the best tool for quickly writing nice-looking presentations using markdown. After years of being in private beta, they released their iOS/iPad version publicly.</p>
+<h2 id="5-a-long-read-for-the-weekend">5. A long read for the weekend</h2>
+<p>This exhaustive review of the <a href="https://hugo.blog/2024/03/11/vision-pro/">Vision Pro</a> is everything I have been looking for and more to get a feel for what the Vision Pro can do.</p>
+<h2 id="have-thoughts">Have thoughts?</h2>
+<!-- raw HTML omitted -->
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/14/pythons-uv-tool.html">Python&#39;s UV tool is even better</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/14/pythons-uv-tool.html" class="u-url"><time class="dt-published" datetime="2024-03-14 11:51:21 -0500">Mar 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Last month, I wrote <a href="https://micro.webology.dev/2024/02/29/pythons-uv-tool.html">Python&rsquo;s UV tool is actually pretty good</a> about Astral&rsquo;s new Python package installer and resolver  <a href="https://github.com/astral-sh/uv"><code>uv</code></a>, and this is a follow-up post.</p>
+<p>Since last month, I have added <code>uv</code> to over a dozen projects, and I recently learned that you could skip the <code>venv</code> step for projects that use containers or CI where the environment is already isolated.</p>
+<p>I mistakenly thought <code>uv</code> required a virtual environment (aka venv), but <a href="https://joshthomas.dev">Josh Thomas</a> recently pointed out that it&rsquo;s unnecessary.</p>
+<p>The trick is to pass the <code>--system</code> option, and <code>uv</code> will perform a system-wide install. Here&rsquo;s an example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">uv pip install --system --requirement requirement.txt
+</code></pre></div><p>Now that I have seen this, I wish <code>pip</code> also used this approach to avoid developers accidentally installing third-party packages globally.</p>
+<h2 id="local-development">local development</h2>
+<p>Nothing has changed with my <code>justfile</code> example from last month.</p>
+<p>When I&rsquo;m working with containers, I create a virtual environment (venv) because I will need most of my project requirements installed <em>outside</em> of the container so that my text editor and LSP can resolve dependencies. <code>uv</code>&rsquo;s default behavior of respecting a <code>venv</code> is all we need here.</p>
+<p>Every one of my projects has a <code>justfile</code> (it&rsquo;s like Make but works the same everywhere) with &ldquo;bootstrap&rdquo; and &ldquo;lock&rdquo; recipes. My &ldquo;bootstrap&rdquo; recipe installs everything I need to work with the project locally. I use my &ldquo;lock&rdquo; recipe to lock my <code>requirements.txt</code> file to use the exact requirements locally and in production.</p>
+<h3 id="justfile-before"><code>justfile</code> before</h3>
+<p>My <code>justfile</code> might look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">@<span style="color:#ae81ff">bootstrap</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade pip</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade --requirement requirements.in</span>
+    
+<span style="color:#f92672">@lock *ARGS</span>:
+    <span style="color:#ae81ff">python -m piptools compile {{ ARGS }} ./requirements.in \</span>
+        --<span style="color:#ae81ff">resolver=backtracking \</span>
+        --<span style="color:#ae81ff">output-file requirements.txt</span>
+</code></pre></div><h3 id="justfile-after"><code>justfile</code> after</h3>
+<p>For the most part, <code>uv</code> shares most of the same syntax as <code>pip</code> so you can start  by changing your <code>pip</code> references to <code>uv pip</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">@<span style="color:#ae81ff">bootstrap</span>
+    <span style="color:#ae81ff">python -m pip install --upgrade pip uv</span>
+    <span style="color:#ae81ff">python -m uv pip install --upgrade --requirement requirements.in</span>
+    
+<span style="color:#f92672">@lock *ARGS</span>:
+    <span style="color:#ae81ff">python -m uv pip compile {{ ARGS }} requirements.in \</span>
+        --<span style="color:#ae81ff">resolver=backtracking \</span>
+        --<span style="color:#ae81ff">output-file requirements.txt</span>
+</code></pre></div><h2 id="dockerfiles">Dockerfiles</h2>
+<p>Everyone&rsquo;s container setup is going to be different, but I use <a href="https://www.docker.com">Docker</a> and <a href="https://orbstack.dev">Orbstack</a>, which use a <code>Dockerfile</code>.</p>
+<h2 id="dockerfile-before"><code>Dockerfile</code> before</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.12-slim-bookworm</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PIP_DISABLE_PIP_VERSION_CHECK <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONDONTWRITEBYTECODE <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONPATH /srv<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONUNBUFFERED <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --upgrade pip<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --requirement /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /src/</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="dockerfile-after"><code>Dockerfile</code> after</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> python:3.12-slim-bookworm</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PIP_DISABLE_PIP_VERSION_CHECK <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONDONTWRITEBYTECODE <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONPATH /srv<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> PYTHONUNBUFFERED <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get update<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> pip install --upgrade pip uv  <span style="color:#75715e"># this is updated</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> requirements.txt /src/requirements.txt<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> uv pip install --system --requirement /src/requirements.txt  <span style="color:#75715e"># this is updated</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /src/</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="github-actions">GitHub Actions</h2>
+<p>GitHub Actions are a little more complicated to explain, but my workflows started similar to this before I made the switch to <code>uv</code>:</p>
+<h3 id="mainyml-before"><code>main.yml</code> before</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set up Python 3.12</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-python@v5</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">python-version</span>: <span style="color:#e6db74">&#39;3.12&#39;</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install dependencies</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      </span>      <span style="color:#ae81ff">python -m pip install --requirement requirements.in</span>
+</code></pre></div><h3 id="mainyml-after"><code>main.yml</code> after</h3>
+<p>The most significant pain point I ran into was related to GitHub Issue <a href="https://github.com/astral-sh/uv/issues/1386">#1386</a>, which has a useable workaround.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Set up Python 3.12</span>
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/setup-python@v5</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">python-version</span>: <span style="color:#e6db74">&#39;3.12&#39;</span>
+
+  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Install dependencies</span>
+    <span style="color:#f92672">run</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">      python -m pip install --upgrade uv  # this is new
+</span><span style="color:#e6db74">      python -m uv pip install --system --requirement requirements.in  # this is updated</span>      
+</code></pre></div><h2 id="gotchas">Gotchas</h2>
+<p>The only gotchas I have encountered with <code>uv</code> is when I&rsquo;m trying to install a Python package from a remote zip file.</p>
+<p>Previously, I could copy and paste the GitHub repo URL, but <code>uv</code> required we use the format <code>package-name @ url-to-zip-file</code></p>
+<h3 id="requirementsin-before"><code>requirements.in</code> before</h3>
+<pre tabindex="0"><code># requirements.in
+https://github.com/jefftriplett/django-feedreader/archive/main.zip
+</code></pre><h3 id="requirementsin-after"><code>requirements.in</code> after</h3>
+<pre tabindex="0"><code># requirements.in
+django-feedreader @ https://github.com/jefftriplett/django-feedreader/archive/main.zip
+</code></pre><h2 id="conclusion">Conclusion</h2>
+<p>This update helps remove a few steps from updating your projects, and it should shave a few minutes off of updating projects to use it.</p>
+<p>I hope this was helpful to anyone who is considering making the switch to <code>uv</code>. I love to hear about how much time it saves you.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/03/13/on-environment-variables.html">On environment variables and dotenv files</a></h1>
 		
 
