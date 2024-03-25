@@ -24,6 +24,206 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/03/24/w-weeknotes-for.html">2024-W12 - Weeknotes for Week 12: March 18 to March 24</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/24/w-weeknotes-for.html" class="u-url"><time class="dt-published" datetime="2024-03-24 21:02:23 -0500">Mar 24, 2024</time></a>
+
+		<div class="e-content">
+			 <h2 id="family">Family</h2>
+<p>Spring Break is over for my kids, and they both returned to school. Both kids seemed healthy again, but then we had a doctor&rsquo;s appointment on Thursday and a follow-up appointment on Friday. Everything was fine, and everyone was healthy.</p>
+<h2 id="work">Work</h2>
+<p>It was a short week for us. I spent most of my week working on the green field project again and then on some internal projects.</p>
+<h2 id="community">Community</h2>
+<p>I only had a little time for community projects this week. What little time I did have was spent at the bank getting paperwork for the next DEFNA board.</p>
+<h2 id="side-projects">Side projects</h2>
+<p><strong>Django News Newsletter:</strong> We shipped issue <a href="https://django-news.com/issues/224#start">#224</a>.</p>
+<p><a href="https://jobs.django-news.com">Django News Jobs</a>: I fixed/simplified a few layout issues. I also spoke to a few companies that use the service, changed how jobs are submitted, and cleaned up some of the messaging around it.</p>
+<p>Django News Portal: Django News has a portal I have never publicly launched. I use it for some of my contributions and to double-check that we get all the big releases. I spend some time working on it over my break.</p>
+<p>Django News Browser Extension: We also have an unreleased Browser Extension I have used for three or more years. I used it with Chrome, but since switching to Vivaldi, I have yet to figure out how to make it work as my new page. I might release this in April.</p>
+<p><strong>Django Packages:</strong> We only had a few minor updates this week. I fixed UV, and we improved Sentry profiling.</p>
+<p>Fun projects: I dabbled with a Bootstrap to Tailwind CSS converter project. I also dusted off an old Git Bot project I wrote about in my <a href="https://micro.webology.dev/2024/03/23/on-scratching-itches.html">On Scratching itches with Python</a> post.</p>
+<h2 id="writing">Writing</h2>
+<p>I wrote and published every day.</p>
+<p><a href="https://micro.webology.dev/2024/03/23/on-scratching-itches.html">2024-03-23</a>: <strong>On scratching itches with Python</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/22/automated-python-and.html">2024-03-22</a>: <strong>Automated Python and Django upgrades</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/21/fixing-a-css.html">2024-03-21</a>: <strong>Fixing a CSS layout issue</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/20/on-robotstxt.html">2024-03-20</a>: <strong>🤖 On Robots.txt</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/19/justfile-alfred-plugin.html">2024-03-19</a>: <strong>Justfile Alfred Plugin</strong> </p>
+<p><a href="https://micro.webology.dev/2024/03/18/weeknotes-for-week.html">2024-03-18</a>: <strong>Weeknotes for Week 11: March 11 to March 17</strong> </p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>I took my annual March Madness break and watched basketball from Thursday through Sunday.</p>
+<p>My Jayhawks Men&rsquo;s basketball team won the first round but fell in the second round, while the Jayhawks Women&rsquo;s team was still in their respective tournament. Overall, it was a rare down year for the men, and it was great to see the women make the tournament and knock off a good team to advance to the Round of 32.</p>
+<h2 id="next-week">Next week</h2>
+<p>I was asked to appear on two different podcasts, and I&rsquo;ll be recording those next week.</p>
+<p>As of tonight, I plan to host Office Hours next week, but someone mentioned it being a holiday weekend. I will figure that out sooner than later this week.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/23/on-scratching-itches.html">On scratching itches with Python</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/23/on-scratching-itches.html" class="u-url"><time class="dt-published" datetime="2024-03-23 23:26:41 -0500">Mar 23, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Python is such a fantastic glue language. Last night, while watching March Madness basketball games, I had a programming itch I wanted to scratch.</p>
+<p>I dusted off a demo I wrote several years ago. It used Python&rsquo;s subprocess module, which strings together a bunch of shell commands to perform a git checkout, run a few commands, and then commit the results. The script worked, but I struggled to get it fully working in a production environment.</p>
+<p>To clean things up and as an excuse to try out a new third-party package, I converted the script to use:</p>
+<ul>
+<li>
+<p><a href="https://github.com/gitpython-developers/GitPython">GitPython</a> - GitPython is a Python library used to interact with Git repositories.</p>
+</li>
+<li>
+<p><a href="https://github.com/dgilland/shelmet">Shelmet</a> - A shell power-up for working with the file system and running subprocess commands.</p>
+</li>
+<li>
+<p><a href="https://github.com/django-q2/django-q2">Django Q2</a> - A multiprocessing distributed task queue for Django based on Django-Q.</p>
+</li>
+</ul>
+<p>Using Django might have been overkill, but having a Repository model to work with felt nice. Django Q2 was also overkill, but if I put this app into production, I&rsquo;ll want a task queue, and Django Q2 has a manageable amount of overhead.</p>
+<p>GitPython was a nice improvement over calling git commands directly because their API makes it easier to see which files were modified and to check against existing branch names. I was happy with the results after porting my subprocess commands to the GitPython API.</p>
+<p>The final package I used is a new package called Shelmet, which was both a nice wrapper around subprocess plus they have a nice API for file system operations in the same vein as Python&rsquo;s Pathlib module.</p>
+<h2 id="future-goals">Future goals</h2>
+<p>I was tempted to cobble together a GitHub bot, but I didn&rsquo;t need one. I might dabble with the GitHub API more to fork a repo, but for now, this landed in a better place, so when I pick it back up again in a year, I&rsquo;m starting in a good place.</p>
+<p>If you want to write a GitHub bot, check out <a href="https://github.com/Mariatta">Mariatta</a>&rsquo;s <a href="https://github.com/Mariatta/black_out">black_out</a> project.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/22/automated-python-and.html">Automated Python and Django upgrades</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/22/automated-python-and.html" class="u-url"><time class="dt-published" datetime="2024-03-22 11:02:57 -0500">Mar 22, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Recently, I have been maintaining forks for several projects that are no longer maintained. Usually, these are a pain to update, but I have found a workflow that takes the edge off by leveraging <a href="https://github.com/pre-commit/pre-commit">pre-commit</a>.</p>
+<p>My process:</p>
+<ul>
+<li>Fork the project on GitHub to whichever organization I work with or my personal account.</li>
+<li>Check out a local copy of my forked copy with git.</li>
+<li>Install <a href="https://github.com/pre-commit/pre-commit">pre-commit</a></li>
+<li>Create a <code>.pre-commit-config.yaml</code> with <em>ZERO</em> formatting or lint changes. This file will only include <a href="https://github.com/adamchainz/django-upgrade">django-upgrade</a> and <a href="https://github.com/asottile/pyupgrade">pyupgrade</a> hooks.</li>
+</ul>
+<p>We skip the formatters and linters to avoid unnecessary changes if we want to open a pull request in the upstream project. If the project isn&rsquo;t abandoned, we will want to do that.</p>
+<ul>
+<li>For <a href="https://github.com/adamchainz/django-upgrade">django-upgrade</a>, change the—-target-version option to target the latest version of Django I&rsquo;m upgrading to, which is currently 5.0.</li>
+<li>For <a href="https://github.com/asottile/pyupgrade">pyupgrade</a>, update the <code>python</code> settings under <code>default_language_version</code>  to the latest version of Python that I&rsquo;m targetting. Currently, that&rsquo;s 3.12.</li>
+</ul>
+<p>The django-upgrade and pyupgrade projects attempt to run several code formatters and can handle most of the more tedious upgrade steps.</p>
+<ul>
+<li>Run <code>pre-commit autoupdate</code> to ensure we have the latest version of our hooks.</li>
+<li>Run <code>pre-commit run --all-files</code> to run <code>pyupgrade</code> and <code>django-upgrade</code> on our project.</li>
+<li>Run any tests contained in the project and review all changes.</li>
+<li>Once I&rsquo;m comfortable with the changes, I commit them all via git and push them upstream to my branch.</li>
+</ul>
+<h2 id="example-pre-commit-configyaml-config">Example <code>.pre-commit-config.yaml</code> config</h2>
+<p>From my experience, less is more with this bane bones <code>.pre-commit-config.yaml</code> config file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># .pre-commit-config.yaml</span>
+
+<span style="color:#f92672">default_language_version</span>:
+  <span style="color:#f92672">python</span>: <span style="color:#ae81ff">python3.12</span>
+
+<span style="color:#f92672">repos</span>:
+  - <span style="color:#f92672">repo</span>: <span style="color:#ae81ff">https://github.com/asottile/pyupgrade</span>
+    <span style="color:#f92672">rev</span>: <span style="color:#ae81ff">v3.15.1</span>
+    <span style="color:#f92672">hooks</span>:
+      - <span style="color:#f92672">id</span>: <span style="color:#ae81ff">pyupgrade</span>
+
+  - <span style="color:#f92672">repo</span>: <span style="color:#ae81ff">https://github.com/adamchainz/django-upgrade</span>
+    <span style="color:#f92672">rev</span>: <span style="color:#ae81ff">1.16.0</span>
+    <span style="color:#f92672">hooks</span>:
+      - <span style="color:#f92672">id</span>: <span style="color:#ae81ff">django-upgrade</span>
+        <span style="color:#f92672">args</span>: [--<span style="color:#ae81ff">target-version, &#34;5.0&#34;]</span>
+</code></pre></div><p>If I&rsquo;m comfortable that the project is abandoned, I&rsquo;ll add <a href="https://github.com/astral-sh/ruff">ruff</a> support with a more opinionated config to ease my maintenance burden going forward.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/21/fixing-a-css.html">Fixing a CSS layout issue</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/21/fixing-a-css.html" class="u-url"><time class="dt-published" datetime="2024-03-21 19:44:28 -0500">Mar 21, 2024</time></a>
+
+		<div class="e-content">
+			 <h1 id="2024-03-fixing-a-css-layout-issue">2024-03 Fixing a CSS layout issue</h1>
+<p>I noticed a layout issue for one of my website projects while viewing a page with little content. The header and footer&rsquo;s background colors are dark, and the middle/main content area is white.</p>
+<p>Where there isn&rsquo;t enough content in the main/middle content area, the footer will float up, and you&rsquo;ll see the white background behind it. Even if we change the default background color to match the header and the footer, the footer looks weird when stretched out.</p>
+<p>Since I&rsquo;m using <a href="https://tailwindcss.com">Tailwind CSS</a>, I figured there had to be a straightforward fix.</p>
+<h2 id="layouthtml-before">layout.html before</h2>
+<p>I&rsquo;m using Flexbox for my layout set in column mode, which allows my document to grow vertically.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">body</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flex flex-col&#34;</span>&gt;
+  &lt;<span style="color:#f92672">header</span>&gt;
+    our heading content
+  &lt;/<span style="color:#f92672">header</span>&gt;
+  &lt;<span style="color:#f92672">main</span>&gt;
+    our body content
+  &lt;/<span style="color:#f92672">main</span>&gt;
+  &lt;<span style="color:#f92672">footer</span>&gt;
+    our footer content
+  &lt;/<span style="color:#f92672">footer</span>&gt;
+&lt;/<span style="color:#f92672">body</span>&gt;
+</code></pre></div><h2 id="layouthtml-after">layout.html after</h2>
+<p>My fix involved adding two classes to my html layout. The first was adding the <a href="https://tailwindcss.com/docs/min-height"><code>min-h-screen</code></a> class to the body element of my HTML document, so my page would always be at least the same height as my browser.</p>
+<p>The second fix was adding a <a href="https://tailwindcss.com/docs/flex-grow"><code>flex-grow</code></a> class to the main element of my HTML layout. This tells the main element to fill any available space that&rsquo;s left over.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">body</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flex flex-col min-h-screen&#34;</span>&gt;
+  &lt;<span style="color:#f92672">header</span>&gt;
+    our heading content
+  &lt;/<span style="color:#f92672">header</span>&gt;
+  &lt;<span style="color:#f92672">main</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;flex-grow&#34;</span>&gt;
+    our body content
+  &lt;/<span style="color:#f92672">main</span>&gt;
+  &lt;<span style="color:#f92672">footer</span>&gt;
+    our footer content
+  &lt;/<span style="color:#f92672">footer</span>&gt;
+&lt;/<span style="color:#f92672">body</span>&gt;
+</code></pre></div><h2 id="overall">Overall</h2>
+<p>The fix was really straightforward. One could easily convert this to Vanilla CSS, but it&rsquo;s two classes, and my content works now.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/20/on-robotstxt.html">🤖 On Robots.txt</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/20/on-robotstxt.html" class="u-url"><time class="dt-published" datetime="2024-03-20 19:36:02 -0500">Mar 20, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have spent a lot of mental energy thinking about how to be more defensive with the <code>robots.txt</code> files in my projects.</p>
+<blockquote>
+<p><strong>robots.txt</strong> is the <a href="https://en.wikipedia.org/wiki/Filename" title="Filename">filename</a> used for implementing the <strong>Robots Exclusion Protocol</strong>, a standard used by <a href="https://en.wikipedia.org/wiki/Website" title="Website">websites</a> to indicate to visiting <a href="https://en.wikipedia.org/wiki/Web_crawler" title="Web crawler">web crawlers</a> and other <a href="https://en.wikipedia.org/wiki/Internet_bot" title="Internet bot">web robots</a> which portions of the website they are allowed to visit.</p>
+<p><a href="https://en.wikipedia.org/wiki/Robots.txt">https://en.wikipedia.org/wiki/Robots.txt</a></p>
+</blockquote>
+<p>In theory, this file helps control what search engines and AI scrapers are allowed to visit, but I need more confidence in its effectiveness in the post-AI apocalyptic world.</p>
+<p>Over the last few weeks, I have added and updated a static <code>robots.txt</code> file on several projects. Since then, I have noticed the number of known AI scrapers has doubled, and then some. See <a href="https://darkvisitors.com">Dark Visitors</a> for a comprehensive list of known AI agents.</p>
+<p>Today, I decided to switch to the <a href="https://github.com/jazzband/django-robots"><code>django-robots</code></a> project because I can update it from the Django admin. Since <code>django-robot</code>&rsquo;s rules are stored in a database, I can automate updating them.</p>
+<h2 id="my-research-so-far">My research so far</h2>
+<p>These websites and articles have seemed helpful so far.</p>
+<ul>
+<li><a href="https://neil-clarke.com/block-the-bots-that-feed-ai-models-by-scraping-your-website/">Block the Bots that Feed “AI” Models by Scraping Your Website</a></li>
+<li><a href="https://coryd.dev/posts/2024/go-ahead-and-block-ai-web-crawlers/">Go ahead and block AI web crawlers</a></li>
+<li><a href="https://darkvisitors.com">Dark Visitors</a></li>
+<li><a href="https://pika.pika.page/posts/your-pika-robots-txt-file">Your Pika robots.txt File</a></li>
+</ul>
+<h3 id="django-resources">Django resources</h3>
+<ul>
+<li><a href="https://learndjango.com/tutorials/add-robotstxt-django-website">Add robots.txt to a Django website</a></li>
+<li><a href="https://adamj.eu/tech/2020/02/10/robots-txt/">How to add a robots.txt to your Django site</a></li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/03/19/justfile-alfred-plugin.html">Justfile Alfred Plugin</a></h1>
 		
 
@@ -33,9 +233,9 @@
 			 <p>A few years back, I had a productivity conversation with <a href="https://kjaymiller.com">Jay Miller</a> about <a href="https://www.alfredapp.com">Alfred</a> plugins, which led to him sharing his <a href="https://github.com/kjaymiller/Bunch_Alfred">Bunch_Alfred</a> plugin. At the time, I played around with the <a href="https://bunchapp.co">Bunch.app</a>, a macOS automation tool, and Alfred&rsquo;s support was interesting.</p>
 <p>I created my Alfred plugin to run <a href="https://github.com/casey/just">Just</a> command runner commands through my Alfred setup. However, I never got around to packing or writing the plugin&rsquo;s documentation.</p>
 <p>My Alfred plugin runs <a href="https://www.alfredapp.com/help/workflows/inputs/script-filter/">Script Filter Input</a>, which reads from a centrally located <code>justfile</code> and generates JSON output of all of the possible options. This will be displayed, and Alfred will run that command, whichever option you select.</p>
+<!-- raw HTML omitted -->
 <p>I was always unhappy with how the JSON document was generated from my commands, so I dusted off the project over lunch and re-engineered it by adding <a href="https://github.com/pydantic/pydantic">Pydantic</a> support.</p>
 <p>Alfred just announced support for a new User Interface called <a href="https://www.alfredapp.com/help/workflows/user-interface/text/">Text View</a>, which could make text and markdown output from Python an exciting way to handle snippets and other productive use cases. I couldn&rsquo;t quite figure it out over lunch, but now I know it&rsquo;s possible, and I might figure out how to convert my Justfile Alfred plugin to generate better output.</p>
-<!-- raw HTML omitted -->
 <!-- raw HTML omitted -->
 
 		</div>
