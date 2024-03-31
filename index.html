@@ -24,6 +24,224 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/03/30/xz-update-dont.html">xz update: Don&#39;t do this</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/30/xz-update-dont.html" class="u-url"><time class="dt-published" datetime="2024-03-30 21:47:47 -0500">Mar 30, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Don&rsquo;t do this. Compromised packages because of burned-out maintainers aren&rsquo;t a time to shill your scorecards that no one cares about.</p>
+<blockquote>
+<p>A malicious or compromised maintainer is extremely difficult to guard against using automated tools or supply chain security technologies. Looking back at the last OpenSSF Scorecard report on the xz repository, we do see a number of best practices such as Code-Review, Token-Permissions, Branch-Protection, and Static-Analysis were not enabled, nor did xz have the OpenSSF Best Practices badge. It&rsquo;s difficult to predict whether these settings on their own would have prevented this backdoor, however, security best practices were not followed.</p>
+</blockquote>
+<p>OpenSSF&rsquo;s Scorecard shows that the Django project is barely rated higher than xz. Django is a good test of the quality of rating systems and scorecards. When Django ranks poorly or average, you are measuring the wrong things.</p>
+<p>This isn&rsquo;t a mistake that only OpenSSF makes. I have seen a half dozen other services ding them for things like not having a Code of Conduct and then linking two or three examples that attribute Django&rsquo;s Code of Conduct.</p>
+<p>Pointing out that someone who is already burned out and never knew your best practices existed is a bad PR move.</p>
+<p>Even worse, we are now paying attention to your best practices, which don&rsquo;t hold water.</p>
+<p>Even worse, if you aren&rsquo;t proactively offering funding to these solo projects you knew were destined to fail, you are actively part of the problem and trying to profit from it. Please stop making it worse for the next burned-out maintainer.</p>
+<p>Also, project maintainers hate being opted into things they have yet to ask or sign up for.</p>
+<p>Do better OpenSSF.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/29/update-and-upgrade.html">⬆️ Update and upgrade Homebrew and `xz` versions</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/29/update-and-upgrade.html" class="u-url"><time class="dt-published" datetime="2024-03-29 19:00:01 -0500">Mar 29, 2024</time></a>
+
+		<div class="e-content">
+			 <p>After I left work today, I noticed a flood of messages about a vulnerability in the <code>xz</code> package that a few dozen of my Homebrew packages used.</p>
+<p>I find these <a href="https://github.com/orgs/Homebrew/discussions/5243">security alerts</a> hard to read and understand, but here is what you need to do if you are on macOS and using Homebrew.</p>
+<p>Thankfully, the Homebrew community already has a fix in place, and all we need to do is update Homebrew and install the latest upgrades of any packages linked/built against <code>xz</code> version <code>5.6.x</code>.</p>
+<p>For more details, check out <a href="https://hackaday.com/2024/03/29/security-alert-potential-ssh-backdoor-via-liblzma/#respond">Security Alert: Potential SSH Backdoor via LIBLZMA</a>.</p>
+<h2 id="am-i-vulnerable">Am I vulnerable?</h2>
+<p>From your terminal run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew info xz
+<span style="color:#f92672">==</span>&gt; xz: stable 5.4.6 <span style="color:#f92672">(</span>bottled<span style="color:#f92672">)</span>
+</code></pre></div><p>If your <code>xz</code> version is 5.4.x, you are safe. 👍</p>
+<p>If your <code>xz</code> version is 5.6.x, do not pass; go and update your Homebrew immediately. 👎</p>
+<h2 id="to-update-your-homebrew-version">To update your Homebrew version</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">brew update
+brew upgrade
+
+brew info xz
+<span style="color:#f92672">==</span>&gt; xz: stable 5.4.6 <span style="color:#f92672">(</span>bottled<span style="color:#f92672">)</span>
+</code></pre></div><h2 id="post-homebrew-upgrade">Post Homebrew upgrade</h2>
+<p>Once you are done, I recommend rebooting your Mac and installing any recent macOS updates.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/28/no-office-hours.html">🚨 No office hours this week due to the holiday 🚨</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/28/no-office-hours.html" class="u-url"><time class="dt-published" datetime="2024-03-28 22:26:40 -0500">Mar 28, 2024</time></a>
+
+		<div class="e-content">
+			 <p>👋 Hi friends,</p>
+<p>🚨 Sorry to cancel this late, but no office hours this week. 🚨</p>
+<p>Something had to give between the holiday weekend, a podcast I&rsquo;m recording, client work, and a few errands I need to run before we go out of town.</p>
+<p>📅 We&rsquo;ll be back <em>next week</em> on Friday, April 5th, 2024, from 2 PM to 4:30 PM Central Time (US and Canada) or use the magic link to convert to your timezone <a href="https://time.is/compare/200pm_05_April_2024_in_CT">https://time.is/compare/200pm_05_April_2024_in_CT</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/28/on-backups-and.html">On backups and building a portable backup drive solution</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/28/on-backups-and.html" class="u-url"><time class="dt-published" datetime="2024-03-28 19:22:50 -0500">Mar 28, 2024</time></a>
+
+		<div class="e-content">
+			 <p>According to ChatGPT, the 3-2-1 backup rule is a simple yet effective strategy for ensuring data safety in case of a loss or disaster. Here&rsquo;s what it stands for:</p>
+<ol>
+<li><strong>3 copies of your data:</strong>  Maintain three copies: the original and two backups.</li>
+<li><strong>2 different media:</strong> Store the backups on two distinct media types or platforms.</li>
+<li><strong>1 off-site backup:</strong> Keep at least one backup in a different physical location.</li>
+</ol>
+<h2 id="what-this-means-to-me">What this means to me</h2>
+<h3 id="-three-copies-of-your-data">✅ Three copies of your data</h3>
+<blockquote>
+<p>Maintain three copies: the original and two backups.</p>
+</blockquote>
+<p>For our first copy, every one of my machines has hourly Time Machine backups via an external NVMe drive. These are quick, noiseless, and reliable. Even though Time Machine keeps copies through time, I consider each drive one copy since a drive can, in theory, become corrupt.</p>
+<p>Our second to third copies are from machine to machine via Syncthing with versioning turned on. If I were to lose a machine, one to three backup copies would automatically be floating on a powered-up machine.</p>
+<p>I keep a third remote copy on a loud Western Digital drive that I can connect for peace of mind. I also periodically clone my boot drive to this machine to have a bootable, working copy of my main work Mac and a Time Machine backup to restore from.</p>
+<h3 id="-two-different-media">✅ Two different media</h3>
+<blockquote>
+<p>Store the backups on two distinct media types or platforms.</p>
+</blockquote>
+<p>My local drives are NMVe drives from two vendors. I bought them when both brands were on sale when I built my last backup drives.</p>
+<p>I also have a Western Digital backup drive that is a noisy, spinning disk.</p>
+<h3 id="-one-off-site-backup">✅ One off-site backup</h3>
+<blockquote>
+<p>Keep at least one backup in a different physical location.</p>
+</blockquote>
+<p>My main machine runs Backblaze, giving me a nightly snapshot if I need it.</p>
+<p>I also have Syncthing between my home and office, giving me backup copies in two physical locations.</p>
+<p>I also keep all of my projects on GitHub and GitLab, which gives me an extra copy.</p>
+<h2 id="-my-portable-backup-drive-solution">🧑‍🍳 My portable backup drive solution</h2>
+<p>(Links are in the parts list)</p>
+<p>While I can&rsquo;t recommend that you build your backup drive, I did out of necessity because I could not find a reasonably priced solution. I was happy with the large, clunky Western Digital external drives, but they were so loud I started looking for noiseless solutions.</p>
+<p>After reading many reviews, I settled on the Sabrent USB-C enclosure because it is small and barely bigger than the NVMe drives. The machine powers these drives, meaning they only need one USB-C cable to connect and power them.</p>
+<!-- raw HTML omitted -->
+<p>Based on reading review websites, I landed on the Samsung 970 EVO series drives. My first drive was a 250G drive, but I moved to 1 TB and 2 TB drives because I found them for &lt;$100 over the holiday sales.</p>
+<!-- raw HTML omitted -->
+<p>My go-to research tool for buying almost anything is <a href="https://camelcamelcamel.com">camelcamelcamel</a>. The website is free to use, and it can show you historical information so that you know if you are paying average, above, or below cost for a production on Amazon. Registering an account with them can create a price alert and get an email during a periodic sale.</p>
+<!-- raw HTML omitted -->
+<p><strong>Pro tip:</strong> When you have two young kids who keep you home on the weekends, you quickly learn that Friday nights are the cheapest day to buy just about anything. So even if camelcamelcamel doesn&rsquo;t alert you, check out the website and on Amazon, and you&rsquo;ll see a trend. Once again, being a parent who is home on a Friday night is an excellent life hack.</p>
+<h3 id="features-of-building-your-own">Features of building your own</h3>
+<ul>
+<li>Silent because there are no spinning disks or noisy fans</li>
+<li>Portable</li>
+<li>USB-C speed and ease</li>
+<li>Powered over USB-C without a clunky power supply</li>
+<li>They are tiny</li>
+<li>BYOD - Bring your own drive</li>
+<li>It takes less than a minute to assemble</li>
+<li>Cheap to build - If you buy at the right time, you can build a 1 TB or 2 TB backup drive for under &lt;$100</li>
+</ul>
+<h3 id="parts-list">Parts list</h3>
+<ul>
+<li><a href="https://camelcamelcamel.com/product/B08RVC6F9Y">SABRENT USB 3.2 10Gbps Type C Tool Free Enclosure</a> for $26 to $29</li>
+<li>Favorite drive: <a href="https://camelcamelcamel.com/product/B07MFZXR1B">SAMSUNG 970 EVO Plus SSD 2TB - M.2 NVMe</a> for $75 to $129</li>
+<li>Reasonable drive: <a href="https://camelcamelcamel.com/product/B09JM8DJNS">Western Digital 2TB WD Blue SN570 NVMe </a> for $85 to $129</li>
+<li>Longer USB-C cable?</li>
+</ul>
+<p>The USB-C cable with the SABRENT is good enough, but it&rsquo;s short. It&rsquo;s fine on most of my computers, but I bought a longer Anker USB-C cable for my MacBook Pro to keep it out of the way.</p>
+<h2 id="results">Results</h2>
+<p>I didn&rsquo;t expect my backup drives to work as well as they did. I tried my first one out for about a year, and then I built two more last year.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/27/on-syncthing-and.html">On Syncthing and multiple devices</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/27/on-syncthing-and.html" class="u-url"><time class="dt-published" datetime="2024-03-27 21:31:40 -0500">Mar 27, 2024</time></a>
+
+		<div class="e-content">
+			 <p>When my son started kindergarten last year, I started experiencing a bit of &ldquo;carrying things withdrawal&rdquo;—for lack of a better term.</p>
+<p>We had a good routine for his first five years and the first year and a half after my daughter was born. Every Monday, we loaded everyone&rsquo;s backpacks into the car. I drove them to daycare/preschool and then went to work at the office or back home. Every Friday, we hauled the kids' stuff back. After kindergarten started, the sheer number of things multiplied to a daily backpack, water bottles, milk, and snacks, and I juggled all the things, plus carrying my one-year-old.</p>
+<p>For years, I alternated between a backpack and a Satchel to carry my MacBook Pro to the office on days I was going in. I even picked up a much larger tote to bring everything and sort it out when we arrived.</p>
+<p>I was burnt out on carrying things to the point that I dreamed of not having to bring anything with me except for my iPhone and my keys.</p>
+<p>I was overdue for a new work machine, so I used this as an excuse to try a Mac desktop. For the office, I switched to a Mac Studio. For my home office, I picked up a Mac Mini Pro. I started using my MacBook Pro as a floater around the house and taking trips with me.</p>
+<h2 id="syncing-files">Syncing files</h2>
+<p>My only pain point was keeping files and projects synced between machines. I already use Apple&rsquo;s iCloud/iDisk, which takes care of my documents and random desktop files, but I wanted something else that wasn&rsquo;t Dropbox to keep my development projects always in sync.</p>
+<p>I&rsquo;ve been using <a href="https://tailscale.com">Tailscale</a> for a few years. It creates a virtual network that allows all my devices and machines to see each other regardless of location.</p>
+<p>I tried several file-syncing solutions before landing on Syncthing, which is also open-source. Syncthing appealed to me because it&rsquo;s a peer-to-peer application that doesn&rsquo;t require a server to run.</p>
+<p>I wanted control over where my data was physically located, which ruled out Dropbox, iDisk, and others. Most of my projects sync from upstairs to downstairs, and no company&rsquo;s business model sits between me and my data.</p>
+<p>Because all my projects are folder-based, I can share each project folder and choose which machine should have access to them. The process is more manual than I&rsquo;d like, but it&rsquo;s quick, and everything works. This also allows me to control where work and personal files are synced.</p>
+<h2 id="hardware">Hardware</h2>
+<p>I&rsquo;m running Syncthing on four physical machines, which include three Macs and one Intel NUC. My NUC is my main distribution point and is wired directly into my home router, whereas my Macs are connected wirelessly.</p>
+<h2 id="setup">Setup</h2>
+<p>Setup is a breeze on Linux and macOS and only takes a few seconds with your favorite package manager. Once you install Syncthing, you can run the service and copy a key, which you can share with your other nodes so they can communicate and share files.</p>
+<p>The only annoying part is keeping my <code>.stignore</code> files in sync when I find a new pattern. While I primarily develop on M2 Macs, my MacBook Pro is an Intel model. I occasionally run into a weird issue from a cache file tied to one architecture over another.</p>
+<p>So far, I have landed on:</p>
+<pre tabindex="0"><code># .stignore
+*.pyc
+*.pyi
+.*cache/
+.DS_Store
+.envrc
+.nox/
+.vendor/
+docker-compose.override.yml
+</code></pre><p>I wanted my <code>.git</code> folder excluded from syncing, but I changed my mind. It&rsquo;s nice to be on the same branch, no matter which machine I&rsquo;m developing on.</p>
+<h2 id="the-results">The results</h2>
+<p>My transition back to a desktop machine was 100% worth it. As long as I have my keys and iPhone, I have everything I need to be productive.</p>
+<p>I have never noticed any latency or file syncing delays between devices. It takes less time than it takes me to walk up or down stairs to switch between devices, so that&rsquo;s a win in my book.</p>
+<h2 id="bonus">Bonus</h2>
+<p>I also run Tailscale&rsquo;s <a href="https://github.com/tailscale/golink">golink</a> private short link service on my NUC, which makes remembering how to access Syncing things easier.</p>
+<p>http://go/syncthing will redirect me to http://127.0.0.1:8384 no matter which machine I&rsquo;m on. I never have to remember which port Syncthing&rsquo;s web interface runs on again.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/26/django-chat-recording.html">Django Chat recording today</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/26/django-chat-recording.html" class="u-url"><time class="dt-published" datetime="2024-03-26 22:18:09 -0500">Mar 26, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I was on the  <a href="https://djangochat.com">Django Chat podcast</a> today, but since the episode will not come out for a few more months, I am sharing a few links for upcoming events and deadlines.</p>
+<p><a href="https://2024.djangocon.us/speaking/">DjangoCon US CFP</a> is open through April 24th. I plan to publish my list of ideas soon. If you contact me, I have a gist to share if you would like an advanced preview.</p>
+<p><a href="https://www.defna.org">DEFNA</a> is seeking a new <a href="https://www.defna.org/announcements/2024/03/26/defna-board-member-recruitment/">director/treasurer</a> through April 9th. Our board seats only become available every few years, so this is an excellent opportunity to contribute to a non-profit and to help the Django community.</p>
+<p><a href="https://djangonaut.space">Djangonaut Space</a> <a href="https://djangonaut.space/sessions/">2024 Session 2</a> applications open on April 15th and close on May 13th.</p>
+<p>We covered many topics, and I&rsquo;m curious about what makes the final cut. It was also a long day, so today is my short post. We covered everything today.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/25/things-i-can.html">Things I can never remember how to do: Django Signals edition</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/25/things-i-can.html" class="u-url"><time class="dt-published" datetime="2024-03-25 16:13:15 -0500">Mar 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I am several weeks into working on a project with my colleague, Lacey Henschel. Today, while reviewing one of her pull requests, I was reminded how to test a Django Signal via mocking.</p>
+<p>Testing Django signals is valuable to me because I need help remembering how to test a signal, and even with lots of effort, it never works. So bookmark this one, friends. It works.</p>
+<p>Thankfully, she wrote it up in one of her <a href="https://github.com/williln/til/blob/main/django/how_i_added_django_activity_stream_with_test.md">TIL: How I set up <code>django-activity-stream</code>, including a simple test</a></p>
+<!-- raw HTML omitted -->
+<p><a href="https://mastodon.social/@lacey@hachyderm.io">https://mastodon.social/@lacey@hachyderm.io</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/03/24/w-weeknotes-for.html">2024-W12 - Weeknotes for Week 12: March 18 to March 24</a></h1>
 		
 
