@@ -24,6 +24,192 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/04/05/syncing-django-waffle.html">⛳ Syncing Django Waffle feature flags</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/05/syncing-django-waffle.html" class="u-url"><time class="dt-published" datetime="2024-04-05 21:58:28 -0500">Apr 5, 2024</time></a>
+
+		<div class="e-content">
+			 <p>The <a href="https://github.com/jazzband/django-waffle">django-waffle</a> feature flag library is helpful for projects where we want to release and test new features in production and have a controlled rollout. I also like using feature flags for resource-intensive features on a website that we want to toggle off during high-traffic periods. It&rsquo;s a nice escape hatch to fall back on if we need to turn off a feature and roll out a fix without taking down your website.</p>
+<p>While Waffle is a powerful tool, I understand the challenge of keeping track of feature flags in both code and the database. It&rsquo;s a pain point that many of us have experienced.</p>
+<p>Waffle has a <code>WAFFLE_CREATE_MISSING_FLAGS=True</code> setting that we can use to tell Waffle to create any missing flags in the database should it find one. While this helps discover which flags our application is using, we need to figure out how to clean up old flags in the long term.</p>
+<p>The pattern I landed on combines storing all our known feature flags and a note about what they do in our main settings file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># settings.py</span>
+<span style="color:#f92672">...</span> 
+
+WAFFLE_CREATE_MISSING_FLAGS<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+
+WAFFLE_FEATURE_FLAGS <span style="color:#f92672">=</span> {
+   <span style="color:#e6db74">&#34;flag_one&#34;</span>: <span style="color:#e6db74">&#34;This is a note about flag_one&#34;</span>,
+   <span style="color:#e6db74">&#34;flag_two&#34;</span>: <span style="color:#e6db74">&#34;This is a note about flag_two&#34;</span>,
+}
+</code></pre></div><p>We will use a management command to sync every feature flag we have listed in our settings file, and then we will clean up any missing feature flags.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># management/commands/sync_feature_flags.py</span>
+<span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
+
+<span style="color:#f92672">from</span> django.conf <span style="color:#f92672">import</span> settings
+<span style="color:#f92672">from</span> waffle.models <span style="color:#f92672">import</span> Flag
+
+
+[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>():
+    <span style="color:#75715e"># Create flags that don&#39;t exist</span>
+    <span style="color:#66d9ef">for</span> name, note <span style="color:#f92672">in</span> settings<span style="color:#f92672">.</span>WAFFLE_FEATURE_FLAGS<span style="color:#f92672">.</span>items():
+        flag, created <span style="color:#f92672">=</span> Flag<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>update_or_create(
+            name<span style="color:#f92672">=</span>name, defaults<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;note&#34;</span>: note}
+        )
+        <span style="color:#66d9ef">if</span> created:
+            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Created flag </span><span style="color:#e6db74">{</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{</span>flag<span style="color:#f92672">.</span>pk<span style="color:#e6db74">}</span><span style="color:#e6db74">)&#34;</span>)
+
+    <span style="color:#75715e"># Delete flags that are no longer registered in settings</span>
+    <span style="color:#66d9ef">for</span> flag <span style="color:#f92672">in</span> Flag<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>exclude(name__in<span style="color:#f92672">=</span>settings<span style="color:#f92672">.</span>FEATURE_FLAGS<span style="color:#f92672">.</span>keys()):
+        flag<span style="color:#f92672">.</span>delete()
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Deleted flag </span><span style="color:#e6db74">{</span>flag<span style="color:#f92672">.</span>name<span style="color:#e6db74">}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{</span>flag<span style="color:#f92672">.</span>pk<span style="color:#e6db74">}</span><span style="color:#e6db74">)&#34;</span>)
+
+</code></pre></div><p>We can use the <code>WAFFLE_CREATE_MISSING_FLAGS</code> settings as a failsafe to create any flags we might have accidently missed. They will stick out because they will not have a note associated with them.</p>
+<p>This pattern is also helpful in solving similar problems for scheduled tasks, which might also store their schedules in the database.</p>
+<p>Check out this example in the <a href="https://github.com/HackSoftware/Django-Styleguide?tab=readme-ov-file#periodic-tasks">Django Styleguide</a> for how to sync Celery&rsquo;s scheduled tasks.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/04/the-upgrade-django.html">⬆️ The Upgrade Django project</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/04/the-upgrade-django.html" class="u-url"><time class="dt-published" datetime="2024-04-04 19:37:35 -0500">Apr 4, 2024</time></a>
+
+		<div class="e-content">
+			 <p><a href="https://upgradedjango.com">Upgrade Django</a> is a <a href="https://www.revsys.com">REVSYS</a> project we created six years ago and launched three years ago.</p>
+<p>The goal of Upgrade Django was to create a resource that made it easy to see at a glance which versions of the <a href="djangoproject.com">Django web framework</a> are maintained and supported. We also wanted to catalog every release and common gotchas and link to helpful information like release notes, blog posts, and the tagged git branch on GitHub.</p>
+<p>We also wanted to make it easier to tell how long a given version of <a href="https://upgradedjango.com/4.2/">Django would be supported</a> and what <a href="https://upgradedjango.com/4.1/">phase of its release cycle</a> it is in.</p>
+<h2 id="future-features">Future features</h2>
+<p>We have over a dozen features planned, but it&rsquo;s a project that primarily serves its original purpose.</p>
+<p>One feature on my list is that I&rsquo;d love to see every backward incompatible change between two Django versions. This way, if someone knows their website is running on <a href="https://upgradedjango.com/3.2/">Django 3.2</a>, they could pick <a href="https://upgradedjango.com/4.2/">Django 4.2</a> or <a href="https://upgradedjango.com/5.0/">Django 5.0</a> version and get a comprehensive list with links to everything they need to upgrade between versions.</p>
+<p>Projects like Upgrade Django are fun to work on because once you collect a bunch of data and start working with it, new ways of comparing and presenting the information become more apparent.</p>
+<p>If you have ideas for improving Upgrade Django that would be useful to your needs, we&rsquo;d love to hear about them.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/03/mise-is-really.html">🚀 Mise is really fast</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/03/mise-is-really.html" class="u-url"><time class="dt-published" datetime="2024-04-03 19:27:03 -0500">Apr 3, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A month or two ago, I stumbled on <a href="https://github.com/epogrebnyak/justpath"><code>justpath</code></a>, which is worth installing to help clean up any PATH environment issues you may or may not realize you have.</p>
+<p>I was frustrated because every time I created a new tab in iTerm2, it took three or more seconds for whatever slowed everything in my bash/dotfiles.</p>
+<p>With <code>justpath</code>, I found it straightforward to identify and address several paths related to ruby, rbenv, cargo, golang, and others that were causing issues. Rather than continue to fight these apps, I deleted them and removed them from my <code>.bash*</code> files. To see if I broke anything, I opened a new iTerm tab, and I had a new shell prompt in less than a second.</p>
+<p>Since I needed access to Ruby, NPM, and other tools, I  switched over to <a href="https://github.com/jdx/mise"><code>mise</code></a>, which promises to be one tool for managing these languages and tools. <code>mise</code> is also written in Rust, so I know it&rsquo;s fast by default.</p>
+<p>To get started, check out Mise&rsquo;s <a href="https://github.com/jdx/mise?tab=readme-ov-file#quickstart">Quickstart</a> docs in their README. I modified their bash example and added it to my <code>.bash*</code> files.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#66d9ef">if</span> command -v mise &gt; /dev/null 2&gt;&amp;1; <span style="color:#66d9ef">then</span>
+    eval <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mise activate bash<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>;
+<span style="color:#66d9ef">fi</span>
+</code></pre></div><p>Once Mise was set up, and I opened a new tab, I installed Go, Node.js, Ruby, and Rust:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># to install Go</span>
+mise install golang
+
+<span style="color:#75715e"># to install Node.js</span>
+mise install node
+
+<span style="color:#75715e"># to install Ruby</span>
+mise install ruby
+
+<span style="color:#75715e"># to install Rust</span>
+mise install rust
+
+<span style="color:#75715e"># to reshim/add these tool to our path...</span>
+mise reshim
+</code></pre></div><p>Eventually, I used Mise to install kubectl (boo) and yarn (hiss). Here is a list of everything on my older MacBook Pro that Mise is managing for me.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mise list
+Plugin   Version  Config Source    Requested
+go       1.22.2
+kubectl  1.22.2
+node     20.10.0  ~/.tool-versions 20.10.0
+ruby     3.3.0
+rust     1.77.1
+yarn     1.22.19
+</code></pre></div><p>Another nice feature of Mise is that you can list the versions of each tool that you want Mise to install and manage for you in a <code>.tool-versions</code> file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ cat ~/.tool-versions
+<span style="color:#75715e"># direnv latest</span>
+<span style="color:#75715e"># golang latest</span>
+<span style="color:#75715e"># kubectl 1.22.2</span>
+<span style="color:#75715e"># nodejs 18.9.1</span>
+<span style="color:#75715e"># nodejs lts</span>
+<span style="color:#75715e"># ruby 3.1.2</span>
+<span style="color:#75715e"># starship latest</span>
+<span style="color:#75715e"># yarn 1.22.19</span>
+nodejs 20.10.0
+</code></pre></div><p>As a nice bonus, I discovered I could use Mise to manage the <code>direnv</code> and <code>starship</code> tools. In theory, Mise can also replace <code>direnv</code> with their built-in <a href="https://mise.jdx.dev/environments.html">environment</a> support), but I haven&rsquo;t tried that feature yet.</p>
+<h2 id="results">Results</h2>
+<p>Mise is a nice win. I cut my new iTerm2 tab/session time down to close to 1/4 of a second, and I have more granular control over which exact versions of each tool I&rsquo;m using.</p>
+<p>Overall, I still prefer to use <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a> to manage my Python versions, so I&rsquo;m keeping that for now mainly because I use <code>pyenv-virtualenvwrapper</code> and a few other nice-to-haves. See my <a href="https://micro.webology.dev/2024/02/10/python-development-on.html">Python Development on macOS Notes: pyenv and pyenv-virtualenvwrapper</a> article on why and how I manage those.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/04/02/til-brandolinis-law.html" class="u-url"><time class="dt-published" datetime="2024-04-02 11:49:55 -0500">Apr 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>TIL: Brandolini&rsquo;s law</p>
+<p>💬 The amount of energy needed to refute bullshit is an order of magnitude bigger than that needed to produce it.</p>
+<p><a href="https://en.wikipedia.org/wiki/Brandolini%27s_law">en.wikipedia.org/wiki/Bran&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/01/an-update-on.html">🔥 An update on OpenSSF&#39;s XZ fumble</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/01/an-update-on.html" class="u-url"><time class="dt-published" datetime="2024-04-01 22:07:39 -0500">Apr 1, 2024</time></a>
+
+		<div class="e-content">
+			 <h2 id="openssfs-scorecards-is-going-just-great-">OpenSSF&rsquo;s Scorecards is Going Just Great 🔥</h2>
+<p>While I&rsquo;m happy that OpenSSF updated their blog post to remove all mentions of their scorecards, they forgot to mention why, apologize, or publicly acknowledge that they messed up.</p>
+<p>Since they rushed their first blog post and spent so little time on it, I wanted to point out the changes and equally spend very little time on why their scorecard is actively harmful to projects that handle security well.</p>
+<p>Today was a rare day off for me, and documenting the numerous red flags of OpenSSF&rsquo;s Scorecards isn&rsquo;t how I spent my Monday night, nor will I spend my Tuesday or any night on this.</p>
+<p>Instead, check out the Scorecards for these three popular projects.</p>
+<ul>
+<li><a href="https://securityscorecards.dev/viewer/?uri=github.com/pallets/flask">Flask</a> scores a 6.9</li>
+<li><a href="https://securityscorecards.dev/viewer/?uri=github.com/python/cpython">cpython</a> scores a 7.0</li>
+<li><a href="https://securityscorecards.dev/viewer/?uri=github.com/django/django">Django</a> scores a 7.2</li>
+</ul>
+<p>If you aren&rsquo;t sure where to start, compare the &ldquo;Pinned-Dependencies&rdquo; and &ldquo;Best-Practices&rdquo; over the three projects. Then, look at the reference files and see if you agree.</p>
+<p>🤷</p>
+<h2 id="updates">Updates</h2>
+<p>This <a href="https://mastodon.social/@davidism@mas.to/112198968259149635">post by David Lord</a> is worth a star.</p>
+<!-- raw HTML omitted -->
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/03/31/sixty-days-of.html">6️⃣0️⃣ Sixty days of blogging ✍️ </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/03/31/sixty-days-of.html" class="u-url"><time class="dt-published" datetime="2024-03-31 22:44:53 -0500">Mar 31, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Sixty days ago, I started blogging daily with my <a href="https://wiggle.work">Wiggle Work</a> friends. Our goal was to blog every day in February, and I&rsquo;m happy to report that <a href="https://micro.webology.dev/2024/03/01/we-did-it.html">all five of us</a> did.</p>
+<p>When March rolled around, I had a dozen+ drafts that I never fully fleshed out, so I decided to keep going. I have over two dozen drafts in various states that I never published. I feel good about having plenty of content and ideas to keep writing. I don&rsquo;t know what April will be like, but I feel comfortable about where I&rsquo;m going.</p>
+<p>Truthfully, the second month was much easier than the first, and there was no pressure to continue or not <a href="https://micro.webology.dev/2024/03/30/xz-update-dont.html">say what I want to say</a> about something.</p>
+<p>Friends, I encourage you to write and publish more on your blog. If you struggle with editing (I sure as hell do), copy and paste your work into Grammarly or LanguageTool to minimally edit and publish them. That process has been good enough for me. You don&rsquo;t have to write daily, but I encourage you to publish more.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/03/30/xz-update-dont.html">xz update: Don&#39;t do this</a></h1>
 		
 
