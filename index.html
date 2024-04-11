@@ -24,6 +24,253 @@
 	
 	  <div class="h-entry">
 		
+
+		<a href="https://micro.webology.dev/2024/04/10/xmen-watching-the.html" class="u-url"><time class="dt-published" datetime="2024-04-10 23:18:24 -0500">Apr 10, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 X-Men &lsquo;97 - Watching the first episode to wind down.</p>
+<p><a href="https://trakt.tv/shows/x-men-97">trakt.tv/shows/x-m&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/10/production-bugs-happen.html">🐛 Production bugs happen to everyone</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/10/production-bugs-happen.html" class="u-url"><time class="dt-published" datetime="2024-04-10 21:30:45 -0500">Apr 10, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have noticed a GitHub bug for a few weeks, but I kept forgetting to ask publicly about it.</p>
+<p>Today, I noticed it again, and I tracked it down to README.rst files, so I wrote this post:</p>
+<blockquote>
+<p>Has anyone else noticed that some READMEs on GitHub have been broken recently?</p>
+<p>I thought it was just me, but the pattern seems to be like code blocks in rst files no longer get formatted.</p>
+<p><a href="https://mastodon.social/@webology/112249549385519057">https://mastodon.social/@webology/112249549385519057</a></p>
+</blockquote>
+<!-- raw HTML omitted -->
+<p>This led to several friends chiming in and one link to this <a href="https://github.com/orgs/community/discussions/113792">open GitHub issue</a> thanks to <a href="https://mastodon.social/@FunkyBob@chaos.social/112249599598006182">Funky Bob</a></p>
+<p>The story&rsquo;s moral is that writing software is hard; even GitHub makes mistakes and breaks things.</p>
+<p>If a trillion-dollar tech company can break things for weeks, cut yourself some slack the next time you stumble on a production.</p>
+<p><strong>Disclaimer:</strong> I wrote this post while talking in this month&rsquo;s <a href="https://www.conferencechats.org">Conference Chats</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/09/copy-all-urls.html">📋 Copy All Urls browser extension</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/09/copy-all-urls.html" class="u-url"><time class="dt-published" datetime="2024-04-09 22:18:04 -0500">Apr 9, 2024</time></a>
+
+		<div class="e-content">
+			 <p>If you are like me and have a habit of opening links in new tabs for days, weeks, and sometimes months, then you probably have not discovered the <a href="https://chromewebstore.google.com/detail/copy-all-urls/djdmadneanknadilpjiknlnanaolmbfk">Copy tabs URL</a> browser extension.</p>
+<p>The <em>Copy tabs URL</em> browser extension is a lifesaver for those who habitually open links in new tabs. It effortlessly copies all open tabs from a browser window into your clipboard, eliminating the need for manual copying and pasting. This makes it a breeze to paste into your editor of choice, such as <a href="https://obsidian.md">Obsidian</a>, saving you valuable time and effort.</p>
+<p>With the <em>Copy tabs URL</em> browser extension, I can easily copy all of my open tabs into a markdown document. This simple action helps me overcome mental hurdles, as I know that the link is safely filed away where I can search and find it later. This makes closing the tab a much easier decision for me.</p>
+<p>For longer-term storage, I use the <a href="https://raindrop.io">Raindrop</a> bookmark manager to track links I want to find later because it doubles as an excellent research tool and personal search engine. Before Raindrop, I frustratingly used Pinboard for a decade.</p>
+<p>So, while the <em>Copy tabs URL</em> browser extension works with Chrome, I switched to the <a href="https://vivaldi.com">Vivaldi</a> browser last year, and it works just fine.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/08/docker-and-orbstack.html">🐳 Docker and OrbStack disk cleanup notes </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/08/docker-and-orbstack.html" class="u-url"><time class="dt-published" datetime="2024-04-08 21:07:22 -0500">Apr 8, 2024</time></a>
+
+		<div class="e-content">
+			 <p><a href="https://www.docker.com">Docker</a> is one of my daily drivers, and here are my notes for reclaiming disk space and a bonus tip for getting a faster runtime.</p>
+<hr>
+<h2 id="docker-containers-prune">Docker &ldquo;Containers&rdquo; Prune</h2>
+<p>Most of the time, when I run into a Docker issue, it&rsquo;s because I have out of disk space allocated for Docker containers and images.</p>
+<p>90% of the time, you can reclaim the most disk space by running <code>docker system prune</code>.</p>
+<p><strong>Why?</strong> Docker&rsquo;s default behavior is to remove &ldquo;stopped containers,&rdquo; which are instances of containers that have already run and are no longer valid. There is no good reason to keep these around, so <strong>I consider this a safe operation</strong> to run.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker system prune
+WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - unused build cache
+
+Are you sure you want to <span style="color:#66d9ef">continue</span>? <span style="color:#f92672">[</span>y/N<span style="color:#f92672">]</span> y
+Deleted Containers:
+...
+Total reclaimed space: 127.5GB
+</code></pre></div><p>I freed up 127.5 GB of disk space when I ran this today.</p>
+<hr>
+<h2 id="docker-images-prune">Docker &ldquo;Images&rdquo; Prune</h2>
+<p>The <code>docker system df</code> will show us how much disk space Docker uses and what storage types.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          <span style="color:#ae81ff">100</span>       <span style="color:#ae81ff">0</span>         64.76GB   64.76GB <span style="color:#f92672">(</span>100%<span style="color:#f92672">)</span>
+Containers      <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         0B        0B
+Local Volumes   <span style="color:#ae81ff">1211</span>      <span style="color:#ae81ff">0</span>         32.79GB   32.79GB <span style="color:#f92672">(</span>100%<span style="color:#f92672">)</span>
+Build Cache     <span style="color:#ae81ff">638</span>       <span style="color:#ae81ff">0</span>         31.29GB   31.29GB
+</code></pre></div><p>The `docker image prune -a' will delete all images that don&rsquo;t have a container associated with them.</p>
+<p><strong>Why?</strong> Worse case, if you delete an image that you need, you can always rebuild it. If you are using a third-party image, you can always <code>docker pull</code> a more recent image.  <strong>I consider this a safe operation</strong> to run.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker image prune -a
+WARNING! This will remove all images without at least one container associated to them.
+Are you sure you want to <span style="color:#66d9ef">continue</span>? <span style="color:#f92672">[</span>y/N<span style="color:#f92672">]</span> y
+...
+Total reclaimed space: 11.28GB
+</code></pre></div><p>The results after we have run our command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         0B        0B
+Containers      <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         0B        0B
+Local Volumes   <span style="color:#ae81ff">1211</span>      <span style="color:#ae81ff">0</span>         32.79GB   32.79GB <span style="color:#f92672">(</span>100%<span style="color:#f92672">)</span>
+Build Cache     <span style="color:#ae81ff">638</span>       <span style="color:#ae81ff">0</span>         31.29GB   31.29GB
+</code></pre></div><hr>
+<h2 id="docker-build-cache-prune">Docker &ldquo;Build Cache&rdquo; Prune</h2>
+<p>Docker&rsquo;s Build Cache stores or caches all of the various build steps that Docker will use to assemble an image.</p>
+<p><strong>I consider this a safe operation</strong> because the worst-case scenario of a build step not being cached is that it takes a little longer to run your next Docker build while Docker re-runs the command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker builder prune
+...
+Total:  31.29GB
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker system df
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         0B        0B
+Containers      <span style="color:#ae81ff">0</span>         <span style="color:#ae81ff">0</span>         0B        0B
+Local Volumes   <span style="color:#ae81ff">1211</span>      <span style="color:#ae81ff">0</span>         32.79GB   32.79GB <span style="color:#f92672">(</span>100%<span style="color:#f92672">)</span>
+Build Cache     <span style="color:#ae81ff">2</span>         <span style="color:#ae81ff">0</span>         0B        0B
+</code></pre></div><hr>
+<h2 id="docker-local-volumes-prune">Docker &ldquo;Local Volumes&rdquo; Prune</h2>
+<p>Docker volumes are where your persistent data lives, like the files your database needs between sessions.</p>
+<p><strong>I do not recommend bulk deleting all of your volumes.</strong></p>
+<p>Unless you really, really mean it, and you know what you are doing, leave <code>docker volume prune</code> alone.</p>
+<p>I have &ldquo;Local Volumes&rdquo; that have lived longer than some Javascript Frameworks have.</p>
+<p>Instead, only delete what you know you aren&rsquo;t using anymore via:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker volume ls
+$ docker volume rm <span style="color:#f92672">{</span>volume-name<span style="color:#f92672">}</span>
+</code></pre></div><hr>
+<h2 id="orbstack-for-extra-performance">OrbStack for extra performance</h2>
+<p>If you are on macOS, try out <a href="https://orbstack.dev">OrbStack</a>, which lives up to its claim of being lightning faster than Docker.</p>
+<p>I run both Docker and Orbstack on my machines, and I use a <code>DOCKER_CONTEXT</code> environment variable to change between the two contexts.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># for OrbStack</span>
+export DOCKER_CONTEXT<span style="color:#f92672">=</span>orbstack
+$ docker system df
+...
+
+<span style="color:#75715e"># for Docker</span>
+export DOCKER_CONTEXT<span style="color:#f92672">=</span>default
+$ docker system df
+...
+</code></pre></div><p>If you aren&rsquo;t sure what your &ldquo;context&rdquo; options are, you can run <code>docker context ls</code> to see them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ docker context ls
+NAME              DESCRIPTION                               DOCKER ENDPOINT                                        ERROR
+default           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock
+desktop-linux *   Docker Desktop                            unix:///Users/username/.docker/run/docker.sock
+orbstack          OrbStack                                  unix:///Users/username/.orbstack/run/docker.sock
+</code></pre></div>
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/07/weeknotes-for-week.html">📖 Weeknotes for Week 14: April 1 to April 7</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/07/weeknotes-for-week.html" class="u-url"><time class="dt-published" datetime="2024-04-07 22:09:37 -0500">Apr 7, 2024</time></a>
+
+		<div class="e-content">
+			 <h2 id="family">Family</h2>
+<p>I skipped last week&rsquo;s update because we spent Easter weekend with my family and ~6 hours in the car with the kids.</p>
+<p>We went to our favorite local nursery, <a href="https://vinlandvalleynursery.com">Vinland Valley Nursery</a>, to pick up some new Hostas and other heartier plants since April is still a bit early for planting flowers because we typically have a few late freezes through Spring. We planted everything, and I fertilized the lawn to prepare it for the season.</p>
+<p>I unboxed and assembled my portable workbench and miter saw. My miter saw shipped with everything but the manual, and by the time I found one and printed it, it was time for me to make dinner. I cooked burgers on the outdoor griddle for the first time this year.</p>
+<h2 id="work">Work</h2>
+<p>I observed Good Friday on Monday and then worked a full day on Saturday to keep up with two client projects.</p>
+<h2 id="community">Community</h2>
+<p>My community cup was overflowing this week:</p>
+<ul>
+<li>Monthly DEFNA Board of Directors meeting</li>
+<li>Biweekly PSF Conduct WG meeting</li>
+<li>I interviewed with Djangonauts to see if Django Packages was a good fit for a future session.</li>
+<li>I joined one of <a href="https://wiggle.work">Wiggle Work&rsquo;s</a> lunch sessions.</li>
+<li>I joined <a href="conferencechats.org/">Conference Chat&rsquo;s</a> Friday session over lunch.</li>
+<li>I hosted Office Hours for my first meeting back in a month.</li>
+<li>I am working on rebooting the DSF&rsquo;s Code of Conduct WG and getting it back up to a healthy number of people.</li>
+<li>I attended half a day of <a href="https://2024.pycascades.com">PyCascades</a></li>
+</ul>
+<h2 id="side-projects">Side projects</h2>
+<p>Mastermind group: A friend invited me to attend their monthly Mastermind business group, which was interesting. We set some goals for next month.</p>
+<p><strong><a href="https://django-news.com">Django News Newsletter</a>:</strong> We shipped issue <a href="https://django-news.com/issues/226#start">#226</a>.</p>
+<p><a href="https://jobs.django-news.com">Django News Jobs</a>: I wrote up a few new features, including potentially moving the project to Django FSM, which might save me a few headaches. I&rsquo;m also debating a new feature to bring Company Endorsements into the listings.</p>
+<p><strong>Django Packages:</strong> Security updates. I gave Ryan some reviews on an upcoming profile/extra links feature he&rsquo;s working on. It&rsquo;s pretty cool. I drafted a few issues for some potential new feature ideas.</p>
+<p><a href="https://upgradedjango.com">Upgrade Django</a>: I bumped to list the latest few Django releases.</p>
+<h2 id="writing">Writing</h2>
+<p>I wrote and published every day.</p>
+<p><a href="https://micro.webology.dev/2024/04/06/refactoring-and-fiddling.html">2024-04-06</a>: <strong>🚜 Refactoring and fiddling with Django migrations for pending pull requests 🐘</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/05/syncing-django-waffle.html">2024-04-05</a>: <strong>⛳ Syncing Django Waffle feature flags</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/04/the-upgrade-django.html">2024-04-04</a>: <strong>⬆️ The Upgrade Django project</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/03/mise-is-really.html">2024-04-03</a>: <strong>🚀 Mise is really fast</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/02/til-brandolinis-law.html">2024-04-02</a>: <strong>TIL: Brandolini’s law</strong></p>
+<p><a href="https://micro.webology.dev/2024/04/01/an-update-on.html">2024-04-01</a>: <strong>🔥 An update on OpenSSF&rsquo;s XZ fumble</strong> </p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>Even though March is over, March Madness continues, and I enjoyed two more weekends of Men&rsquo;s and Women&rsquo;s basketball. I took first place in my women&rsquo;s bracket this week. My son tied for #2 and was excited about it tonight.</p>
+<p>While I am in first place for my men&rsquo;s bracket, they play tomorrow (Monday), and the team I picked to win lost last weekend. So I will only win this year if there is a team fight and both teams forfeit. So there is still a chance.</p>
+<h2 id="next-week">Next week</h2>
+<p>I should have mowed today and made another pass at removing sticks and leaves accumulated over the Spring. So I suspect we&rsquo;ll spend some time outside doing that next week.</p>
+<p>It&rsquo;s also time to break out the miter finally saw and spend half a day replacing old boards, repairing fences, and getting my money&rsquo;s worth out of it.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/06/refactoring-and-fiddling.html">🚜 Refactoring and fiddling with Django migrations for pending pull requests 🐘</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/06/refactoring-and-fiddling.html" class="u-url"><time class="dt-published" datetime="2024-04-06 14:59:54 -0500">Apr 6, 2024</time></a>
+
+		<div class="e-content">
+			 <p>One of Django&rsquo;s most powerful features is the ORM, which includes a robust migration framework. One of Django&rsquo;s most misunderstood features is Django migrations because it just works 99% of the time.</p>
+<p>Even when working solo, Django migrations are highly reliable, working 99.9% of the time and offering better uptime than most web services you may have used last week.</p>
+<p>The most common stumbling block for developers of all skill levels is rolling back a Django migration and prepping a pull request for review.</p>
+<p>I&rsquo;m not picky about pull requests or git commit history because I default to using the &ldquo;Squash and merge&rdquo; feature to turn all pull request commits into one merge commit. The merge commit tells me when, what, and why something changed if I need extra context.</p>
+<p>I am pickier about seeing &gt;2 database migrations for any app unless a data migration is involved. It&rsquo;s common to see 4 to 20 migrations when someone works on a database feature for a week. Most of the changes tend to be fiddly, where someone adds a field, renames the field, renames it again, and then starts using it, which prompts another <code>null=True</code> change followed by a <code>blank=True</code> migration.</p>
+<p>For small databases, none of this matters.</p>
+<p>For a database with 10s or 100s of millions of records, these small changes can cause minutes of downtime <em>per</em> migration, which amounts to a throwaway change. While there are ways to mitigate most migration downtime situations, that&rsquo;s different from my point today.</p>
+<p>I&rsquo;m also guilty of being fiddly with my Django model changes because I know I can delete and refactor them before requesting approval. The process I use is probably worth sharing because once every new client comes up.</p>
+<p>Let&rsquo;s assume I am working on <a href="https://jobs.django-news.com">Django News Jobs</a>, and I am looking over my pull request one last time before I ask someone to review it. That&rsquo;s when I noticed four migrations that could quickly be rebuilt into one, starting with my <code>0020*</code> migration in my <code>jobs</code> app.</p>
+<p>The rough steps that I would do are:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># step 1: see the state of our migrations</span>
+$ python -m manage showmigrations jobs
+jobs
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0001_initial
+ ...
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0019_alter_iowa_versus_unconn
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0020_alter_something_i_should_delete
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0021_alter_uconn_didnt_foul
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0022_alter_nevermind_uconn_cant_rebound
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0023_alter_iowa_beats_uconn
+ <span style="color:#f92672">[</span>X<span style="color:#f92672">]</span> 0024_alter_south_carolina_sunday_by_four
+
+<span style="color:#75715e"># step 2: rollback migrations to our last &#34;good&#34; state</span>
+$ python -m manage migrate jobs <span style="color:#ae81ff">0019</span>
+
+<span style="color:#75715e"># step 3: delete our new migrations</span>
+$ rm jobs/migrations/002*
+
+<span style="color:#75715e"># step 4: rebuild migrations </span>
+python -m manage makemigrations jobs 
+
+<span style="color:#75715e"># step 5: profit </span>
+python -m manage migrate jobs
+</code></pre></div><p>95% of the time, this is all I ever need to do.</p>
+<p>Occasionally, I check out another branch with conflicting migrations, and I&rsquo;ll get my <strong>local</strong> database in a weird state.</p>
+<p>In those cases, check out the <code>--fake</code> (&ldquo;Mark migrations as run without actually running them.&quot;) and <code>--prune</code> (&ldquo;Delete nonexistent migrations from the <code>django_migrations</code> table.&quot;) options. The fake and prune operations saved me several times when my <code>django_migrations</code> table was out of sync, and I knew that SQL tables were already altered.</p>
+<h2 id="what-not-squashmigrations">What not <code>squashmigrations</code>?</h2>
+<p>Excellent question. <a href="https://docs.djangoproject.com/en/5.0/topics/migrations/#migration-squashing">Squashing migrations</a> is wonderful if you care about keeping every or most of the operations each migration is doing. Most of the time, I do not, so I overlook it.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/04/05/syncing-django-waffle.html">⛳ Syncing Django Waffle feature flags</a></h1>
 		
 
@@ -51,7 +298,7 @@ WAFFLE_FEATURE_FLAGS <span style="color:#f92672">=</span> {
 <span style="color:#f92672">from</span> waffle.models <span style="color:#f92672">import</span> Flag
 
 
-[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span>()
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>():
     <span style="color:#75715e"># Create flags that don&#39;t exist</span>
     <span style="color:#66d9ef">for</span> name, note <span style="color:#f92672">in</span> settings<span style="color:#f92672">.</span>WAFFLE_FEATURE_FLAGS<span style="color:#f92672">.</span>items():
