@@ -24,6 +24,182 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/04/16/rustywind-and-precommit.html">🧰 Rustywind and pre-commit take the edge off of Tailwind CSS</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/16/rustywind-and-precommit.html" class="u-url"><time class="dt-published" datetime="2024-04-16 22:02:12 -0500">Apr 16, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Last year, I wrote this <a href="https://jefftriplett.com/2023/rustywind-pre-commit-hook/">TIL: Creating a Rustywind pre-commit hook</a>, which illustrates how to use the <a href="https://github.com/avencera/rustywind">Rustywind</a> CLI, which helps organize <a href="https://tailwindcss.com">Tailwind CSS</a> classes.</p>
+<p>Rustywind is a CSS class linting and formatting CLI tool that helps sort Tailwind CSS classes consistently and can help to de-duplicate them. If you struggle with duplicate classes or feel overwhelmed, Rustywind might be what you need.</p>
+<p>I prefer to install Rustywind as a <a href="https://pre-commit.com">pre-commit</a> hook to run on every git commit or when I run <code>pre-commit run</code>.</p>
+<p>This <code>.pre-commit-config.yaml</code> config will run the latest version of Rustywind every time pre-commit runs.</p>
+<pre tabindex="0"><code># .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: rustywind
+        name: rustywind Tailwind CSS class linter
+        language: node
+        additional_dependencies:
+          - rustywind@latest
+        entry: rustywind
+        args: [--write]
+        types_or: [html]
+</code></pre><p><code>pre-commit</code> is also an excellent way to manage your project&rsquo;s other linting and formatting tools. It can be used to ensure you always use the latest version of Rustywind and other tools.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/15/weeknotes-for-week.html">📓 Weeknotes for Week 15: April 8 to April 14</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/15/weeknotes-for-week.html" class="u-url"><time class="dt-published" datetime="2024-04-15 22:07:20 -0500">Apr 15, 2024</time></a>
+
+		<div class="e-content">
+			 <h2 id="family">Family</h2>
+<p>The mowing season has officially kicked off. I mowed our yard for the first time this year on the highest setting because our grass seemed to have grown a foot in a week in several places since I fertilized it last weekend. I also trimmed and removed leaves and branches from the yard. I was rewarded by a late afternoon migraine, but lucked out and only lasted for a few hours.</p>
+<p>I finally broke out my miter saw and portable workbench and made room for it in the garage. As I fixed one of the beams that held up the front porch, I realized the water damage was much worse than I thought. It was only held up by one beam, so I&rsquo;m glad I didn&rsquo;t put off fixing it any longer. The new support is now fixed, primed, and ready for some wood filler in the holes with a fresh coat of paint to be applied.</p>
+<p>My son was an excellent helper this weekend, spending most of Sunday following me around and helping. We also went to a Lawrence fixture Cotton&rsquo;s Hardware store to get some grass seed, windshield wiper fluid, and a replacement garden hose.</p>
+<p>My daughter discovered a new Batman cartoon and spent Sunday shouting, &ldquo;I am the night&rdquo; and &ldquo;I am Batman&rdquo; as well as any two-year-old can.</p>
+<h2 id="work">Work</h2>
+<p>It was a busy work week, juggling two client projects. We had a client demo and then a design handoff, in which we now have to turn a static PHP website into a fully working Django website.</p>
+<h2 id="community">Community</h2>
+<p><strong>Django Code of Conduct WG:</strong> I spent more time than expected this week helping with this. We were down to just me, and now we have at least three, soon four, and soon more people to help out.</p>
+<p><strong>Django Packages</strong> was accepted as a <a href="https://djangonaut.space">Djangonaut Space</a> project, so I spent time preparing for some June deadlines.</p>
+<p><strong>Trailhawks:</strong> I met with my running club&rsquo;s new President, and we discussed some changes to help get everything ready for the new 2024 racing season.</p>
+<p><strong>DEFNA:</strong> I walked the board through the conference budget, what to look for, and how to know how we are doing.</p>
+<p><a href="https://www.conferencechats.org">Conference Chats</a>: We had our monthly Wednesday night meetup.</p>
+<p><strong>Office Hours:</strong> I hosted a Friday session.</p>
+<h2 id="side-projects">Side projects</h2>
+<p><strong><a href="https://django-news.com">Django News Newsletter</a>:</strong> We shipped issue <a href="https://django-news.com/issues/227#start">#227</a>.</p>
+<p><a href="https://jobs.django-news.com">Django News Jobs</a>: I refactored some of my <a href="https://github.com/viewflow/django-fsm">django-fsm</a> states with a few different workflows to automate importing jobs via the aggregator.</p>
+<h2 id="writing">Writing</h2>
+<p>I wrote and published every day.</p>
+<p><a href="https://micro.webology.dev/2024/04/14/dear-tech-companies.html">2024-04-14</a>: <strong>🧱 Dear Tech Companies: Two-year-old edition</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/13/how-often-do.html">2024-04-13</a>: <strong>🙋 How often do you use Django&rsquo;s startproject and startapp?</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/12/office-hours-on.html">2024-04-12</a>: <strong>📅 Office Hours on April 19th</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/11/on-leaving-pinboard.html">2024-04-11</a>: <strong>📌 On leaving Pinboard, aka Raindrop, is better 🤷</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/10/production-bugs-happen.html">2024-04-10</a>: <strong>🐛 Production bugs happen to everyone</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/09/copy-all-urls.html">2024-04-09</a>: <strong>📋 Copy All Urls browser extension</strong> </p>
+<p><a href="https://micro.webology.dev/2024/04/08/docker-and-orbstack.html">2024-04-08</a>: <strong>🐳 Docker and OrbStack disk cleanup notes</strong> </p>
+<h2 id="me-time">&ldquo;Me&rdquo; time</h2>
+<p>I spent a night deep diving on Simon&rsquo;s <a href="https://simonwillison.net/2024/Apr/8/files-to-prompt/">Building files-to-prompt entirely using Claude 3 Opus</a> article, which meant registering a paid Claude account, paying for API access, and spending $0.50 to try everything out.</p>
+<p>The results were better than expected, but the AI bar is still pretty low. It helped write tests and some light refactors, but it&rsquo;s mostly a copy-and-paste-to-refactor tool vs. a write-out working code tool.</p>
+<h2 id="entertainment">Entertainment</h2>
+<p>📺 <a href="https://trakt.tv/shows/fallout">Fallout</a> is excellent and worthy of all the praise.</p>
+<p>📺 <a href="https://trakt.tv/shows/x-men-97">X-Men &lsquo;97</a> is a nostalgic &rsquo;90s throwback cartoon. If I hadn&rsquo;t watched this series as a teenager, I&rsquo;m not sure I would have liked it as an adult.</p>
+<p>🎮 <a href="https://www.backloggd.com/games/double-dragon-gaiden-rise-of-the-dragons-sacred-reunion/">Double Dragon Gaiden: Rise of the Dragons - Sacred Reunion</a>: My son and I picked up the DLC and started playing this weekend. The game is fun but only has five levels, which is a bit short. We can beat it in one session, which is nice, but the DLC improves on the original with a survival mode, which we liked a lot.</p>
+<h2 id="next-week">Next week</h2>
+<p>More work. More house projects. More office hours. More community projects. Figure out my PyCon US plans.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/14/dear-tech-companies.html">🧱 Dear Tech Companies: Two-year-old edition</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/14/dear-tech-companies.html" class="u-url"><time class="dt-published" datetime="2024-04-14 08:29:34 -0500">Apr 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Dear Tech Companies,</p>
+<p>There is never a good time to interrupt a two-year-old to ask her for a one to five-star review while she&rsquo;s playing the LEGO® DUPLO® WORLD game.</p>
+<p>I understand that app review ratings are a vital metric impacting your rank in App Stores. While it pains me to write this, if your app is good and my children like it, we parents will rate it on our own time instead of being forced to so our children can return to their firetruck game because an App Store review popup prevents them from playing. I assume no one on the LEGO app store team has children to understand the pain, confusion, and agony this brings.</p>
+<p>It&rsquo;s deeply frustrating to encounter in-game purchases in a game designed for TWO TO FIVE-YEAR-OLDS. Fortunately, we&rsquo;re on the Apple One / Apple Arcade plan, which allows us to bypass such unnecessary features.</p>
+<p>I hope that you can learn from the mistakes made in the LEGO® DUPLO® WORLD game. This way, you can avoid frustrated parents leaving you with low app store ratings in the heat of the moment.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/13/how-often-do.html">🙋 How often do you use Django&#39;s startproject and startapp?</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/13/how-often-do.html" class="u-url"><time class="dt-published" datetime="2024-04-13 22:00:56 -0500">Apr 13, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I saw this <a href="https://mastodon.social/@nanorepublica@indiehackers.social/112226584167045805">Mastodon post</a> last week and thought it worth sharing.</p>
+<!-- raw HTML omitted -->
+<blockquote>
+<p>Weekend <a href="https://mastodon.social/tags/django">#django</a> question/poll</p>
+<p>How often do you use <code>startproject</code> &amp; <code>startapp</code> or something else?</p>
+</blockquote>
+<p>These commands vary by the client or project I&rsquo;m working on.</p>
+<p>I use <code>startproject</code> one to two times a month.</p>
+<p>I use <code>startapp</code> one to a dozen times a week.</p>
+<p>I have used <a href="https://github.com/copier-org/copier">copier</a> and <a href="https://github.com/cookiecutter/cookiecutter">cookiecutter</a>, and both have their place, but I only use them occasionally.</p>
+<p>I create more new projects and apps than the average developer because I&rsquo;m curious and spin up projects quickly to try out ideas. I prefer this over every experiment being part of a mono project because I will throw most of these away.</p>
+<blockquote>
+<p>and how many years since you started using django?</p>
+</blockquote>
+<p>I have been using Django since 2006.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/12/office-hours-on.html">📅 Office Hours on April 19th</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/12/office-hours-on.html" class="u-url"><time class="dt-published" datetime="2024-04-12 22:27:36 -0500">Apr 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📅 Next week, I&rsquo;m hosting Office Hours on Friday, April 19th, 2024, from 2 PM to 4:30 PM Central Time (US and Canada). If you need to convert it to your local time zone, use this <a href="https://time.is/compare/200pm_19_April_2024_in_CT">handy link</a>.</p>
+<p>ℹ️ During our session, we will discuss our ongoing projects, catch up with one another, and work together to wrap up our week on a productive note.</p>
+<p>🙏 As always, everyone is welcome to join, whether you&rsquo;re a regular attendee or joining for the first time.</p>
+<p>✅ If you need any additional details, feel free to send me a message or check out the gist from our previous sessions, where you&rsquo;ll find the Zoom link ⚠️</p>
+<p>I look forward to seeing everyone.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/04/11/fallout-everybody-else.html" class="u-url"><time class="dt-published" datetime="2024-04-11 20:49:27 -0500">Apr 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Fallout - Everybody Else Is Doing It, So Why Can&rsquo;t We? ☢️</p>
+<p><a href="https://trakt.tv/shows/fallout">trakt.tv/shows/fal&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/11/on-leaving-pinboard.html">📌 On leaving Pinboard, aka Raindrop, is better 🤷</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/11/on-leaving-pinboard.html" class="u-url"><time class="dt-published" datetime="2024-04-11 20:40:33 -0500">Apr 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A friend asked me which bookmarking service I switched to after I moved on from the Pinboard bookmark service.</p>
+<p>tl;dr I use <a href="https://raindrop.io">Raindrop</a>. The product and API works wonderfully. 👍</p>
+<p>A good bookmark service should:</p>
+<ul>
+<li>be easy to add a bookmark</li>
+<li>have a good browser extension or have a good bookmarklet</li>
+<li>be the best personal search engine</li>
+<li>be a good research tool for taking notes and allowing tagging</li>
+<li>be reliable</li>
+<li>maintain reasonable uptime</li>
+</ul>
+<p>Today, I realized I had been on Raindrop&rsquo;s FREE plan for over a year, so I fixed that and upgraded to a PRO account.</p>
+<p>That&rsquo;s a good sign since I have ~40k and over two decades of bookmarks, and they never pressured me to upgrade or put limits on my account in any frustrating way.</p>
+<h2 id="why-i-gave-up-on-pinboard">Why I gave up on Pinboard</h2>
+<p>I could write thousands of words about how frustrating being a paid user was, but I&rsquo;ll sum it up as running Pinboard wasn&rsquo;t a priority for Pinboard&rsquo;s founder, and it painfully showed. 👎</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 
 		<a href="https://micro.webology.dev/2024/04/10/xmen-watching-the.html" class="u-url"><time class="dt-published" datetime="2024-04-10 23:18:24 -0500">Apr 10, 2024</time></a>
 
