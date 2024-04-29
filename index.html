@@ -24,13 +24,286 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/04/28/djangocon-us-talks.html">💚 DjangoCon US Talks I&#39;d Like to See 2024 Edition</a></h1>
+		
 
-		<a href="https://micro.webology.dev/2024/04/22/quick-update-tonight.html" class="u-url"><time class="dt-published" datetime="2024-04-22 20:52:55 -0500">Apr 22, 2024</time></a>
+		<a href="https://micro.webology.dev/2024/04/28/djangocon-us-talks.html" class="u-url"><time class="dt-published" datetime="2024-04-28 19:45:13 -0500">Apr 28, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Continuing in my tradition of <a href="https://jefftriplett.com/2023/djangocon-us-talks-i-d-like-to-see-2023-edition/">2023</a>, <a href="https://jefftriplett.com/2022/djangocon-us-talks-i-d-like-to-see-2022-edition/">2022</a>, <a href="https://jefftriplett.com/2018/djangocon-us-talks-i-d-like-to-see-2018-edition/">2018</a>, <a href="https://jefftriplett.com/2017/django-talks-id-like-to-see/">2017</a>, and <a href="https://jefftriplett.com/2016/djangocon-us-talks-id-like-to-see/">2016</a> &ldquo;DjangoCon US Talks I&rsquo;d like to see&rdquo; annual posts, here is my update for 2024.</p>
+<p>This year&rsquo;s <em>updated</em> talk and tutorial deadline is <a href="https://time.is/1200PM_29_Apr_2024_in_New_York?DjangoCon_US_2024_CFP_closes">April 29, 2024, at 12 PM EDT</a>, but check the official <a href="https://2024.djangocon.us/speaking/">speaking page</a> for updates and <a href="https://pretalx.com/djangocon-us-2024/cfp">submit your proposal.</a> </p>
+<p>Before you read mine, I suggest you check out <a href="https://katherinemichel.github.io/portfolio/djangocon-us-2024-topics-inspiration-list.html">Kati Michel&rsquo;s</a> and <a href="https://winstel.dev/2024/03/01/talk-ideas-for-dcus-24/">Drew Winstel&rsquo;s</a> list of talk ideas too.</p>
+<h2 id="modern-django">Modern Django</h2>
+<p>Three or four years ago, our Django stack was optimized to leverage the Django ORM to tie together a mix of authentication and REST API using the Django REST Framework. The front end was entirely buried by Javascript, which printed HTML into your browser, and the HTML was entirely hidden away. What used to take a developer hours and days now took weeks because there were so many layers and abstractions to wade through.</p>
+<p>Then it all started to change a few years ago, and we learned that we don&rsquo;t need the additional weeks of development time to use JS/JSON layers for which we may never build that iOS/Android app. We don&rsquo;t need React for contact us forms, and 90% of our web tasks could be built in a day.</p>
+<p>The theme I&rsquo;d like to see more of this year is doing more with HTML instead of hiding it behind layers of Javascript.</p>
+<p>I want to see lots of talks about technologies like HTMx and frameworks like Tailwind CSS, which are firmly centered inside HTML, instead of trying to avoid using HTML.</p>
+<h2 id="the-two-non-python-languages-we-are-starting-to-talk-about">The two non-Python languages we are starting to talk about</h2>
+<p>Rust and WASM are starting to change everything. How do they fit in with Django and Python?</p>
+<h2 id="theme-rust">Theme: Rust</h2>
+<p>The Rust language is shaping the landscape of Python productivity in ways that none of us could have predicted. Tools written in Rust are significantly faster and are gaining steam. </p>
+<ul>
+<li>
+<p>What can a Django developer take from Rust? </p>
+</li>
+<li>
+<p>How do I develop a package for Django and Python that uses Rust? </p>
+</li>
+<li>
+<p>How libraries like PyDantic are speeding up development (Django Ninja uses it)</p>
+</li>
+</ul>
+<h2 id="alwaysniceto-have-talks">Always nice to have talks</h2>
+<ul>
+<li>
+<p>What&rsquo;s new in Django 5.x? </p>
+</li>
+<li>
+<p>What&rsquo;s new in Python 3.13? </p>
+</li>
+<li>
+<p>What&rsquo;s new in Wagtail CMS and Django CMS? </p>
+</li>
+<li>
+<p>Where do we want the DSF to go? </p>
+</li>
+<li>
+<p>How to contribute to Django or third party projects</p>
+</li>
+</ul>
+<h2 id="embracing-html-and-lightweight-front-end-frameworks">Embracing HTML and lightweight front-end frameworks</h2>
+<p>Last year, I predicted it would be the year of &ldquo;you probably don&rsquo;t need JavaScript,&rdquo; and I still feel good about that. We saw <a href="https://htmx.org">HTMx</a> take off, but I think Django is still underserved and could benefit from more talks: </p>
+<ul>
+<li>Django 5 added more granular template/form styling , and we could use a talk that deep dives </li>
+<li>Using Django forms with htmx</li>
+<li>Using search with htmx</li>
+<li>Whatever cool things you are doing that I didn&rsquo;t mention here</li>
+</ul>
+<h2 id="panel-ideas">Panel ideas</h2>
+<ul>
+<li>
+<p>Django Fellows panel</p>
+</li>
+<li>
+<p>Django content creators' panel</p>
+</li>
+<li>
+<p>Django apps and community - It would be nice to hear from the more significant apps and community projects.</p>
+</li>
+</ul>
+<h2 id="wagtail-cms">Wagtail CMS</h2>
+<ul>
+<li>How do I migrate from WordPress to Wagtail CMS?</li>
+<li>How to properly test with Wagtail CMS for me, because I struggle with it</li>
+</ul>
+<h2 id="talks-i-dont-want-to-see">Talks I don&rsquo;t want to see</h2>
+<p>I find myself at a weird crossroads because I have never discouraged certain topics, but we need to talk more openly about what is bad for our industry and the world instead of avoiding it. Otherwise, we are left with dead air, and people assume we are all on the same page.</p>
+<p>To kick us off, there are talks and topics that I do not want to see:</p>
+<ul>
+<li>
+<p>BAD AI talks and ones that spread more FUD into the community</p>
+</li>
+<li>
+<p>crypto talks</p>
+</li>
+<li>
+<p>why technology sucks</p>
+</li>
+<li>
+<p>proposing a talk because you dislike or even hate something</p>
+</li>
+<li>
+<p>bashing other communities</p>
+</li>
+<li>
+<p>bashing our communities</p>
+</li>
+<li>
+<p>lightning talks disguised as questions (not so much a talk idea, but this has been on my mind for a while)</p>
+</li>
+</ul>
+<p>So please, <strong>none</strong> of these: </p>
+<ul>
+<li>
+<p>The future of Django depends on AI</p>
+</li>
+<li>
+<p>Why tech needs AI</p>
+</li>
+<li>
+<p>Crypto talks</p>
+</li>
+<li>
+<p>Your product unless you are sponsoring.</p>
+</li>
+</ul>
+<h2 id="good-luck">Good luck</h2>
+<p>You have less than a day, but between my list, <a href="https://katherinemichel.github.io/portfolio/djangocon-us-2024-topics-inspiration-list.html">Kati&rsquo;s list</a>, and <a href="https://winstel.dev/2024/03/01/talk-ideas-for-dcus-24/">Drew&rsquo;s list</a> you have no excuses for saying you didn&rsquo;t know what to talk about at DjangoCon US this year.</p>
+<p>Good luck! </p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/27/drop-google-chrome.html">🔥 Drop Google Chrome and try out Vivaldi for a week, I dare you </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/27/drop-google-chrome.html" class="u-url"><time class="dt-published" datetime="2024-04-27 09:33:47 -0500">Apr 27, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Last year, I switched to the <a href="https://vivaldi.com">Vivaldi</a> web browser because I read a few peer reviews that pointed out that Vivaldi is a better Google Chrome web browser than Chrome.</p>
+<p>This week, Vivaldi rolled out a <a href="https://help.vivaldi.com/desktop/tabs/memory-saver/">new memory-saver feature</a> that I&rsquo;m excited to try out. It lets <em>you</em> decide how long to keep a tab in memory before hibernating and reclaiming the memory dedicated to the tab.</p>
+<p>Vivaldi&rsquo;s memory and CPU usage are already night and day better than Google Chrome. For instance, I can have one Chrome window with three tabs open ironically for Google Gmail, Google Calendar, and Google Docs, which eat up more resources than 2 to 4 Vivaldi windows open with countless tabs.</p>
+<p>As it turns out, all that tracking and spyware eats up a ton of RAM and CPU. Who knew? 🤷</p>
+<p>All of my Chrome Extensions work on Vivaldi using the Chrome Store except for my custom Django News &ldquo;newtab&rdquo; extension that I wrote. I suspect it&rsquo;s me, and I probably need 15 minutes to troubleshoot it.</p>
+<p>Instead, I&rsquo;m nudging you to drop Google Chrome and try out <a href="https://vivaldi.com">Vivaldi</a> because several of my Google friends were fired this week despite <a href="https://www.forbes.com/sites/dereksaul/2024/04/25/google-soars-toward-record-2-trillion-valuation-on-earnings/?sh=536f86313c4d">the company never being more profitable</a>.</p>
+<p>ChatGPT told me that Alphabet/Google are worth enough to give everyone on Earth $253.16, which feels like a fair tradeoff. I&rsquo;d like mine to be a check because I do not trust Google with my bank details, nor should you.</p>
+<h2 id="what-i-dont-like-about-vivaldi">What I don&rsquo;t like about Vivaldi</h2>
+<p>Vivaldi is outstanding and could be better.</p>
+<p>The first thing you&rsquo;ll want to do is access the &ldquo;Settings &raquo; Address Bar &raquo; Drop-Down Menu Priority&rdquo; and uncheck the &ldquo;Direct Match&rdquo; option.</p>
+<p>The Direct Match option tends to match from &ldquo;Brand websites,&rdquo; which is one of the ways Vivaldi makes money, but it&rsquo;s not the only way. When Direct Match is checked, I get recommendations for Macy&rsquo;s instead of Mastodon until I discovered how to turn it off.</p>
+<p>Check out <a href="https://vivaldi.com/blog/vivaldi-business-model/">What&rsquo;s Vivaldi&rsquo;s business model?</a> to better understand how they work.</p>
+<p>I would love to see Vivaldi let me PAY THEM MONEY annually for a solid web browser that aligns with my interests. Until then, I&rsquo;m OK with them getting an affiliate cut from eBay or Amazon when I use their bookmarks.</p>
+<h2 id="why-not-firefox">Why not Firefox?</h2>
+<p>I hear this often, and I won&rsquo;t talk anyone down from their favorite browser unless it&rsquo;s Chrome or whatever Microsoft calls their latest hobby browser this decade. 🤷</p>
+<p>Firefox doesn&rsquo;t work well for me, and I say this because I have used it for over a decade. I also don&rsquo;t trust their parent company because of where their money comes from and the various mistakes they <a href="https://krebsonsecurity.com/2024/03/mozilla-drops-onerep-after-ceo-admits-to-running-people-search-networks/">continue to make</a>.</p>
+<p>If Firefox sparks joy, I encourage you to use it. I continue to get &ldquo;the emperor has no clothes&rdquo; vibes from their company, even when I want to like their products.</p>
+<h2 id="share-your-thoughts">Share your thoughts</h2>
+<p>If you have thoughts, I&rsquo;m on <a href="https://mastodon.social/@webology/112343674364725570">Mastodon</a>, and I&rsquo;d love to know what config options worked best for you.</p>
+<!-- raw HTML omitted -->
+<p>#Enshittification</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/26/on-trackpads-i.html">🖱️ On Trackballs. I need one. 🪤</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/26/on-trackpads-i.html" class="u-url"><time class="dt-published" datetime="2024-04-26 20:12:50 -0500">Apr 26, 2024</time></a>
+
+		<div class="e-content">
+			 <p>At night, when I&rsquo;m couch computing after everyone goes to bed, I use one of these XL adjustable lap desks with my MacBook Pro (2019 model) and a cheap, wired external mouse that I love using. <a href="https://camelcamelcamel.com/product/B0B4F96VCD">camelcamelcamel.com/product/B&hellip;</a> This desk is wonderful, and I highly recommend it. 😘</p>
+<p>However, while it&rsquo;s the perfect height/location for typing, the built-in trackpad is more problematic to use to the point I don&rsquo;t use it.</p>
+<p>So, with these factors in mind, I&rsquo;d like to know if anyone has an external Trackball they want that would pair well with this setup. I&rsquo;m open to all suggestions and eager to hear your experiences. </p>
+<p>Historically, I have had fantastic luck with Logitech keyboards and various products over the years, but I&rsquo;m a little put off by their recent &ldquo;Put an AI on It&rdquo; trend. So I&rsquo;m not against it, but I&rsquo;m not excited about it. </p>
+<p>Do you have any recommendations for a good trackball that&rsquo;s not Apple&rsquo;s Magic Trackpad?</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/25/on-open-sourcing.html">🖖 On Open Sourcing DOS 4</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/25/on-open-sourcing.html" class="u-url"><time class="dt-published" datetime="2024-04-25 17:05:30 -0500">Apr 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My first PC as a kid ran MS-DOS 4, so seeing today&rsquo;s news on <a href="https://www.hanselman.com/blog/open-sourcing-dos-4">Open Sourcing DOS 4</a> takes me back.</p>
+<blockquote>
+<p>Today, in partnership with IBM and in the spirit of open innovation, we&rsquo;re releasing the source code to MS-DOS 4.00 under the MIT license. There&rsquo;s a somewhat complex and fascinating history behind the 4.0 versions of DOS, as Microsoft partnered with IBM for portions of the code but also created a branch of DOS called Multitasking DOS that did not see a wide release.</p>
+</blockquote>
+<p>I played with LOGO and Applesoft BASIC on my grade school&rsquo;s Apple IIe, but <a href="https://en.wikipedia.org/wiki/GW-BASIC">GW-BASIC</a> shipped with MS-DOS 4 and was the first programming language that I knew inside and out.</p>
+<p>I struggled at times because book and magazine examples were written for BASICA, which mostly worked, but it sometimes took some extra fiddling.</p>
+<p>MS-DOS 5.0 exposed me to <a href="https://en.wikipedia.org/wiki/QBasic">QBasic</a>, which was the first programming language I worked with that had an <a href="https://en.wikipedia.org/wiki/Integrated_development_environment">IDE</a>.</p>
+<p>I fondly remember writing code on that old 386 and playing DOS games. I remember thinking there would eventually be no limits between the code and what I saw was possible on Star Trek: The Next Generation just a few years later.</p>
+<p>Looking back, we aren&rsquo;t there yet, but we are closer to the Star Trek computer and Holodeck than to the technology I grew up in.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/24/office-hours-on.html">📅 Office Hours on April 26th</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/24/office-hours-on.html" class="u-url"><time class="dt-published" datetime="2024-04-24 19:52:52 -0500">Apr 24, 2024</time></a>
+
+		<div class="e-content">
+			 <p><strong>Please note:</strong> I moved the time up 30 minutes.</p>
+<p>📅 I&rsquo;m hosting Office Hours this Friday, April 26th, 2024, from <em>2:00 PM to 4:30 PM Central Time</em> (US and Canada). If you need to convert it to your local time zone, use this <a href="https://time.is/0200PM_26_Apr_2024_in_CT?Jeff%27s_Office_Hours">handy link</a>.</p>
+<p>ℹ️ During our session, we will discuss our ongoing projects, catch up with one another, and work together to wrap up our week on a productive note.</p>
+<p>🙏 As always, everyone is welcome to join, whether you&rsquo;re a regular attendee or joining for the first time.</p>
+<p>✅ If you need any additional details, feel free to send me a message or check out the gist from our previous sessions, where you&rsquo;ll find the Zoom link ⚠️</p>
+<p>I look forward to seeing everyone.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/23/github-actions-cleaning.html">🐳 GitHub Actions Cleaning up old Docker container images</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/23/github-actions-cleaning.html" class="u-url"><time class="dt-published" datetime="2024-04-23 22:46:16 -0500">Apr 23, 2024</time></a>
+
+		<div class="e-content">
+			 <p>If you use GitHub Actions to build and deploy Docker container images, you quickly learn that deleting old container images you no longer need is a huge pain. I don&rsquo;t know why GitHub doesn&rsquo;t make this easier, but they have a reusable workflow we can use to help prune and clean up old container images.</p>
+<p>The <a href="https://github.com/actions/delete-package-versions">delete-package-versions</a> will let you set a number to only keep the last x-known good images, with some other valuable options like deleting untagged container images.</p>
+<p>I prefer to write one <a href="https://docs.github.com/en/actions/using-workflows/reusing-workflows">reusable workflow</a>, which I can call from my standard CI build and deploy pipeline, along with a workflow_dispatch action we can call whenever we want.</p>
+<p>This workflow is a mouthful but wraps the <code>delete-package-versions</code> action and gives us a few configurable options to pass. Having a default value on <code>min_versions_to_keep</code> is nice because it is a default when calling this workflow from other locations.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#75715e"># .github/workflows/delete-container-versions.yml</span>
+<span style="color:#f92672">name</span>: <span style="color:#ae81ff">Delete Untagged Container Versions</span>
+
+<span style="color:#f92672">on</span>:
+  <span style="color:#f92672">workflow_call</span>:
+    <span style="color:#f92672">inputs</span>:
+      <span style="color:#f92672">package_name</span>:
+        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+      <span style="color:#f92672">package_type</span>:
+        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">string</span>
+      <span style="color:#f92672">min_versions_to_keep</span>:
+        <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+        <span style="color:#f92672">type</span>: <span style="color:#ae81ff">number</span>
+        <span style="color:#f92672">default</span>: <span style="color:#ae81ff">30</span>
+
+<span style="color:#f92672">jobs</span>:
+  <span style="color:#f92672">delete_versions</span>:
+    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+    <span style="color:#f92672">steps</span>:
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Delete all untagged container versions</span>
+        <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/delete-package-versions@v5</span>
+        <span style="color:#f92672">with</span>:
+          <span style="color:#f92672">delete-only-untagged-versions</span>: <span style="color:#e6db74">&#39;false&#39;</span>
+          <span style="color:#f92672">min-versions-to-keep</span>: <span style="color:#ae81ff">${{ inputs.min_versions_to_keep }}</span>
+          <span style="color:#f92672">package-name</span>: <span style="color:#ae81ff">${{ inputs.package_name }}</span>
+          <span style="color:#f92672">package-type</span>: <span style="color:#ae81ff">${{ inputs.package_type }}</span>
+</code></pre></div><p>Our <code>cleanup.yml</code> is set up as a workflow_dispatch, allowing us to call our <code>delete-container-versions</code> job whenever we want.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#75715e"># .github/workflows/cleanup.yml</span>
+<span style="color:#f92672">name</span>: <span style="color:#ae81ff">Delete Untagged Container Versions</span>
+
+<span style="color:#f92672">on</span>:
+  <span style="color:#f92672">workflow_dispatch</span>:
+
+<span style="color:#f92672">jobs</span>:
+  <span style="color:#f92672">delete-container-versions</span>:
+    <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">.github/workflows/delete-container-versions.yml</span>
+    <span style="color:#f92672">with</span>:
+      <span style="color:#f92672">package_name</span>: <span style="color:#e6db74">&#39;your-docker-container-package-name&#39;</span>
+      <span style="color:#f92672">package_type</span>: <span style="color:#e6db74">&#39;container&#39;</span>
+</code></pre></div><p>I&rsquo;m embarrassed to admit I had several repos with over 500 or more Docker container images. Deleting the oldest Docker images took less than a minute once I had the button set up.</p>
+<p>After successfully building and pushing a new container image to our registry, I also include this job as the last step. This will future-proof our build and deployment workflow so that it never gets out of control again.</p>
+<p>Also, I can count the number of times that I have needed to revert to one image on one hand and have never reverted to an image more than that. So saving the last 10, 20, or 30 images is peace of mind.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/04/22/quick-django-news.html">📰 Quick Django News #228/#229 update tonight</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/04/22/quick-django-news.html" class="u-url"><time class="dt-published" datetime="2024-04-22 20:56:05 -0500">Apr 22, 2024</time></a>
 
 		<div class="e-content">
 			 <p>Quick update tonight since I&rsquo;m tired, but I had to re-do/re-send <a href="https://django-news.com/issues/229#start">Django News #228</a> because our newsletter provider failed, and feel free to read the rest.</p>
 <p>Then I typoed DjangoCon US&rsquo;s <a href="https://2024.djangocon.us/news/cfp-last-call/">WEDNESDAY CFP deadline</a>, which I fixed online, but I can&rsquo;t fix what I already sent out.</p>
-<p>I&rsquo;m quitting early tonight.</p>
+<p>I’m quitting early tonight.</p>
 
 		</div>
 	  </div>
