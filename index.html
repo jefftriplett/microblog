@@ -24,6 +24,132 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/06/28/a-just-recipe.html">🐘 A Just recipe to back and restore a Postgres database</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/06/28/a-just-recipe.html" class="u-url"><time class="dt-published" datetime="2024-06-28 23:58:54 -0500">Jun 28, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have used this <a href="https://github.com/casey/just">casey/just</a> recipe to help backup and restore my Postgres databases from my Docker containers.</p>
+<p>I work with a few machines, and it&rsquo;s an excellent way to create a database dump from one machine and then restore it from another machine. I sometimes use it to test data migrations because restoring a database dump takes a few seconds.</p>
+<p>I have been migrating from Docker to <a href="https://orbstack.dev">OrbStack</a>, and the only real pain point is moving data from one volume to another. I sometimes need to switch between the two, so I have recipes set to back up and restore my database from one context to another.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#75715e"># justfile</span>
+
+<span style="color:#ae81ff">set DATABASE_URL := env_var_or_default(&#39;DATABASE_URL&#39;, &#39;postgres://postgres@db/postgres&#39;)</span>
+
+
+<span style="color:#75715e"># dump database to file</span>
+<span style="color:#f92672">@pg_dump file=&#39;db.dump&#39;</span>:
+    <span style="color:#ae81ff">docker compose run \</span>
+        --<span style="color:#66d9ef">no</span>-<span style="color:#ae81ff">deps \</span>
+        --<span style="color:#ae81ff">rm \</span>
+        <span style="color:#ae81ff">db \</span>
+        <span style="color:#ae81ff">pg_dump \</span>
+            --<span style="color:#ae81ff">dbname &#34;{{ DATABASE_URL }}&#34; \</span>
+            --<span style="color:#ae81ff">file /code/{{ file }} \</span>
+            --<span style="color:#ae81ff">format=c \</span>
+            --<span style="color:#ae81ff">verbose</span>
+
+<span style="color:#75715e"># restore database dump from file</span>
+<span style="color:#f92672">@pg_restore file=&#39;db.dump&#39;</span>:
+    <span style="color:#ae81ff">docker compose run \</span>
+        --<span style="color:#66d9ef">no</span>-<span style="color:#ae81ff">deps \</span>
+        --<span style="color:#ae81ff">rm \</span>
+        <span style="color:#ae81ff">db \</span>
+        <span style="color:#ae81ff">pg_restore \</span>
+            --<span style="color:#ae81ff">clean \</span>
+            --<span style="color:#ae81ff">dbname &#34;{{ DATABASE_URL }}&#34; \</span>
+            --<span style="color:#ae81ff">if-exists \</span>
+            --<span style="color:#66d9ef">no</span>-<span style="color:#ae81ff">owner \</span>
+            --<span style="color:#ae81ff">verbose \</span>
+            <span style="color:#ae81ff">/code/{{ file }}</span>
+</code></pre></div><p>Shoutout to <a href="https://social.joshthomas.dev/@josh">Josh Thomas</a> for help on this recipe since we both iterated on this for several projects.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/06/27/office-hours-for.html">📅 Office Hours for June 28th</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/06/27/office-hours-for.html" class="u-url"><time class="dt-published" datetime="2024-06-27 18:15:01 -0500">Jun 27, 2024</time></a>
+
+		<div class="e-content">
+			 <p>It&rsquo;s been a week, but I&rsquo;m hosting Office Hours this <a href="https://time.is/0230PM_28_June_2024_in_CT?Jeff%27s_Office_Hours">Friday at 2:30 pm</a>.</p>
+<p>I was on the fence because I was out Wednesday and Thursday for a funeral while juggling other family/life events.
+I was also looking forward to it, and some weekend work is unavoidable, no matter how productive my Friday is. So let&rsquo;s do this!</p>
+<p>This will be our last Office Hours until <a href="https://time.is/0230PM_12_July_2024_in_CT?Jeff%27s_Office_Hours">July 12th</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/06/25/managing-docker-compose.html">🐳 Managing Docker Compose Profiles with Just: Switching Between Default and Celery Configurations</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/06/25/managing-docker-compose.html" class="u-url"><time class="dt-published" datetime="2024-06-25 22:10:38 -0500">Jun 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>For a recent client project, we wanted to toggle between various Docker Compose profiles to run the project with or without Celery.</p>
+<p>Using Compose&rsquo;s <code>profiles</code> option, we can label services that we may not want to start by default a label. This might look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">services</span>:
+
+  <span style="color:#f92672">beat</span>:
+    <span style="color:#f92672">profiles</span>:
+      - <span style="color:#ae81ff">celery</span>
+    <span style="color:#ae81ff">...</span>
+
+  <span style="color:#f92672">celery</span>:
+    <span style="color:#f92672">profiles</span>:
+      - <span style="color:#ae81ff">celery</span>
+    <span style="color:#ae81ff">...</span>
+
+
+  <span style="color:#f92672">web</span>:
+    <span style="color:#ae81ff">...</span>
+</code></pre></div><p>We use a <a href="https://github.com/casey/just">casey/just</a> justfile for some of our common workflows, and I realized I could set a <code>COMPOSE_PROFILES</code> environment variable to switch between running a &ldquo;default&rdquo; profile and a &ldquo;celery&rdquo; profile.</p>
+<p>Using just&rsquo;s <a href="https://github.com/casey/just?tab=readme-ov-file#environment-variables"><code>env_var_or_default</code></a> feature, we can set both an ENV variable and a default value to fall back on for our project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># justfie </span>
+
+export COMPOSE_PROFILES :<span style="color:#f92672">=</span> env_var_or_default<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;COMPOSE_PROFILES&#39;</span>, <span style="color:#e6db74">&#39;default&#39;</span><span style="color:#f92672">)</span>
+
+@up *ARGS:
+    docker compose up <span style="color:#f92672">{{</span> ARGS <span style="color:#f92672">}}</span>
+
+<span style="color:#75715e"># ... the rest of your justfile...</span>
+
+</code></pre></div><p>To start our service <em>without Celery</em>, I would run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ just up
+</code></pre></div><p>`
+To start our service <em>with Celery</em>, I would run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export COMPOSE_PROFILES<span style="color:#f92672">=</span>celery
+$ just up
+</code></pre></div><p>Our <code>COMPOSE_PROFILES</code> environment variable will get passed into our <code>just up</code> recipe, and if we don&rsquo;t include one, it will have a default value of <code>default</code>, which will skip running the Celery service.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/06/24/mastodon-bookmark-exporter.html">🚜 Mastodon Bookmark exporter to Markdown/Frontmatter</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/06/24/mastodon-bookmark-exporter.html" class="u-url"><time class="dt-published" datetime="2024-06-24 23:21:16 -0500">Jun 24, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I wrote a Mastodon Bookmark exporter tool over the weekend and decided to polish it up and release it tonight.</p>
+<p>I wrote the tool to help me sort out Mastodon posts that I might bookmark to follow up on or write about. I bookmark posts on the go or even from bed, and when I have time, I will pull them back up.</p>
+<p>The Mastodon Bookmark exporter tool reads your Mastodon bookmarks and exports the latest posts to a markdown/frontmatter file.</p>
+<p>I&rsquo;m releasing the project as a <a href="https://gist.github.com/jefftriplett/623039d2fd09b959eadde6a496ade47a">gist</a> under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial License</a> for personal reasons. If you have licensing questions, contact me directly or through <a href="https://www.revsys.com">www.revsys.com</a> for commercial inquiries, and we can work something out.</p>
+<!-- raw HTML omitted -->
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/06/23/weeknotes-for-week.html">Weeknotes for Week 25: June 17 to 23</a></h1>
 		
 
