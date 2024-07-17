@@ -24,6 +24,185 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/07/16/my-thoughts-on.html">🗳️ My thoughts on the PSF Election results</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/16/my-thoughts-on.html" class="u-url"><time class="dt-published" datetime="2024-07-16 22:37:50 -0500">Jul 16, 2024</time></a>
+
+		<div class="e-content">
+			 <p>A few weeks ago, I wrote about this year&rsquo;s PSF Election, three <a href="https://micro.webology.dev/2024/07/02/on-the-psf.html">proposed bylaws changes</a>, and how I intended to vote. I&rsquo;m happy that the membership overwhelmingly approved all three proposed bylaw changes. Here is this <a href="https://opavote.com/results/5004101476679680">year&rsquo;s results</a>.</p>
+<h2 id="merging-contributing-and-managing-member-classes">Merging Contributing and Managing member classes</h2>
+<p>This change is a good step toward consolidating two membership classes and a commitment to acknowledging that all community contributions are important, not just code contributions.</p>
+<h2 id="simplifying-the-voter-affirmation-process-by-treating-past-voting-activity-as-intent-to-continue-voting">Simplifying the voter affirmation process by treating past voting activity as intent to continue voting</h2>
+<p>If you voted in last year&rsquo;s election, there are fewer barriers to voting in the next election. With a 76% turnout this year, I suspect next year will still yield over a 50% voter turnout, and I suspect turnout will continue to be high.</p>
+<h2 id="allow-for-removal-of-fellows-by-a-board-vote-in-response-to-code-of-conduct-violations-removing-the-need-for-a-vote-of-the-membership">Allow for removal of Fellows by a Board vote in response to Code of Conduct violations, removing the need for a vote of the membership</h2>
+<p>This one means the most to me. When I joined the board, our Code of Conduct was barely two paragraphs long and said little. We rewrote it and formed the PSF Code of Conduct workgroup. From today forward, we can appreciate that the Python Code of Conduct applies to everyone.</p>
+<h2 id="overall">Overall</h2>
+<p>We also gained three new directors, including two returning directors. This election may be the first time we have had an election in which no one running from North America made it on the board. (Possibly Europe, too, but I didn&rsquo;t dive as deep to verify that.) Either way, this is a noteworthy milestone.</p>
+<p>I&rsquo;m proud of the Python community for embracing our Code of Conduct and membership changes. A few of these were overdue, but updating the voter affirmation process is an excellent proactive step and a shift for the board.</p>
+<p>I also want to thank Débora Azevedo, the PSF&rsquo;s vice chair-elect and our outbound director. I was impressed with Débora when we served on the board together, and I thought she brought valuable insights. When she put her name forward to run for vice chair, I was impressed because it&rsquo;s an intimidating group to put yourself out there, and I thought Débora managed it well.</p>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://opavote.com/results/5004101476679680">🗳️ Python Software Foundation Board of Directors Election 2024 Results</a></li>
+<li><a href="https://micro.webology.dev/2024/07/02/on-the-psf.html">💬 On the PSF Bylaw changes</a></li>
+<li><a href="https://micro.webology.dev/2024/07/03/psf-elections-how.html">🗳️ PSF Elections how I am voting</a></li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/15/django-migration-operations.html">🐘 Django Migration Operations aka how to rename Models</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/15/django-migration-operations.html" class="u-url"><time class="dt-published" datetime="2024-07-15 12:20:41 -0500">Jul 15, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Renaming a table in Django seems more complex than it is. Last week, a client asked me how much pain it might be to rename a Django model from Party to Customer. We already used the model&rsquo;s <code>verbose_name</code>, so it has been referencing the new name for months.</p>
+<p>Renaming the model should be as easy as renaming the model while updating any foreign key and many-to-many field references in other models and then running Django&rsquo;s <code>make migrations</code> sub-command to see where we are at.</p>
+<p>The main issue with this approach is that Django will attempt to create a new table first, update model references, and then drop the old table.</p>
+<p>Unfortunately, Django will either fail mid-way through this migration and roll the changes back or even worse, it may complete the migration only for you to discover that your new table is empty.</p>
+<p>Deleting data is not what we want to happen.</p>
+<p>As it turns out, Django supports a <a href="https://docs.djangoproject.com/en/5.0/ref/migration-operations/#renamemodel"><code>RenameModel</code></a> migration option, but it did not prompt me to ask if we wanted to rename Party to Customer.</p>
+<p>I am also more example-driven, and the Django docs don&rsquo;t have an example of how to use <code>RenameModel</code>. Thankfully, this migration operation is about as straightforward as one can imagine: <code>class RenameModel(old_model_name, new_model_name)</code></p>
+<p>I re-used the existing migration file that Django created for me. I dropped the <code>CreateModel</code> and <code>DeleteModel</code> operations, added a <code>RenameField</code> operation, and kept the <code>RenameField</code> operations which resulted in the following migration:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> django.db <span style="color:#f92672">import</span> migrations
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Migration</span>(migrations<span style="color:#f92672">.</span>Migration):
+
+    dependencies <span style="color:#f92672">=</span> [
+        (<span style="color:#e6db74">&#39;resources&#39;</span>, <span style="color:#e6db74">&#39;0002_alter_party_in_the_usa&#39;</span>),
+    ]
+
+    operations <span style="color:#f92672">=</span> [
+        migrations<span style="color:#f92672">.</span>RenameModel(<span style="color:#e6db74">&#39;Party&#39;</span>, <span style="color:#e6db74">&#39;Customer&#39;</span>),
+        migrations<span style="color:#f92672">.</span>RenameField(<span style="color:#e6db74">&#39;Customer&#39;</span>, <span style="color:#e6db74">&#39;party_number&#39;</span>, <span style="color:#e6db74">&#39;customer_number&#39;</span>),
+        migrations<span style="color:#f92672">.</span>RenameField(<span style="color:#e6db74">&#39;AnotherModel&#39;</span>, <span style="color:#e6db74">&#39;party&#39;</span>, <span style="color:#e6db74">&#39;customer&#39;</span>),
+    ]
+</code></pre></div><p>The story&rsquo;s moral is that you should <em>always check and verify</em> that your Django migrations will perform as you expect before running them in production. Thankfully, we did, even though glossing over them is easy.</p>
+<p>I also encourage you to dive deep into the areas of the Django docs where there aren&rsquo;t examples. Many areas of the docs may need examples or even more expanded docs, and they are easy to gloss over or get intimidated by.</p>
+<p>You don&rsquo;t have to be afraid to create and update your migrations by hand. After all, Django migrations are Python code designed to give you a jumpstart. You can and should modify the code to meet your needs. <a href="https://docs.djangoproject.com/en/5.0/ref/migration-operations/">Migration Operations</a> have a clean API once you dig below the surface and understand what options you have to work with.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/14/why-i-deleted.html">🔥 Why I deleted Firefox from my machines this weekend</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/14/why-i-deleted.html" class="u-url"><time class="dt-published" datetime="2024-07-14 13:57:12 -0500">Jul 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I no longer trust or believe in Mozilla, so I deleted Firefox from my machines this weekend.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">➜ brew remove firefox
+<span style="color:#f92672">==</span>&gt; Uninstalling Cask firefox
+<span style="color:#f92672">==</span>&gt; Backing App <span style="color:#e6db74">&#39;Firefox.app&#39;</span> up to <span style="color:#e6db74">&#39;/opt/homebrew/Caskroom/firefox/112.0.1/Firefox.app&#39;</span>
+<span style="color:#f92672">==</span>&gt; Removing App <span style="color:#e6db74">&#39;/Applications/Firefox.app&#39;</span>
+<span style="color:#f92672">==</span>&gt; Unlinking Binary <span style="color:#e6db74">&#39;/opt/homebrew/bin/firefox&#39;</span>
+<span style="color:#f92672">==</span>&gt; Purging files <span style="color:#66d9ef">for</span> version 112.0.1 of Cask firefox
+~ on ☁️   took 4s
+</code></pre></div><p>There was no one decision, but <a href="https://support.mozilla.org/en-US/kb/privacy-preserving-attribution">Firefox version 128&rsquo;s Privacy-Preserving Attribution</a> update was the final straw.</p>
+<p>The default browser you use is a personal decision, and I have always kept Firefox around. It was my default for over a decade until I gave up and switched to Google Chrome. At that point, Firefox became bloated and buggy like the Mozilla browser before it, and I found myself at that intersection again.</p>
+<p>Last year, I switched to <a href="https://vivaldi.com">Vivaldi</a> as my <a href="https://micro.webology.dev/2024/04/27/drop-google-chrome.html">default browser</a> and only kept Chrome around for a few organizations.  Eventually, I&rsquo;ll delete Chrome, too, but that&rsquo;s more symbolic of removing Google from my life.</p>
+<p>What annoys me the most is that Mozilla was supposed to be the company that knows better, but their leadership keeps reminding <a href="https://www.theverge.com/2017/12/16/16784628/mozilla-mr-robot-arg-plugin-firefox-looking-glass">us</a> <a href="https://www.theverge.com/2020/8/11/21363424/mozilla-layoffs-quarter-staff-250-people-new-revenue-focus">of</a> <a href="https://www.theverge.com/2024/3/22/24109116/mozilla-ends-onerep-data-removal-partnership">who</a> <a href="https://www.theverge.com/2024/2/13/24072184/mozilla-is-laying-off-around-60-workers-and-scaling-back-its-mastodon-instance">they</a> <a href="https://www.theregister.com/2024/06/24/mozilla_product_chief_sues_over/">are</a>.</p>
+<p>Removing Firefox pains me because I believe in alternative browsers that aren&rsquo;t controlled by one company. I have friends who have worked for Mozilla in the past and present.</p>
+<p>Had Mozilla pledged to cut the bullshit and give me a Firefox Pro option to support them, I would have been one of the first to sign up. However, I don&rsquo;t trust Mozilla when they aren&rsquo;t focused on being the best web browser in the industry. I&rsquo;d rather avoid their antics until they give me a reason to trust them again.</p>
+<p>PS: Maybe <a href="https://servo.org">Servo</a> is a better alternative from Mozilla, but for now, <a href="https://vivaldi.com">Vivaldi</a> is my best Chrome-like, and it&rsquo;s not run by Google until something better emerges.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/12/duckdb-may-be.html">🦆 DuckDB may be the tool you didn&#39;t know you were missing</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/12/duckdb-may-be.html" class="u-url"><time class="dt-published" datetime="2024-07-13 09:31:37 -0500">Jul 13, 2024</time></a>
+
+		<div class="e-content">
+			 <p>🤔 I haven&rsquo;t fully figured out <a href="https://duckdb.org">DuckDB</a> yet, but it&rsquo;s worth trying out if you are a Python dev who likes to work on data projects or gets frequently tasked with data import projects.</p>
+<p>DuckDB is a fast database engine that lets you read CSV, Parquet, and JSON files and query them using SQL. Instead of importing data into your database, DuckDB enables you to write SQL and run it against these file types.</p>
+<p>I have a YouTube to frontmatter project that can read a YouTube playlist and write out each video to a markdown file. I modified the export script to save the raw JSON output to disk.</p>
+<p>I used DuckDB to read a bunch of JSON files using the following script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> duckdb
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    result <span style="color:#f92672">=</span> duckdb<span style="color:#f92672">.</span>sql(<span style="color:#e6db74">&#34;SELECT id,snippet FROM read_json(&#39;data/*.json&#39;)&#34;</span>)<span style="color:#f92672">.</span>fetchall()
+
+    <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> result:
+        id, snippet <span style="color:#f92672">=</span> row
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>id<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+        print(snippet[<span style="color:#e6db74">&#34;channelTitle&#34;</span>])
+        print(snippet[<span style="color:#e6db74">&#34;title&#34;</span>])
+        print(snippet[<span style="color:#e6db74">&#34;publishedAt&#34;</span>])
+        print(snippet[<span style="color:#e6db74">&#34;description&#34;</span>])
+        print()
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    main()
+</code></pre></div><p>This script accomplishes several things:</p>
+<ul>
+<li>It reads over 650 JSON files in about one second.</li>
+<li>It uses SQL to query the JSON data directly.</li>
+<li>It extracts specific fields (id and snippet) from each JSON file.</li>
+</ul>
+<h2 id="performance-and-ease-of-use">Performance and Ease of Use</h2>
+<p>The speed at which DuckDB processes these files is remarkable. In traditional setups, reading and parsing this many JSON files could take significantly longer and require more complex code.</p>
+<h2 id="when-to-use-duckdb">When to Use DuckDB</h2>
+<p>DuckDB shines in scenarios where you need to:</p>
+<ul>
+<li>Quickly analyze data in files without a formal import process.</li>
+<li>Perform SQL queries on semi-structured data (like JSON)</li>
+<li>Process large datasets efficiently on a single machine.</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>DuckDB is worth trying out in your data projects. If you have a lot of data and you need help with what to do with it, being able to write SQL against hundreds of files is powerful and flexible.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/12/macos-bartender-app.html">🚜 macOS Bartender app to Ice app</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/12/macos-bartender-app.html" class="u-url"><time class="dt-published" datetime="2024-07-12 11:17:29 -0500">Jul 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I upgraded my Macs to macOS Sonoma a few weeks ago. While everything has been uneventful, the Bartender app pinged me one too many times about upgrading to Bartender 5, which has several Sonoma-only features.</p>
+<p>Last year, I looked forward to upgrading Bartender until their <a href="https://www.macbartender.com/Bartender5/blog/">recent botched communication and messaging</a> regarding the purchase of the app.</p>
+<p><a href="https://mastodon.social/@oliverandrich@social.tchncs.de">Oliver Andrich</a>&rsquo;s <a href="https://andrich.me/2024/06/%F0%9F%93%94-week-23-an-almost-perfect-week/">Week 23: An Almost Perfect Week</a> was the nudge I needed to go ahead and switch over to <a href="https://github.com/jordanbaird/Ice">Ice</a>, which is an open-source menu bar manager for macOS.</p>
+<p>The upgrade took less than a minute, and the app worked the same way Bartender did for me. I changed the menu icon to an ellipsis to match what I had the Bartender app set to, and everything worked.</p>
+<h2 id="previously">Previously</h2>
+<ul>
+<li><a href="https://micro.webology.dev/2024/06/06/bartender-update.html">🧊 Bartender Update</a></li>
+<li><a href="https://micro.webology.dev/2024/06/04/bartender-mac-app.html">👤 Bartender Mac App PSA</a></li>
+</ul>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/11/bitdo-goldensilver-limited.html">🎮 8BitDo Golden/Silver Limited Edition controllers</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/11/bitdo-goldensilver-limited.html" class="u-url"><time class="dt-published" datetime="2024-07-11 13:38:13 -0500">Jul 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My favorite third-party video game hardware company, 8BitDo, announced its 11th-anniversary limited edition controllers, <a href="https://www.8bitdo.com/sn30-pro-usb-limited/">SN30 Pro - Golden/Silver Limited Edition</a>.</p>
+<p>I have over half a dozen 8BitDo controllers (and even a keyboard), my favorites, and what we pick up when my family wants to game on our Switch or iPad.</p>
+<p>I wanted the SN30 form factor but have yet to order one. I don&rsquo;t know if a metal, wired controller will fit into my library, but they tempt me.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/07/10/office-hours-for.html">📅 Office Hours for July 12th</a></h1>
 		
 
