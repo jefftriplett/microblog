@@ -24,6 +24,69 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/08/02/pinboard-what-a.html">📌 Pinboard... what a waste</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/02/pinboard-what-a.html" class="u-url"><time class="dt-published" datetime="2024-08-02 20:38:04 -0500">Aug 2, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Earlier this year, I wrote about why I <a href="https://micro.webology.dev/2024/04/11/on-leaving-pinboard.html">dumped Pinboard</a> after a decade of usage.</p>
+<blockquote>
+<p>Why I gave up on Pinboard</p>
+<p>I could write thousands of words about how frustrating being a paid user was, but I’ll sum it up as running Pinboard wasn’t a priority for Pinboard’s founder, and it painfully showed. 👎</p>
+</blockquote>
+<p>This aged well.</p>
+<p>I suspect that someday, I will roll out my own commercial Delicious clone for people who just want a reliable bookmark-archiving web service.</p>
+<p>A few years ago, I might have said this would be a Pinboard clone, but at least Yahoo knew when to pack it up and shut it down vs. whatever the Pinboard founder has been doing. 🤷</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/26/ollama-tool-calling.html">🦙 Ollama Tool Calling Loose Notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/26/ollama-tool-calling.html" class="u-url"><time class="dt-published" datetime="2024-07-26 23:30:18 -0500">Jul 26, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I spent a <a href="https://micro.webology.dev/2024/07/24/ollama-llama-red.html">few hours this week</a> working with the Ollama project and trying to get tool calling to work with the LangChain library.</p>
+<p>Tool calling is a way to expose Python functions to a language model that allows them to be called. This will enable models to perform more complex actions and even call the outside world for more information.</p>
+<p>I haven&rsquo;t used LangChain before, and I found the whole process frustrating. The docs were full of errors. I eventually figured it out, but I was limited to one tool call per prompt, which felt broken.</p>
+<p>Earlier today, I was telling a colleague about it, and when we got back from grabbing coffee, I thought I would check the Ollama Discord channel to see if anyone else had figured it out. To my surprise, they added and released <a href="https://ollama.com/blog/tool-support">Tool support</a> last night, which allowed me to ditch LangChain altogether.</p>
+<p>The Ollama project&rsquo;s <a href="https://github.com/ollama/ollama-python/blob/main/examples/tools/main.py">tool calling example</a> was just enough to help get me started.</p>
+<p>I struggled with the function calling syntax, but after digging a bit deeper, I found this example from <a href="https://platform.openai.com/docs/assistants/tools/function-calling">OpenAI&rsquo;s Function calling docs</a>, which matches the format the Ollama project is following. I still don&rsquo;t fully understand it, but I got more functions working and verified that I can make multiple tool calls within the same prompt.</p>
+<p>Meta&rsquo;s Llama 3.1 model supports tool calling, and the two work quite well together. I am also impressed with Llama 3.1 and the large context window support. I&rsquo;m running the 8B and 70B models on a Mac Studio, and they feel very close to the commercial APIs I have worked with, but I can run them locally.</p>
+<h2 id="embedding-models">Embedding models</h2>
+<p>Tonight, I tried out Ollama&rsquo;s <a href="https://ollama.com/blog/embedding-models">Embedding models</a> example, and while I got it working, I still need to put practical data into it to give it a better test</p>
+<h2 id="one-more-tip">One more tip</h2>
+<p>If you did not know Ollama can parse and return valid JSON, check out <a href="https://whoa.fyi/how-to-get-json-response-from-ollama/">How to get JSON response from Ollama</a>. It made my JSON parsing and responses much more reliable.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/07/25/office-hours-this.html">📅 Office Hours this Friday, July 26th</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/07/25/office-hours-this.html" class="u-url"><time class="dt-published" datetime="2024-07-25 22:47:33 -0500">Jul 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I am hosting Office Hours this <a href="https://time.is/0230PM_26_July_2024_in_CT?Jeff%27s_Office_Hours">Friday, July 26th, 2024, from 2:30 pm to 4:30 pm Central Time</a>.</p>
+<p>I&rsquo;ll probably be on a bit early depending on much of my client projects I get wrapped up this week.</p>
+<p>ℹ️ Anyone can join office hours.</p>
+<p>ℹ️ Our office hours are a collaborative space where we can discuss our ongoing projects, catch up, and work together to wrap up our week on a productive note.</p>
+<p>💼 I will be working on Django Packages and possibly a new project.</p>
+<p>🙏 As always, everyone is welcome to join, whether you’re a regular attendee or joining for the first time.</p>
+<p>✅ If you need any additional details, feel free to send me a message or check out the gist from our previous sessions, where you’ll find the Zoom link ⚠️</p>
+<p>I look forward to seeing everyone.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/07/24/ollama-llama-red.html">🦙 Ollama Llama 3.1 Red Pajama </a></h1>
 		
 
