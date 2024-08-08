@@ -24,6 +24,98 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/08/07/which-django-and.html">⬆️ Which Django and Python versions should I be using today? </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/07/which-django-and.html" class="u-url"><time class="dt-published" datetime="2024-08-07 22:05:56 -0500">Aug 7, 2024</time></a>
+
+		<div class="e-content">
+			 <p><a href="https://www.djangoproject.com/weblog/2024/aug/07/django-51-released/">Django 5.1 was released</a>, and I was reminded of the article I wrote earlier this year about <a href="https://micro.webology.dev/2024/02/01/choosing-the-right.html">Choosing the Right Python and Django Versions for Your Projects</a>.</p>
+<p>While I encouraged you to wait until the second, third, or even fourth patch release of Django and Python before upgrading, I received a bit of pushback. One interesting perspective claimed that if everyone waits to upgrade, we don&rsquo;t find critical bugs until the later versions. While that may be plausible, I don&rsquo;t believe that the dozens of people who read my blog will be swayed by my recommendation to wait for a few patch releases.</p>
+<p>I could have emphasized the potential risks of not testing early. Please start testing during the alpha and release candidate phase so that when Django 5.1 is released, your third-party applications will be ready and working on launch day, minimizing the risk of last-minute issues.</p>
+<p>Today, I tried to upgrade <a href="https://djangopackages.org">Django Packages</a> to run on Django 5.1 to see if our test suite would run on Django 5.1, and it very quickly failed in CI due to at least one package not supporting 5.1 yet. Even if it had passed, I&rsquo;m 90% sure another package would have failed because that&rsquo;s the nature of running a new major Django or Python release on day one. Even if the third-party package is ready, the packaging ecosystem needs time to catch up.</p>
+<h2 id="which-version-of-django-should-i-use-today">Which version of Django should I use today?</h2>
+<p>I&rsquo;m sticking with <strong>Django 5.0</strong> until Django 5.1&rsquo;s ecosystem has caught up. I plan to update the third-party packages I help maintain to have Django 5.1 support. After a few patch releases of Django 5.1 have come out and the ecosystem has time to catch up, I will try to migrate again.</p>
+<h2 id="which-version-of-python-should-i-use-today">Which version of Python should I use today?</h2>
+<p>I&rsquo;m starting new projects on <strong>Python 3.12</strong>, with a few legacy projects still being done on Python 3.11. While I am adding Django 5.1 support, I plan to add Python 3.13 support in my testing matrixes to prepare everything for Python 3.13&rsquo;s release this fall.</p>
+<h2 id="office-hours">Office hours</h2>
+<p>I plan to spend some of my <a href="https://micro.webology.dev/categories/office-hours/">Office Hours</a> this week working on Django 5.1 and Python 3.13 readiness for projects I maintain. Please join me if you have a project to update or would like some light-hearted banter to end your week.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/06/google-search-speculation.html">🔍 Google Search speculation 🔥</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/06/google-search-speculation.html" class="u-url"><time class="dt-published" datetime="2024-08-06 20:34:23 -0500">Aug 6, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Eric Holscher posted this <a href="https://mastodon.social/@ericholscher@fosstodon.org/112917186548638471">post</a> today, and I wanted to share my speculation.</p>
+<blockquote>
+<p>Calling it now:</p>
+<ul>
+<li>Google stops paying Apple &amp; Mozilla for search</li>
+<li>Apple ships search (probably buys DDG or similar)</li>
+<li>Apple pays Mozilla to be default search engine</li>
+</ul>
+</blockquote>
+<h2 id="google-stops-paying-apple--mozilla-for-search">Google stops paying Apple &amp; Mozilla for search</h2>
+<p>This judgment means that Google has to give up overpaying to be the default search engine for Apple and Mozilla. It&rsquo;s the primary basis of the lawsuit, and the judge wrote a 300-page judgment. So, it&rsquo;s safe to say it will happen even if Alphabet isn&rsquo;t formally broken up.</p>
+<h2 id="apple-ships-search-probably-buys-ddg-or-similar">Apple ships search (probably buys DDG or similar)</h2>
+<p>Short term: Because Apple already has an AI deal with Google, I expect Apple&rsquo;s default search to stay the same despite Google not being able to pay them for that default. Apple will change the options menu, but Google will remain the default.</p>
+<p>Long shot/Longer term: Apple buys a few search companies and creates its own search products, as it did with Apple Maps. Search isn&rsquo;t going to look like Google search does today, or, better yet, it looked like a decade ago before it because of an ad-first search secondary service.</p>
+<h2 id="apple-pays-mozilla-to-be-default-search-engine">Apple pays Mozilla to be default search engine</h2>
+<p>I do not see this happening even if Mozilla spends most of its cash buying a search company. Mozilla won&rsquo;t be able to pay Apple to use it, and they need an incentive to switch. Logistically, Mozilla would cease to exist before this could happen.</p>
+<p>Apple doesn&rsquo;t want to be a search company or incorporate ads like Google and Meta do with their products. Even Apple TV&rsquo;s ads are mostly for other Apple TV content.</p>
+<h2 id="what-about-mozilla">What about Mozilla?</h2>
+<p>Mozilla will either pivot to try to buy or partner with Kagi, DDG, or Brave (gross, but the most likely). The Mozilla Foundation is facing a potentially extinction-level event, but it has a <a href="https://www.bloomberg.com/news/newsletters/2023-05-05/why-google-keeps-paying-mozilla-s-firefox-even-as-chrome-dominates">billion-dollar nest egg</a> to fall back on.</p>
+<p>Mozilla has cash, but its options may not resemble the Mozilla Foundation we know today.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/05/of-course-google.html">🧐 Of course, Google is a monopoly</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/05/of-course-google.html" class="u-url"><time class="dt-published" datetime="2024-08-05 22:15:05 -0500">Aug 5, 2024</time></a>
+
+		<div class="e-content">
+			 <blockquote>
+<p>“After having carefully considered and weighed the witness testimony and evidence, the court reaches the following conclusion: Google is a monopolist, and it has acted as one to maintain its monopoly,” the ruling states.</p>
+<p><a href="https://www.theguardian.com/technology/article/2024/aug/05/google-loses-antitrust-lawsuit">www.theguardian.com/technolog&hellip;</a></p>
+</blockquote>
+<p>Of course, Google is a monopoly. They have been for over a decade and closer to two decades.</p>
+<p>If this quote from The Verge is true, Google’s CEO was a pretty damning witness and admitted that Google intentionally froze the ecosystem in place.</p>
+<blockquote>
+<p> The judge found former Google executive Sridhar Ramaswamy “a particularly compelling witness,” pointing to his answer about why Google would pay billions of dollars in revenue share to maintain default status if it already had the best search engine. Ramaswamy told the court that the payments “basically freeze the ecosystem in place.”
+ 
+<a href="https://www.theverge.com/2024/8/5/24155520/judge-rules-on-us-doj-v-google-antitrust-search-suit">www.theverge.com/2024/8/5/&hellip;</a></p>
+</blockquote>
+<p>Thanks to The Verge’s “brilliant” reporting, I can’t source this quote again, but I pulled it before they removed it and shared it across several Slacks and Discord groups.</p>
+<p>As far as Alphabet/Google goes, the US Government should break them up and disassemble the company. That outcome may depend on the result of the 2024 election, but both the Department of Justice and the Federal Trade Commission are signaling that they intend to follow through.</p>
+<p>I suspect Mozilla has the most to lose over this ruling. Google accounts for a significant portion of Mozilla’s revenue and has historically kept them afloat. However, I suspect the days of Google paying any company to be its default search are numbered.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/08/03/kingdom-of-the.html" class="u-url"><time class="dt-published" datetime="2024-08-03 20:23:04 -0500">Aug 3, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Kingdom of the Planet of the Apes - It&rsquo;s a good night to just veg out.</p>
+<p><a href="https://trakt.tv/movies/kingdom-of-the-planet-of-the-apes-2024">trakt.tv/movies/ki&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/08/02/pinboard-what-a.html">📌 Pinboard... what a waste</a></h1>
 		
 
@@ -1713,10 +1805,10 @@ $ just up
 <p><code>ModelAdmin.list_display</code> now supports using <code>__</code> lookups to list fields from related models.</p>
 </blockquote>
 <p>Many times a year, I forget that <code>list_display</code> does not support the dunder <code>__</code> lookup, which leads to adding a property on <code>ModelAdmin</code> instead. FINALLY, Django supports this and I&rsquo;m thrilled.</p>
-<h2 id="the-query_string-template-tag">The <code>query_string</code> template tag</h2>
+<h2 id="the-querystring-template-tag">The <code>querystring</code> template tag</h2>
 <blockquote>
-<p><code>{% query_string %}</code> template tag</p>
-<p>Django 5.1 introduces the <a href="https://docs.djangoproject.com/en/dev/ref/templates/builtins/#std-templatetag-query_string"><code>{% query_string %}</code></a> template tag, simplifying the modification of query parameters in URLs, making it easier to generate links that maintain existing query parameters while adding or changing specific ones.</p>
+<p><code>{% querystring %}</code> template tag</p>
+<p>Django 5.1 introduces the <a href="https://docs.djangoproject.com/en/dev/ref/templates/builtins/#std-templatetag-querystring"><code>{% querystring %}</code></a> template tag, simplifying the modification of query parameters in URLs, making it easier to generate links that maintain existing query parameters while adding or changing specific ones.</p>
 </blockquote>
 <p>This is one of those template tags that I routinely add to my projects because it&rsquo;s so helpful. I&rsquo;m thrilled to no longer need it.</p>
 <h2 id="views-require-authentication-by-default">Views require authentication by default</h2>
