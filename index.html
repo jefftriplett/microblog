@@ -24,6 +24,90 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/08/21/uv-updates-and.html">🐍 UV Updates and PEP 723: Simplifying Python Packaging and Scripting</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/21/uv-updates-and.html" class="u-url"><time class="dt-published" datetime="2024-08-21 22:57:49 -0500">Aug 21, 2024</time></a>
+
+		<div class="e-content">
+			 <p>The <a href="https://astral.sh/blog/uv-unified-python-packaging">uv: Unified Python packaging</a> update brings fresh air to the Python community, with several improvements streamlining the development process. One exciting addition is an early preview of <a href="https://peps.python.org/pep-0723/">PEP 723</a>, also known as <a href="https://astral.sh/blog/uv-unified-python-packaging#single-file-scripts">Single-file scripts</a>.</p>
+<p>The Single-file scripts feature particularly caught my attention due to its potential to simplify the distribution and execution of small Python projects. Streamlining the process is highly appealing to someone who frequently creates GitHub Gists and shares them privately and publicly.</p>
+<p>With this new feature, I can now instruct users to run <code>uv run main.py</code> without explaining what a <code>venv</code> or <code>virtualenv</code> is, plus a long list of requirements that need to be passed to <code>pip install</code>.</p>
+<p>I had the opportunity to test this feature over lunch today. While adding libraries to the script was straightforward, I encountered a few hurdles when I forgot to invoke <code>uv run</code> in my virtual environment (venv). This makes sense, given that it&rsquo;s a new habit, but it highlights the importance of adapting to changes in our development workflow.</p>
+<p>Overall, the UV: Unified Python packaging update and the introduction of Single-file scripts mark a significant step in simplifying Python development. As developers become more familiar with these improvements, we expect increased adoption and smoother collaboration on small-scale projects.</p>
+<h2 id="bonus-example">Bonus Example</h2>
+<p>I looked through some of my recent visits, and one I recently shared with a few conference organizer friends was a one-off script I used to read several YouTube video JSON files that I&rsquo;m using to bootstrap another project. It was the first time I used <a href="https://duckdb.org">DuckDB</a> to make quick work of reading data from a bunch of JSON files using SQL.</p>
+<p>Overall, I was happy with DuckDB and what PEP 723 might bring to the future of Python apps, even if my example only does a little.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># To run this application, use:</span>
+<span style="color:#75715e">#   uv run demo-duckdb.py</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># /// script</span>
+<span style="color:#75715e"># requires-python = &#34;&gt;=3.10&#34;</span>
+<span style="color:#75715e"># dependencies = [</span>
+<span style="color:#75715e">#     &#34;duckdb&#34;,</span>
+<span style="color:#75715e">#     &#34;rich&#34;,</span>
+<span style="color:#75715e">#     &#34;typer&#34;,</span>
+<span style="color:#75715e"># ]</span>
+<span style="color:#75715e"># ///</span>
+<span style="color:#f92672">import</span> duckdb
+<span style="color:#f92672">import</span> typer
+
+<span style="color:#f92672">from</span> rich <span style="color:#f92672">import</span> print
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    result <span style="color:#f92672">=</span> duckdb<span style="color:#f92672">.</span>sql(<span style="color:#e6db74">&#34;SELECT id,snippet FROM read_json(&#39;json/*.json&#39;)&#34;</span>)<span style="color:#f92672">.</span>fetchall()
+
+    <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> result:
+        id, snippet <span style="color:#f92672">=</span> row
+        print(<span style="color:#e6db74">&#34;-&#34;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">80</span>)
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>id<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>snippet[<span style="color:#e6db74">&#39;channelTitle&#39;</span>]<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>snippet[<span style="color:#e6db74">&#39;title&#39;</span>]<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>snippet[<span style="color:#e6db74">&#39;publishedAt&#39;</span>]<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+        print(snippet[<span style="color:#e6db74">&#34;description&#34;</span>])
+        print(snippet[<span style="color:#e6db74">&#34;thumbnails&#34;</span>]<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;maxres&#34;</span>) <span style="color:#f92672">or</span> snippet<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;standard&#34;</span>))
+        print()
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    typer<span style="color:#f92672">.</span>run(main)
+</code></pre></div><p>Overall, the future is bright with UV and PEP 723 may bring us. I&rsquo;m excited to have more one-file Python apps that are easier to share and run with others.</p>
+<p>PEP 723 also opens the door to turning a one-file Python script into a runnable Docker image that doesn&rsquo;t even need Python on the machine or opens the door for <a href="https://beeware.org">Beeware</a> and <a href="https://beeware.org/project/projects/tools/briefcase/">Briefcase</a> to build standalone apps.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/14/breaking-up-google.html">🔥 Breaking Up Google</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/14/breaking-up-google.html" class="u-url"><time class="dt-published" datetime="2024-08-14 18:35:26 -0500">Aug 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Here are my thoughts on John Gruber&rsquo;s recent article and notes on the <a href="https://daringfireball.net/linked/2024/08/14/us-google-breakup">Google Monopoly</a>.</p>
+<blockquote>
+<p>I mean, let’s say Google was forced to spin Chrome off. How would Chrome Inc. make money? Clearly, they’d make money through TAC fee payments from Google search. &gt;Also, if they split off Chrome they’d almost have to split off Android.</p>
+</blockquote>
+<p>Chrome Inc will be quite profitable, making $20 billion a year from Alphabet to set Google Search as the default search engine on Chrome. The same model works for Android Inc, too.</p>
+<p>The Justice Department doesn&rsquo;t exist to figure out Alphabet&rsquo;s business model nor does it care to. The fact that everything is so tied together that it&rsquo;s hard to split up doesn&rsquo;t is only further proof that Google is a monopoly.</p>
+<blockquote>
+<p>If Google is disallowed from making its own web browser how in the world can they make an OS? I mean in theory they could make an OS that only offered third-party browsers but that would mean no system-level webview for apps to embed. Some people laughed at Microsoft’s late-1990s argument that Windows needed a built-in browser but that’s obviously true today. It’s no different than including a TCP/IP networking stack or printer drivers.</p>
+</blockquote>
+<p>The OS which is Linux based can go with Chrome. Google doesn&rsquo;t need their own OS to work on Mac, iOS, Windows, and other operating system they run their products on.</p>
+<blockquote>
+<p>I don’t know what the remedy ought to be for this case, but I don’t think a breakup is it.</p>
+</blockquote>
+<p>A breakup is better for consumers. Google&rsquo;s stranglehold on the online ad industry will feel painful after it&rsquo;s broken up. The only reason it feels hard to break Google into so many new companies is because it&rsquo;s such a one-sided monopoly. However, that doesn&rsquo;t justify not breaking them up.</p>
+<p>Google has a long history of pushing technology that is only good for Google. Does anyone remember <a href="https://www.theverge.com/23711172/google-amp-accelerated-mobile-pages-search-publishers-lawsuit">AMP</a> and how Google forced the publishing industry to jump to a platform that only benefited them?</p>
+<p>It makes sense to chop Alphabet + Google into dozens of smaller companies. Chrome, Android, Gmail, Docs (maybe Maps), and hardware should stand independently. Search and Ads should each be divided into multiple companies. The goal isn&rsquo;t to make business sense; it is to divide the company into parts that compete against themselves.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/08/14/tiny-desk-concert.html">🎻 Tiny Desk Concert Wednesday with Sierra Ferrell</a></h1>
 		
 
