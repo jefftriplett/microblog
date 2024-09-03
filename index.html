@@ -24,6 +24,266 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/09/03/stop-scheduling-security.html">🚫 Stop scheduling security updates and deprecating major features over holidays</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/09/03/stop-scheduling-security.html" class="u-url"><time class="dt-published" datetime="2024-09-03 09:24:54 -0500">Sep 3, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I know people outside the US 🙄 at this, but please stop releasing major security updates and backward incompatible changes over major US, international, and religious holidays.</p>
+<p>Given that major security updates are embargoed and scheduled weeks and months in advance, it&rsquo;s essential to coordinate and avoid conflicts. A simple check of the calendar before scheduling announcements can prevent such issues.</p>
+<p>Even if you give everyone two weeks' notice, aka what GitHub just did, wait to schedule them for release over a holiday weekend.</p>
+<p>Historically, the Python and Django communities have also been guilty of this, so I&rsquo;m not just finger-pointing at GitHub. We can all do better here.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/25/how-a-camera.html">🌡️ How a $20 Camera Outsmarted My Fancy Thermometer</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/25/how-a-camera.html" class="u-url"><time class="dt-published" datetime="2024-08-25 21:13:21 -0500">Aug 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My ThermoWorks Signals thermometer&rsquo;s battery was dead, so I connected it to my Anker 737 Power Bank (24,000mAh for the curious) to get me by.</p>
+<!-- raw HTML omitted -->
+<p>Previously, I mounted a Wyze camera on a tripod and pointed it toward my thermometer because its Bluetooth connection wasn&rsquo;t strong enough. WiFi worked fine for the camera, but our smoker is in our backyard and has to go through two external walls to reach any of our devices.</p>
+<p>This worked well during the early pandemic when I was working from home. I could check the camera from my upstairs office or couch without worrying about the weather. As a bonus, I could see the front panel of my Pitbos Smoker to monitor it in case it ran out of wood pellets or the heat source went out. I could have bought the fancy ThermoWorks Signals thermometer, but a $20 Wyze Camera worked better.</p>
+<p>Today, I have the fancy thermometer, and I still should have connected the Wyze cam because the smoker ran out of pellets, which delayed dinner by 45 minutes.</p>
+<p>Maybe I will use this as an excuse to explore one of Ollama&rsquo;s Vision libraries like <a href="https://ollama.com/library/llava">LLaVA</a> to read photos from the Wyze Camera and the smoker to let me know when something goes wrong.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/25/using-claude-sonnet.html">🚜 Using Claude 3.5 Sonnet to refactor one of Brian Okken&#39;s Python projects</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/25/using-claude-sonnet.html" class="u-url"><time class="dt-published" datetime="2024-08-25 14:46:23 -0500">Aug 25, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Brian Okken <a href="https://mastodon.social/@brianokken@fosstodon.org/113023568032444293">posted</a> and published his <a href="https://pythontest.com/top-pytest-plugins/">Top pytest Plugins</a> script and then a follow-up post, <a href="https://pythontest.com/pytest/finding-top-pytest-plugins/">Finding the top pytest plugins</a>, which was pretty cool.</p>
+<p>I have written a few throw-away scripts, which William Vincent wrote about and updated a few times in the <a href="https://learndjango.com/tutorials/essential-django-3rd-party-packages">Top 10 Django Third-Party Packages (2024)</a> and <a href="https://learndjango.com/tutorials/10-most-used-django-packages">The 10 Most-Used Django Packages (2024)</a>.</p>
+<p>These efforts are powered by <a href="https://github.com/hugovk/">Hugo van Kemenade</a>&rsquo;s excellent <a href="https://hugovk.github.io/top-pypi-packages/">Top PyPI Packages</a>.</p>
+<p>This inspired me to fork Brian&rsquo;s <a href="https://github.com/okken/top-pytest-plugins">top-pytest-plugins</a> project, which I updated to support passing in other package names like &ldquo;django&rdquo; to get a rough estimate of monthly package downloads.</p>
+<p>The refactored project is <a href="https://github.com/jefftriplett/top-python-packages">jefftriplett/top-python-packages</a>.</p>
+<p><strong>Please note:</strong> Looking at the package name doesn&rsquo;t scale as well for projects that have their own <a href="https://pypi.org/classifiers/">Trove classifiers</a>. For a project like pytest, it works well. Many of the top packages may not even have Django in their name for a project like Django. Some projects may even actively discourage a project from using their project in their package&rsquo;s name for trademark reasons. So, YMMV applies here.</p>
+<h2 id="prompts">Prompts</h2>
+<p>I added <code>uv run</code> support, which I have <a href="https://micro.webology.dev/categories/uv/">written about a lot lately</a>.</p>
+<p>I also copied the <code>top_pytest.py</code> file into a Claude 3.5 Sonnet session, and I let it handle the whole refactor. It even handled adding the <a href="https://peps.python.org/pep-0723/">PEP 723</a> new package dependencies without me asking it to.</p>
+<p>In case it&rsquo;s useful to anyone, here are my prompts:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">## Prompt:
+Please update this script to use a rich table.
+
+
+## Prompt:
+Please update the table styles to be ascii so I can copy and paste it into a markdown doc
+
+
+## Prompt:
+Please remove the description column
+
+
+## Prompt:
+Please change all PyTest and pytest references to Django and django
+
+
+## Prompt:
+Please add back `if &#39;django&#39; in project.lower() and &#39;django&#39; != project.lower():`
+
+
+## Prompt:
+please remove the \*# Export to markdown section. I can just pipe the output \*
+
+
+## Prompt:
+Please add the typer library.
+
+
+## Prompt:
+Please remove days and limit
+
+
+## Prompt:
+Please refactor the script to allow me to pass the package name instead of django. You can default to django though.
+
+
+This way I can pass pytest or flask or other projects.
+
+
+## Prompt:
+Please change the default Table box type to MARKDOWN
+</code></pre></div><h2 id="outro">Outro</h2>
+<p>I don&rsquo;t usually write about Claude or prompts, but the tool has been handy lately.</p>
+<p>If you have had some similar successes, let me know. I have been exploring some rabbit holes, and it&rsquo;s changing the way I approach solving problems.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/23/uv-run-django.html">📓 UV Run Django Notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/23/uv-run-django.html" class="u-url"><time class="dt-published" datetime="2024-08-23 07:45:00 -0500">Aug 23, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I wanted to know how hard it would be to turn one of my <a href="https://github.com/jefftriplett/django-startproject">django-startproject</a> projects into a <code>uv run</code> friendly project. As it turns out, it worked, and the steps were more than reasonable.</p>
+<h2 id="before-the-pep-723ing">Before the PEP 723&rsquo;ing&hellip;</h2>
+<p>I started with a fairly vanilla <code>manage.py</code> that Django will give you after running <code>python -m manage startproject</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#e6db74">&#34;&#34;&#34;Django&#39;s command-line utility for administrative tasks.&#34;&#34;&#34;</span>
+
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> sys
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#e6db74">&#34;&#34;&#34;Run administrative tasks.&#34;&#34;&#34;</span>
+    os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>setdefault(<span style="color:#e6db74">&#34;DJANGO_SETTINGS_MODULE&#34;</span>, <span style="color:#e6db74">&#34;config.settings&#34;</span>)
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#f92672">from</span> django.core.management <span style="color:#f92672">import</span> execute_from_command_line
+    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span> <span style="color:#66d9ef">as</span> exc:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ImportError</span>(
+            <span style="color:#e6db74">&#34;Couldn&#39;t import Django. Are you sure it&#39;s installed and &#34;</span>
+            <span style="color:#e6db74">&#34;available on your PYTHONPATH environment variable? Did you &#34;</span>
+            <span style="color:#e6db74">&#34;forget to activate a virtual environment?&#34;</span>
+        ) <span style="color:#f92672">from</span> exc
+    execute_from_command_line(sys<span style="color:#f92672">.</span>argv)
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    main()
+</code></pre></div><h2 id="shebang">shebang</h2>
+<p>Then we add <code>#!/usr/bin/env -S uv run</code> to the top of our <code>manage.py</code> file.</p>
+<p>Next, we make our <code>manage.py</code> executable and try to run it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ chmod +x manage.py
+$ ./manage.py
+ModuleNotFoundError: No module named <span style="color:#e6db74">&#39;django&#39;</span>
+</code></pre></div><p>Our script ran, but Python couldn&rsquo;t find Django. To tell our script to install Django, we can use <code>uv add—- script</code> to add it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ uv add --script manage.py django
+Updated <span style="color:#e6db74">`</span>manage.py<span style="color:#e6db74">`</span>
+$ ./manage.py
+...
+
+Type <span style="color:#e6db74">&#39;manage.py help &lt;subcommand&gt;&#39;</span> <span style="color:#66d9ef">for</span> help on a specific subcommand.
+
+Available subcommands:
+
+<span style="color:#f92672">[</span>django<span style="color:#f92672">]</span>
+    check
+    compilemessages
+    createcachetable
+    dbshell
+    diffsettings
+    dumpdata
+    flush
+    inspectdb
+    loaddata
+    makemessages
+    makemigrations
+    migrate
+    optimizemigration
+    runserver
+    sendtestemail
+    shell
+    showmigrations
+    sqlflush
+    sqlmigrate
+    sqlsequencereset
+    squashmigrations
+    startapp
+    startproject
+    test
+    testserver
+Note that only Django core commands are listed as settings are not properly configured <span style="color:#f92672">(</span>error: No module named <span style="color:#e6db74">&#39;environs&#39;</span><span style="color:#f92672">)</span>.
+</code></pre></div><p>Django worked as expected this time, but Python could not find a few third-party libraries I like to include in my projects.</p>
+<p>To add these, I passed the other four to <code>uv add --script</code> which will add them to the project.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ uv add --script manage.py django-click <span style="color:#e6db74">&#34;environs[django]&#34;</span> psycopg2-binary whitenoise
+Updated <span style="color:#e6db74">`</span>manage.py<span style="color:#e6db74">`</span>
+...
+$ ./manage.py
+...
+</code></pre></div><p>Our Django app&rsquo;s <code>manage.py</code> works when we run it.</p>
+<h2 id="after-the-pep-723ing">After the PEP 723&rsquo;ing&hellip;</h2>
+<p>After we installed our dependencies in our <code>manage.py</code> file, they were added to the top of the file between the <code>///</code> blocks.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env -S uv run</span>
+<span style="color:#75715e"># /// script</span>
+<span style="color:#75715e"># requires-python = &#34;&gt;=3.10&#34;</span>
+<span style="color:#75715e"># dependencies = [</span>
+<span style="color:#75715e">#     &#34;django&#34;,</span>
+<span style="color:#75715e">#     &#34;django-click&#34;,</span>
+<span style="color:#75715e">#     &#34;environs[django]&#34;,</span>
+<span style="color:#75715e">#     &#34;psycopg2-binary&#34;,</span>
+<span style="color:#75715e">#     &#34;whitenoise&#34;,</span>
+<span style="color:#75715e"># ]</span>
+<span style="color:#75715e"># ///</span>
+<span style="color:#e6db74">&#34;&#34;&#34;Django&#39;s command-line utility for administrative tasks.&#34;&#34;&#34;</span>
+
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> sys
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#e6db74">&#34;&#34;&#34;Run administrative tasks.&#34;&#34;&#34;</span>
+    os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>setdefault(<span style="color:#e6db74">&#34;DJANGO_SETTINGS_MODULE&#34;</span>, <span style="color:#e6db74">&#34;config.settings&#34;</span>)
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#f92672">from</span> django.core.management <span style="color:#f92672">import</span> execute_from_command_line
+    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span> <span style="color:#66d9ef">as</span> exc:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ImportError</span>(
+            <span style="color:#e6db74">&#34;Couldn&#39;t import Django. Are you sure it&#39;s installed and &#34;</span>
+            <span style="color:#e6db74">&#34;available on your PYTHONPATH environment variable? Did you &#34;</span>
+            <span style="color:#e6db74">&#34;forget to activate a virtual environment?&#34;</span>
+        ) <span style="color:#f92672">from</span> exc
+    execute_from_command_line(sys<span style="color:#f92672">.</span>argv)
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    main()
+</code></pre></div>
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/08/22/python-uv-run.html">🐍 Python UV run with shebangs</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/08/22/python-uv-run.html" class="u-url"><time class="dt-published" datetime="2024-08-22 13:54:45 -0500">Aug 22, 2024</time></a>
+
+		<div class="e-content">
+			 <p>This <a href="https://simonwillison.net/2024/Aug/21/usrbinenv-uv-run/">UV shebang</a> trick that Simon Willison linked up is a nice pattern, and I plan to rebuild some of my one-off scripts in my <a href="https://github.com/jefftriplett/dotfiles">dotfiles</a> using it.</p>
+<p>Here is a demo that will print &ldquo;hello python&rdquo; using the Python Branding colors using the <a href="https://github.com/Textualize/rich">Rich</a> library while letting UV install and manage rich for you.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env -S uv run</span>
+<span style="color:#75715e"># /// script</span>
+<span style="color:#75715e"># requires-python = &#34;&gt;=3.10&#34;</span>
+<span style="color:#75715e"># dependencies = [</span>
+<span style="color:#75715e">#     &#34;rich&#34;,</span>
+<span style="color:#75715e"># ]</span>
+<span style="color:#75715e"># ///</span>
+
+<span style="color:#f92672">from</span> rich.console <span style="color:#f92672">import</span> Console
+<span style="color:#f92672">from</span> rich.theme <span style="color:#f92672">import</span> Theme
+
+python_theme <span style="color:#f92672">=</span> Theme(
+    {
+        <span style="color:#e6db74">&#34;pyyellow&#34;</span>: <span style="color:#e6db74">&#34;#ffde57&#34;</span>,
+        <span style="color:#e6db74">&#34;pyblue&#34;</span>: <span style="color:#e6db74">&#34;#4584b6&#34;</span>,
+    }
+)
+
+console <span style="color:#f92672">=</span> Console(theme<span style="color:#f92672">=</span>python_theme)
+
+console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">&#34;[pyyellow]hello[/pyyellow] [pyblue]python[/pyblue]&#34;</span>, style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;on #646464&#34;</span>)
+</code></pre></div><p>Assuming you have UV installed, and you save and <code>chmod +x</code> this file as <code>hello-python.py</code>, then you should be able to run it via <code>./hello-python.py.</code></p>
+<p>I suspect I can more easily bootstrap new machines using this trick without fewer worries about polluting my global system packages.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/08/21/uv-updates-and.html">🐍 UV Updates and PEP 723: Simplifying Python Packaging and Scripting</a></h1>
 		
 
