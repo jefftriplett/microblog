@@ -24,6 +24,91 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/09/19/uv-roundup-five.html">🤠 UV Roundup: Five good articles and a pre-commit tip</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/09/19/uv-roundup-five.html" class="u-url"><time class="dt-published" datetime="2024-09-19 14:18:30 -0500">Sep 19, 2024</time></a>
+
+		<div class="e-content">
+			 <p>I have written quite a bit about <a href="https://micro.webology.dev/categories/uv/">UV</a> on my <a href="https://micro.webology.dev">micro blog</a>, and I am happy to see more and more people adopt it. I have stumbled on so many good articles recently that I wanted to share them because every article points out something new or different about why UV works well for them.</p>
+<p>If you are new to <a href="https://github.com/astral-sh/uv">UV</a>, it&rsquo;s a new tool written by <a href="https://astral.sh/">Astral</a>, the creators of <a href="https://github.com/astral-sh/ruff">Ruff</a>.</p>
+<p>I like UV because it replaces, combines, or complements a bunch of Python tools into one tool and user developer experience without forcing a UV way of doing it. UV effectively solves the question, &ldquo;Why do I need another Python tool?&rdquo; to do everyday Python tasks.</p>
+<p>Some reason I like UV after using it for months:</p>
+<ul>
+<li>It&rsquo;s a faster pip and is really, really fast</li>
+<li>It can install and manage Python versions</li>
+<li>It can run and install Python scripts</li>
+<li>It can run single-file Python scripts along with their dependencies</li>
+<li>It can handle project lock files</li>
+</ul>
+<p>While some people don&rsquo;t care about UV being fast, it&rsquo;s shaved minutes off my CI builds and container rebuilds, which means it has also saved me money and energy resources.</p>
+<h2 id="overall-thoughts-on-uv">Overall thoughts on UV</h2>
+<p>Oliver Andrich&rsquo;s <a href="https://andrich.me/2024/09/uv-i-am-somewhat-sold/">UV — I am (somewhat) sold</a> takes the approach of only using UV to set up a new Python environment. Oliver uses UV to install Python, aliases to call Python, and UV tool install to set up a few global utilities.</p>
+<h2 id="using-uv-with-django">Using UV with Django</h2>
+<p>Anže Pečar&rsquo;s <a href="https://blog.pecar.me/uv-with-django">UV with Django</a> shows how to use UV to set up a new project with Django.</p>
+<h2 id="switching-from-pyenv-to-uv">Switching from pyenv to UV</h2>
+<p>Will Guaraldi Kahn-Greene&rsquo;s <a href="https://bluesock.org/~willkg/blog/dev/switch_pyenv_to_uv.html">Switching from pyenv to uv</a> was relatable for me because I also use pyenv, but I plan to slowly migrate to using only UV. I&rsquo;m already halfway there, but I will have pyenv for my legacy projects for years because many aren&rsquo;t worth porting yet.</p>
+<h2 id="using-uv-and-managing-with-ansible">Using UV and managing with Ansible</h2>
+<p>Adam Johnson&rsquo;s <a href="https://adamj.eu/tech/2024/09/18/python-uv-development-setup/">Python: my new uv setup for development</a> taught me to use <code>uv cache prune</code> to clean up unused cache entries and shows how he manages his UV setup using Ansible.</p>
+<h2 id="some-notes-on-uv">Some notes on UV</h2>
+<p>Simon Willison&rsquo;s <a href="https://simonwillison.net/2024/Sep/15/uv-i-am-somewhat-sold/">Notes on UV</a> is an excellent summary of Oliver&rsquo;s notes.</p>
+<h2 id="a-parting-uv-tip">A parting UV tip</h2>
+<p>If you are a pre-commit fan hoping for a version that supports UV, the <a href="https://github.com/tox-dev/pre-commit-uv"><code>pre-commit-uv</code></a> project does just that. I started updating my justfile recipes to bake <code>just lint</code> to the following <code>uv run</code> command, which speeds up running and installing pre-commit significantly.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ uv run --with pre-commit-uv pre-commit run --all-files
+pre-commit-uv
+</code></pre></div><h2 id="if-you-are-attending-djangocon-us">If you are attending DjangoCon US&hellip;</h2>
+<p>If you are attending DjangoCon US and want to talk UV, Django, <a href="https://django-news.com">Django News</a>, <a href="https://djangopackages.org">Django Packages</a>, hit me up while you are there.</p>
+<p>I&rsquo;ll be attending, volunteering, organizing, <a href="https://mastodon.social/@JoshFoxleyTalent@fosstodon.org/113165161818979000">sponsoring</a>, and sprinting around the venue in Durham, NC, for the next week starting this Friday.</p>
+<p>We still have <a href="https://ti.to/defna/djangocon-us-2024">online and in-person tickets</a>, but not much longer!</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/09/12/office-hours-fall.html">📅 Office Hours Fall Update</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/09/12/office-hours-fall.html" class="u-url"><time class="dt-published" datetime="2024-09-12 07:00:00 -0500">Sep 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>This Friday, I am hosting Office Hours before I travel to <a href="https://2024.djangocon.us">DjangoCon US</a> (organizer) and the <a href="https://blackpythondevs.com/leadership-summit-2024/">Black Python Devs Leadership Summit</a> (speaker) in Durham, NC.</p>
+<p>This Friday will be my last session before a two-week break, but I will resume Office Hours again on October 4th.</p>
+<ul>
+<li>Friday, September 13th, 2024, <a href="https://time.is/0230PM_13_September_2024_in_CT?Jeff%27s_Office_Hours">2:30 pm to 4:30 pm</a></li>
+<li>Friday, September 20th, 2024 - No office hours</li>
+<li>Friday, September 27th, 2024 - No office hours</li>
+<li>Friday, October 4th, 2024, <a href="https://time.is/0230PM_04_October_2024_in_CT?Jeff%27s_Office_Hours">2:30 pm to 4:30 pm</a></li>
+</ul>
+<h2 id="high-level-details">High-level details</h2>
+<p>ℹ️ Anyone can join office hours. Many join because they work remotely, miss seeing faces, and miss the random conversations when a small group hangs out.</p>
+<p>ℹ️ Our office hours are a collaborative space where we can discuss our ongoing projects, catch up, and work together to wrap up our week on a productive note.</p>
+<p>🙏 As always, everyone is welcome to join, whether you’re a regular attendee or joining for the first time. If you are curious, reach out.</p>
+<p>✅ If you need any additional details, feel free to send me a message or check out the gist from our previous sessions, where you’ll always find the most recent Zoom link ⚠️</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/09/11/on-travel-tips.html">🛌 On travel tips BYOP aka bring your own pillow</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/09/11/on-travel-tips.html" class="u-url"><time class="dt-published" datetime="2024-09-11 08:30:26 -0500">Sep 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>🎒 While some of my friends and colleagues can pack everything they need in a small backpack for a week&rsquo;s travel, I am not that person.</p>
+<p>I turned into the person who brings their pillow when they travel, and it changed my stay and quality of sleep by 1000%.</p>
+<p>There are many variables you can&rsquo;t control when you travel, but the pillow is the one variable I can control, and it has the biggest impact on my overall sleep quality. It&rsquo;s frustrating to pay $200 or more a night for a nice hotel room and then to have a lousy night of sleep because of a flat pillow.</p>
+<p>You can&rsquo;t control the mattress quality you sleep on, but having a decent pillow takes the edge off for me.</p>
+<p>It&rsquo;s also an excellent excuse to buy a new pillow for your home in case your bag gets damaged, something happens to your pillow, and you need to throw your old pillow away. That also eases the burden so you can throw your travel pillow in the wash as soon as you get back without disrupting your first night back home.</p>
+<p>In conclusion, you can bring your own pillow if you struggle with sleep while traveling. It&rsquo;s a relatively cheap life hack that might require a slightly bigger bag, but it might be worth it for improved sleep quality.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/09/10/on-evolving-djangos.html">🚜 On Evolving Django&#39;s `auth.User` model</a></h1>
 		
 
@@ -34,7 +119,7 @@
 </a> Stack Report before I have a firm opinion, but I saw his <a href="https://mastodon.social/@carlton@fosstodon.org/113113728832109272">Mastodon post</a> and I thought it was worth sharing some initial thoughts.</p>
 <p>On my first read, I fell into the camp that wants <code>django-unique-user-email</code> and full name to be the defaults on Django&rsquo;s built-in User. I have wanted this forever, and my clients do, too.</p>
 <p>Django should still allow me to create a custom user, but the documentation could be better. Django&rsquo;s documentation is a topic for another day, but I&rsquo;m confused by it and find it less and less helpful. I notice the developers I work with get lost in them, too. Docs may be a good DjangoCon US topic if you want to discuss it in a few weeks.</p>
-<p>I would love the default User to have a unique email address, full name, and a short name. Optionally, a username is an email address setting. Please don&rsquo;t take away the ability to have a custom User model.</p>
+<p>I would love the default User to have a unique email address, full name, and a short name. Optionally, a username is an email address setting. Please don&rsquo;t take away the ability to have a custom User model. (<strong>Update:</strong> Carlton is <em>not</em> making a case for removing a custom User model, but others have made that argument. No, thank you.)</p>
 <p>Carlton&rsquo;s &ldquo;Action points&rdquo; conclusion seems reasonable to me.</p>
 
 		</div>
