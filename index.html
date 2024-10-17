@@ -24,7 +24,168 @@
 	
 	  <div class="h-entry">
 		
-			<h1><a href="https://micro.webology.dev/2024/10/10/office-hours-october.html">📅 Office Hours October Update</a></h1>
+			<h1><a href="https://micro.webology.dev/2024/10/16/my-notes-on.html">📓 My notes on publishing a Python package with UV and building a custom GitHub Action for files-to-claude-xml </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/10/16/my-notes-on.html" class="u-url"><time class="dt-published" datetime="2024-10-16 23:07:08 -0500">Oct 16, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My new Python application <a href="https://pypi.org/project/files-to-claude-xml/">files-to-claude-xml</a> is now on PyPI, which means they are packaged and pip installable. My preferred way of running <code>files-to-claude-xml</code> is via UV&rsquo;s tool run, which will install it if it still needs to be installed and then execute it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ uv tool run files-to-claude-xml --version
+</code></pre></div><h2 id="publishing-on-pypi-with-uv">Publishing on PyPi with UV</h2>
+<p>UV has both build and publish commands, so I took them for a spin today.</p>
+<p><code>uv build</code> just worked, and a Python package was built.</p>
+<p>When I tried <code>uv publish</code>, it prompted me for some auth settings for which I had to log in to <a href="https://pypi.org">PyPI</a> to create a token.</p>
+<p>I added those to my local ENV variables I manage with <a href="https://direnv.net">direnv</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">export UV_PUBLISH_PASSWORD<span style="color:#f92672">=</span>&lt;your-PyPI-token-here&gt;
+export UV_PUBLISH_USERNAME<span style="color:#f92672">=</span>__token__
+</code></pre></div><p>Once both were set and registered, <code>uv publish</code> published my files on PyPI.</p>
+<h2 id="github-action">GitHub Action</h2>
+<p>To make <code>files-to-claude-xml</code> easier to run on GitHub, I created a custom action to build a <code>_claude.xml</code> from the GitHub repository.</p>
+<p>To use this action, I wrote this example workflow, which runs from <a href="https://github.com/jefftriplett/files-to-claude-xml-example">files-to-claude-xml-example</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">name</span>: <span style="color:#ae81ff">Convert Files to Claude XML</span>
+
+
+<span style="color:#f92672">on</span>:
+  <span style="color:#ae81ff">push</span>
+
+
+<span style="color:#f92672">jobs</span>:
+  <span style="color:#f92672">convert-to-xml</span>:
+    <span style="color:#f92672">runs-on</span>: <span style="color:#ae81ff">ubuntu-latest</span>
+    <span style="color:#f92672">steps</span>:
+    - <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/checkout@v4</span>
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Convert files to Claude XML</span>
+      <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">jefftriplett/files-to-claude-xml-action@main</span>
+      <span style="color:#f92672">with</span>:
+        <span style="color:#f92672">files</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">          README.md
+</span><span style="color:#e6db74">          main.py</span>          
+        <span style="color:#f92672">output</span>: <span style="color:#e6db74">&#39;_claude.xml&#39;</span>
+        <span style="color:#f92672">verbose</span>: <span style="color:#e6db74">&#39;true&#39;</span>
+    - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">Upload XML artifact</span>
+      <span style="color:#f92672">uses</span>: <span style="color:#ae81ff">actions/upload-artifact@v4</span>
+      <span style="color:#f92672">with</span>:
+        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">claude-xml</span>
+        <span style="color:#f92672">path</span>: <span style="color:#ae81ff">_claude.xml</span>
+</code></pre></div><p>My GitHub action is built with a <code>Dockerfile</code>, which installs <code>files-to-claude-xml</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="color:#75715e"># Dockerfile</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ghcr.io/astral-sh/uv:bookworm-slim</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> UV_LINK_MODE<span style="color:#f92672">=</span>copy
+
+
+<span style="color:#66d9ef">RUN</span> --mount<span style="color:#f92672">=</span>type<span style="color:#f92672">=</span>cache,target<span style="color:#f92672">=</span>/root/.cache/uv <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --mount<span style="color:#f92672">=</span>type<span style="color:#f92672">=</span>bind,source<span style="color:#f92672">=</span>uv.lock,target<span style="color:#f92672">=</span>uv.lock <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --mount<span style="color:#f92672">=</span>type<span style="color:#f92672">=</span>bind,source<span style="color:#f92672">=</span>pyproject.toml,target<span style="color:#f92672">=</span>pyproject.toml <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    uv sync --frozen --no-install-project<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;uvx&#34;</span>, <span style="color:#e6db74">&#34;files-to-claude-xml&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>To turn a GitHub repository into a runnable GitHub Action, an <code>action.yml</code> file needs to exist in the repository. This file describes the input arguments and which <code>Dockerfile</code> or command to run.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#75715e"># action.yml</span>
+<span style="color:#f92672">name</span>: <span style="color:#e6db74">&#39;Files to Claude XML&#39;</span>
+<span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Convert files to XML format for Claude&#39;</span>
+<span style="color:#f92672">inputs</span>:
+  <span style="color:#f92672">files</span>:
+    <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Input files to process&#39;</span>
+    <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">list</span>
+  <span style="color:#f92672">output</span>:
+    <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Output XML file path&#39;</span>
+    <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+    <span style="color:#f92672">default</span>: <span style="color:#e6db74">&#39;_claude.xml&#39;</span>
+  <span style="color:#f92672">verbose</span>:
+    <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Enable verbose output&#39;</span>
+    <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+    <span style="color:#f92672">default</span>: <span style="color:#e6db74">&#39;false&#39;</span>
+  <span style="color:#f92672">version</span>:
+    <span style="color:#f92672">description</span>: <span style="color:#e6db74">&#39;Display the version number&#39;</span>
+    <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+    <span style="color:#f92672">default</span>: <span style="color:#e6db74">&#39;false&#39;</span>
+<span style="color:#f92672">runs</span>:
+  <span style="color:#f92672">using</span>: <span style="color:#e6db74">&#39;docker&#39;</span>
+  <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#39;Dockerfile&#39;</span>
+  <span style="color:#f92672">args</span>:
+    - <span style="color:#ae81ff">${{ join(inputs.files, &#39; &#39;) }}</span>
+    - --<span style="color:#ae81ff">output</span>
+    - <span style="color:#ae81ff">${{ inputs.output }}</span>
+    - <span style="color:#ae81ff">${{ inputs.verbose == &#39;true&#39; &amp;&amp; &#39;--verbose&#39; || &#39;&#39; }}</span>
+    - <span style="color:#ae81ff">${{ inputs.version == &#39;true&#39; &amp;&amp; &#39;--version&#39; || &#39;&#39; }}</span>
+</code></pre></div><p>Overall, this works. Claude&rsquo;s prompting helped me figure it out, which felt fairly satisfying given the goal of <code>files-to-claude-xml</code>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/10/14/the-legend-of.html">🎮 The Legend of Zelda: Echoes of Wisdom review 👍</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/10/14/the-legend-of.html" class="u-url"><time class="dt-published" datetime="2024-10-14 21:05:11 -0500">Oct 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>My oldest kiddo and I finished The Legend of Zelda: Echoes of Wisdom tonight. The 2D Zelda games are some of my favorite games of all time.</p>
+<p>I was worried about the game&rsquo;s overall look. It looked too much like Link&rsquo;s Awakening, which I wasn&rsquo;t a fan of compared to the GameBoy version.</p>
+<p>I&rsquo;m happy to say the screenshots don&rsquo;t do the game justice. They perfected their 2D engine and included some camera control, which helps prevent disappearing into the shadows and behind objects.</p>
+<p>The game feels like a sequel to 90s SNES A Link to the Past game with some features from the more recent Switch 3D Zeldas and lore. They even built off of the original Zelda&rsquo;s 2D dungeon side-scrolling mode in a way that I thought was a lot of fun without dreading it.</p>
+<p>While I&rsquo;m happy to see Zelda finally get her own game, I thought the character had a lot of depth and one of the most interesting sets of powers and echoes, which allows for a dizzyingly large number of monsters and objects that Zelda can conjure on demand.</p>
+<p>My only complaint was that I snagged a Lynel within the first few hours of play, but I only had enough power right before the last battle of the game to conjure it.</p>
+<p>I&rsquo;m happy that they thought out post-ending gameplay to make finding everything you missed easier, which was refreshing, instead of being stuck in a weird state.</p>
+<p>Echoes of Wisdom might be my favorite 2D(ish) Zelda game and one of my favorite Zelda games.</p>
+<p>I hope Nintendo lets Grezzo, the game studio behind it, continue to make weird, 2D Zelda games. This game makes me want to explore the studio&rsquo;s other Nintendo 3DS Zelda games that I missed out on.</p>
+<p><a href="https://www.backloggd.com/games/the-legend-of-zelda-echoes-of-wisdom/">www.backloggd.com/games/the&hellip;</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/10/12/i-released-filestoclaudexml.html">🤖 I released files-to-claude-xml and new development workflows</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/10/12/i-released-filestoclaudexml.html" class="u-url"><time class="dt-published" datetime="2024-10-12 14:00:31 -0500">Oct 12, 2024</time></a>
+
+		<div class="e-content">
+			 <p>After months of using and sharing this tool via a private gist, I finally carved out some time to release <a href="https://github.com/jefftriplett/files-to-claude-xml">files-to-claude-xml</a>.</p>
+<p>Despite my social media timeline declaring LLMs dead earlier today, I have used <a href="https://www.anthropic.com/news/projects">Claude Projects</a> and Artifacts.</p>
+<p>My workflow is to copy a few files into a Claude Project and then create a new chat thread where Claude will help me write tests or build out a few features.</p>
+<p>My <code>files-to-claude-xml</code> script grew out of some research I did where I stumbled on their <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips#essential-tips-for-long-context-prompts">Essential tips for long context prompts</a> which documents how to get around some file upload limits which encourages uploading one big file using Claude&rsquo;s XML-like format.</p>
+<p>With <code>files-to-claude-xml</code>, I build a list of files that I want to import into a Claude Project. Then, I run it to generate a <code>_claude.xml</code> file, which I drag into Claude. I create a new conversation thread per feature, then copy the finished artifacts out of Claude once my feature or thread is complete.</p>
+<p>After the feature is complete, I delete the <code>_claude.xml</code> file from my project and replace it with an updated copy after I re-run <code>files-to-claude-xml</code>.</p>
+<h2 id="features-on-the-go">Features on the go</h2>
+<p>One bonus of using Claude Projects is that once everything is uploaded, I can use the Claude iOS app as a sort-of notes app and development tool. I can start parallel conversation threads and have it work on new ideas and features. Once I get back to my desktop, I can pull these chat conversations up, and if I like the direction of the feature, I might use them. If not, I have wasted no time or effort on them. This also serves as a nice ToDo list.</p>
+<h2 id="new-workflows">New workflows</h2>
+<p>I am working on side projects further using this methodology. Sometimes, I would like to work on something casually while watching Netflix, but my brain shuts off from coding during the day. Instead of feeling bad that I haven&rsquo;t added share links to a website or some feature I meant to add last week, I can pair Claude to work on it with me.</p>
+<p>I can also get more done with my lunch hours on projects like <a href="https://djangotv.com">DjangoTV</a> than I could have otherwise. Overall, I&rsquo;m happy to have an on-demand assistant to pair with and work on new features and ideas.</p>
+<p>It&rsquo;s also quicker to try out new ideas and projects that I would have needed to make time for.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>Simon Willison wrote <a href="https://github.com/simonw/files-to-prompt">files-to-prompt</a>, which I think is also worth trying. I contributed to the discussion, feedback, and document structure for the <code>--cxml</code> feature.</p>
+<p>I wrote <code>files-to-claude-xml</code> before Simon had cxml support and hoped to not release my version.</p>
+<p>However, after trying it out on several projects, my ignore/exclude list grew more significant than the files that I wanted to include in my project to send to Claude. I found it easier to generate a list of files to pass to mine instead of maintaining a long list to exclude.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+
+		<a href="https://micro.webology.dev/2024/10/11/bad-monkey-i.html" class="u-url"><time class="dt-published" datetime="2024-10-11 22:41:31 -0500">Oct 11, 2024</time></a>
+
+		<div class="e-content">
+			 <p>📺 Bad Monkey</p>
+<p>I went in with zero expectations and enjoyed <a href="https://trakt.tv/shows/bad-monkey">Bad Monkey</a>. The show was fun in one of those narrated 80s detective shows. I am not sure that I am or am not a Vince Vaughn fan, but it is the best role I have seen him.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/10/10/office-hours-october.html">📅 Office Hours for October</a></h1>
 		
 
 		<a href="https://micro.webology.dev/2024/10/10/office-hours-october.html" class="u-url"><time class="dt-published" datetime="2024-10-10 20:28:54 -0500">Oct 10, 2024</time></a>
