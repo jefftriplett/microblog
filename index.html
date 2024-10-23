@@ -24,6 +24,36 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/10/23/til-justfiles-can.html">TIL Justfiles can also be Just Scripts </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/10/23/til-justfiles-can.html" class="u-url"><time class="dt-published" datetime="2024-10-23 12:04:47 -0500">Oct 23, 2024</time></a>
+
+		<div class="e-content">
+			 <p>TIL that Justfiles can turn into Just Scripts by adding <code>#!/usr/bin/env just --justfile</code> to the top of the file and running <code>chmod +x</code> on the file.</p>
+<p>From the docs:</p>
+<blockquote>
+<p>By adding a shebang line to the top of a <code>justfile</code> and making it executable, <code>just</code> can be used as an interpreter for scripts:
+<a href="https://github.com/casey/just?tab=readme-ov-file#just-scripts">https://github.com/casey/just?tab=readme-ov-file#just-scripts</a></p>
+</blockquote>
+<h2 id="justsh"><code>just.sh</code></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">#!/usr/bin/env just --justfile
+</span><span style="color:#75715e"></span>
+@_default:
+	just --justfile just.sh --list
+
+@lint *ARGS:
+    uv --quiet run --with pre-commit-uv pre-commit run <span style="color:#f92672">{{</span> ARGS <span style="color:#f92672">}}</span> --all-files
+</code></pre></div><p>After you run <code>chmod +x just.sh</code>, this file may be run using <code>./just.sh</code>, and sub-commands everything <code>just &lt;subcommand&gt;</code> will just work.</p>
+<p>Please note that <code>--justfile just.sh</code> is needed if you want your Just Script to be able to introspect or call itself.</p>
+<h2 id="why">Why?</h2>
+<p>More and more of my clients are using Justfiles, and occasionally, I want some other recipes that may belong outside the default workflows. These can also be reusable between projects for some of my other internal tooling, so it&rsquo;s an excellent resource to learn about.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/10/16/my-notes-on.html">📓 My notes on publishing a Python package with UV and building a custom GitHub Action for files-to-claude-xml </a></h1>
 		
 
