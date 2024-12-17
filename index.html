@@ -24,6 +24,58 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2024/12/17/why-do-the.html">🤷 Why do the Django and Python communities use so many Google Forms? </a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/12/17/why-do-the.html" class="u-url"><time class="dt-published" datetime="2024-12-17 11:09:32 -0600">Dec 17, 2024</time></a>
+
+		<div class="e-content">
+			 <p>Last week, I wrote but didn&rsquo;t publish some notes about why the Django and Python communities use so many Google Forms.</p>
+<p>The simple answer is that Google Forms are quick and easy to set up, and data can be easily exported via Google Sheets or a CSV file.</p>
+<p>Getting data in and out of Django isn&rsquo;t hard, but why isn&rsquo;t it as easy as using Google Forms?</p>
+<p>I&rsquo;d love to see a Django version of Google Forms that we can all use.</p>
+<p>Has anyone solved this problem?</p>
+<p>From a technical perspective, Django ships with a <code>JSONField</code>, which can store any form data we want without having to migrate databases. Turning a flat <code>JSONField</code> into CSV is already a solved problem.</p>
+<p><strong>Please note:</strong> I am not looking for a Django forms wrapper or your opinions about why Django should use your fancy Django forms tool.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2024/12/14/new-project-to.html">New project to shorten django-admin to django because we are not monsters</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2024/12/14/new-project-to.html" class="u-url"><time class="dt-published" datetime="2024-12-14 21:18:43 -0600">Dec 14, 2024</time></a>
+
+		<div class="e-content">
+			 <p>One of the biggest mysteries in Django is why I have to run <code>django-admin</code> from my terminal instead of just running <code>django</code>. Confusingly, <code>django-admin</code> has nothing to do with Django&rsquo;s admin app.</p>
+<p>If you have ever wondered why and wanted to type <code>django</code> from your terminal, my new project, <code>django-cli-no-admin</code> solves this problem for you.</p>
+<p>I looked at several package names on <a href="https://pypi.org">PyPI</a>, including <code>django-cli</code>, which I liked the best (someone is name squatting this package.)</p>
+<p>I gave up and went with <a href="https://pypi.org/project/django-cli-no-admin/"><code>django-cli-no-admin</code></a> for lack of a better name.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># new school</span>
+uv pip install django-cli-no-admin
+
+<span style="color:#75715e"># old school</span>
+pip install django-cli-no-admin
+
+<span style="color:#75715e"># to use it...</span>
+django --version 
+</code></pre></div><p>This tool aliases Django&rsquo;s <code>django-admin</code> script does but we shorted the name by 50%:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">[<span style="color:#a6e22e">project</span>.<span style="color:#a6e22e">scripts</span>]
+<span style="color:#a6e22e">django</span> = <span style="color:#e6db74">&#34;django.core.management:execute_from_command_line&#34;</span>
+</code></pre></div><h2 id="should-django-adopt-this">Should Django adopt this?</h2>
+<p>Yes. But we can leave <code>django-admin</code> alone since we have ~20 years of history referencing it.</p>
+<h2 id="how-long-has-this-lived-in-your-head">How long has this lived in your head?</h2>
+<p>Almost two decades.</p>
+<h2 id="where-is-the-code">Where is the code?</h2>
+<p><a href="https://github.com/jefftriplett/django-cli-no-admin">https://github.com/jefftriplett/django-cli-no-admin</a></p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2024/12/01/weeknotes-for-week.html">📓 Weeknotes for Week 48: November 25 to December 1</a></h1>
 		
 
@@ -123,7 +175,7 @@
 <li>Friday, November 22nd, 2024, <a href="https://time.is/0200PM_22_November_2024_in_CT">2:00 pm to 4:15 pm</a> - Hard stop for me</li>
 <li>Friday, November 29th, 2024 - No office hours (US Holiday)</li>
 <li>Friday, December 6th, 2024, <a href="https://time.is/0200PM_6_December_2024_in_CT">2:30 pm to 4:30 pm</a></li>
-<li>Friday, December 13th, 2024, <a href="https://time.is/0800AM_13_December_2024_in_CT">8:00 am to 11:00 am</a> - 🌅 Early edition 🐓 (updated 12/12 to start an hour earlier)</li>
+<li>Friday, December 13th, 2024, <a href="https://time.is/0800AM_13_December_2024_in_CT">8:00 am to 11:00 am</a> - 🌅 Early edition 🐓 <em>(updated 12/12 to start an hour earlier)</em></li>
 <li>Friday, December 20th, 2024, <a href="https://time.is/0230PM_20_December_2024_in_CT">2:30 pm to 4:30 pm</a></li>
 <li>Friday, December 27th, 2024 - No office hours (US Holiday)</li>
 <li>Friday, January 3rd, 2025, <a href="https://time.is/0200PM_3_January_2025_in_CT">2:30 pm to 4:30 pm</a></li>
