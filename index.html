@@ -24,6 +24,109 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2025/01/22/python-click-djangoclick-and-typer/">Python Click, django-click, and Typer notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/01/22/python-click-djangoclick-and-typer/" class="u-url"><time class="dt-published" datetime="2025-01-22 18:37:45 -0600">Jan 22, 2025</time></a>
+
+		<div class="e-content">
+			 <p>One of the most significant Python innovations in my development toolchain was the <a href="https://click.palletsprojects.com">Click</a> utility, which simplified the creation of Python scripts. Click changed how I approach writing one-off Python scripts and made it easier for me to write better developer experiences around those scripts.</p>
+<p>Once I found <a href="https://github.com/GaretJax/django-click">django-click</a>, writing Django management commands was a breeze, using the same Click API that I was already familiar with.</p>
+<p>Arguably, the second most significant innovation was the <a href="https://typer.tiangolo.com">Typer</a> library, built on Click, making writing Python scripts even easier. I didn&rsquo;t think it was possible to be easier than Python Click until Typer came out and proved me wrong.</p>
+<h2 id="the-python-click-library">The Python Click library</h2>
+<p>A typical pattern I use with Click is creating a command that accepts an argument like a URL.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> click
+
+
+[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>argument(<span style="color:#e6db74">&#34;url&#34;</span>, type<span style="color:#f92672">=</span>str)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(url):
+	do_something(url<span style="color:#f92672">=</span>url)
+</code></pre></div><h2 id="the-python-django-click-library">The Python django-click library</h2>
+<p>This works well, but one improvement would be to accept as many <code>url</code> arguments as I can pass to it. Thankfully, Click solves this with the <code>nargs</code> argument. I always have to look this up, which is why we are here.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
+
+
+[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>argument(<span style="color:#e6db74">&#34;urls&#34;</span>, nargs<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, type<span style="color:#f92672">=</span>str)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(urls):
+    <span style="color:#66d9ef">for</span> url <span style="color:#f92672">in</span> urls:
+        do_something(url<span style="color:#f92672">=</span>url)
+</code></pre></div><h2 id="the-python-typer-library">The Python Typer library</h2>
+<p>Suppose we were writing this example with Typer. In that case, we could simplify it to using Python&rsquo;s native data types, which would make it feel more like I&rsquo;m writing native code and less like I&rsquo;m using a library.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> typer
+
+
+app <span style="color:#f92672">=</span> typer<span style="color:#f92672">.</span>Typer() 
+
+
+[<span style="color:#a6e22e">@app</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>app)()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(urls: list[str]): 
+    <span style="color:#66d9ef">for</span> url <span style="color:#f92672">in</span> urls:
+        do_something(url<span style="color:#f92672">=</span>url)
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>There is also a <a href="https://github.com/django-commons/django-typer">django-typer</a> library, bringing the Typer library to Django. I suspect I&rsquo;ll switch to django-typer the next time I start a new project to give it a good test drive. I can speculate on what that looks like, but I&rsquo;ll leave that for another day.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/01/15/email-calendars-and-the-chaos/">📩 Email, Calendars, and the Chaos of Modern Workflows</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/01/15/email-calendars-and-the-chaos/" class="u-url"><time class="dt-published" datetime="2025-01-15 20:51:45 -0600">Jan 15, 2025</time></a>
+
+		<div class="e-content">
+			 <p>I was feeling overloaded with emails this week, and then I remembered that my out-of-office auto-responder told people they should contact me after the first of the year if they needed me to reply.</p>
+<p>Thankfully, I could select and archive all of my 2024 emails with this rule <code>label:inbox after:2023/12/31 before:2025/01/01</code>, which reconciled my old emails.</p>
+<h2 id="calendars-and-shared-documents">Calendars and shared Documents</h2>
+<p>With each Google organization, I&rsquo;m a member with another Google Calendar, Google Drive, and Google Contacts to manage. That document someone wants feedback on sometimes feels like spinning a wheel, and I need to guess which inbox and account the message might land in.</p>
+<p>The best solution that I have found for juggling meeting invites is <a href="https://reclaim.ai">Reclaim</a>, which is terrific for merging multiple calendars into one calendar so I can at least keep on top of meeting invites and scheduling. Dropbox recently bought them, but I&rsquo;m hoping that Dropbox will leave them alone.</p>
+<p>Email and calendars have become more challenging since I switched to a Mac Studio at the office. While we were returning to work during a blizzard last week, I realized that my personal Mac Mini in my home office had no concept of my work calendar or the 4 or 7 Vivaldi profiles with syncing that I use to jump between orgs all day.</p>
+<p>With 1Password, this is a straightforward process to set up and authorize, but it still takes time.</p>
+<p>Tonight, I&rsquo;m pretty sure I even locked myself out of one service because it&rsquo;s probably not a typical usage pattern to jump between three Macs over two locations with a half dozen profiles to juggle.</p>
+<h2 id="calendar-agent">Calendar Agent</h2>
+<p>Over the Thanksgiving break, I wrote my first Calendar Agent, who can read and write to my work calendar. It&rsquo;s not fully baked yet, but it works well enough to tell me about my upcoming meetings and to create a meeting for me. Sometimes.</p>
+<p>The biggest downside to using my Calendar Agent is that I have to run it from my terminal, which isn&rsquo;t always the most convenient place.</p>
+<p>Side note: I might rewrite my agent using <a href="https://ai.pydantic.dev">PydanticAI</a> as an excuse to learn about the Python agent framework, streamline tool-calling, and play with more local agents using <a href="https://ollama.com">Ollama</a>.</p>
+<h2 id="the-better-email-solution">The better email solution</h2>
+<p>The better email solution was a Django email app called Concorde, one of <a href="https://github.com/adamfast">Adam Fast</a>&rsquo;s creations. It was Django querysets for managing email rules, which I modified and ran over the years. It quickly created better rules than Gmail supported, like deleting old messages in specific folders after x-days. When I kept my fork running and updated, the tool was invaluable. When I kept my Concorde up and running, my email life was healthier than when I was slower to fix it after an upgrade.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I&rsquo;m annoyed that the best solutions for these problems are to either pay a company to make a Google Suite usable or you must be a developer to build tools to manage it all.</p>
+<p>This stuff sucks.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/01/12/the-best-nfl-broadcast-teams/">🏈 The best NFL broadcast teams and telecast quality, ranked</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/01/12/the-best-nfl-broadcast-teams/" class="u-url"><time class="dt-published" datetime="2025-01-12 20:00:08 -0600">Jan 12, 2025</time></a>
+
+		<div class="e-content">
+			 <p><a href="https://mastodon.social/@gruber/113779696867783170">John Gruber</a> posted his picks a few weeks ago, and I couldn&rsquo;t disagree more.</p>
+<p>2024 NFL broadcast teams and telecast quality, ranked:</p>
+<ol>
+<li>Mike Tirico and Chris Collinsworth, NBC (the best duo by a lot)</li>
+<li>Al Michaels and Kirk Herbstreit, Amazon</li>
+<li>Jim Nantz and Tony Romo, CBS</li>
+</ol>
+<p>&ndash; the floor &ndash;</p>
+<ol start="4">
+<li>Kevin Burkhardt and Tom Brady, Fox</li>
+<li>The Manning Cast. If not for a paint-dryingly bad combo of Joe Buck and Troy Aikman, I would never have put the Manning Cast above anyone. This isn&rsquo;t even fair to Aikman, who isn&rsquo;t that bad, but Joe Buck should stick with baseball.</li>
+<li>Joe Buck and Troy Aikman, ABC, aka paint drying</li>
+</ol>
+<p>Al Michaels, Mike Tirico, and Chris Collinsworth are what football sounds like to me after Madden. Damn, I miss Madden. Even boringly one-sided games he made special.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/01/11/djangotemplatedemailmd-notes-aka-if-you/">django-templated-email-md notes aka if you want to format emails with Markdown, use it</a></h1>
 		
 
