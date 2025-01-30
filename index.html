@@ -24,6 +24,73 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2025/01/29/my-big-list-of-aillm/">🤖 My big list of AI/LLM tools, notes, and how I&#39;m using them</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/01/29/my-big-list-of-aillm/" class="u-url"><time class="dt-published" datetime="2025-01-29 18:46:04 -0600">Jan 29, 2025</time></a>
+
+		<div class="e-content">
+			 <p>I have been using, working, and running commercial and local LLMs for years, but I never got around to sharing the tools and applications I use. Here are some quick notes, tools, and resources I have landed on and use daily.</p>
+<h2 id="mac-apps-i-use">Mac Apps I use:</h2>
+<p>I do all of my development on Macs. These tools make running local LLMs accessible.</p>
+<ul>
+<li>
+<p><a href="https://ollama.com">Ollama</a> is the server that can download and run 100s of AI models.</p>
+</li>
+<li>
+<p><a href="https://github.com/kevinhermawan/Ollamac">Ollamac</a> is a GUI client for Ollama that lets you write prompts, save history, and allow you to pick models to test out quickly.</p>
+</li>
+<li>
+<p><a href="https://tailscale.com">Tailscale</a> I use Tailscale on all of my devices, which gives me access to my work M2 Mac Studio and home office Mac Mini Pro, which both run Ollama, from anywhere in the world. This makes prototyping at home quick but then I can run a larger model from my work machine and it&rsquo;s so fast, it feels like the machine is running in my house.</p>
+</li>
+<li>
+<p><a href="https://goodsnooze.gumroad.com/l/openai-bundle">OpenAI Bundle</a>—I bought this bundle because it was the cheapest way to get a bunch of AI apps, including four of Jordi Bruin&rsquo;s apps. I have used these for a few years.</p>
+<ul>
+<li><a href="https://goodsnooze.gumroad.com/l/macwhisper">MacWhisper</a> - I use MacWhisper to turn voice notes and podcasts into plain text files for my notes and sometimes blog articles.</li>
+<li><a href="https://goodsnooze.gumroad.com/l/voices">Voices</a> - I use Voices when I find a large blog post and want to listen to it while working.</li>
+</ul>
+</li>
+<li>
+<p><a href="https://claude.ai/download">Claude for Desktop</a> gets a lot of crap for being &ldquo;yet another Electron app&rdquo; instead of a custom-built macOS app, but the people saying that don&rsquo;t know what they are talking about. The Claude Desktop has voice support and keyboard hotkeys, which make the app incredibly useful. More importantly, Claude Desktop also supports <a href="https://modelcontextprotocol.io">Model Context Protocol</a>, which lets Claude access your file system, git, and anything else you want to access. It&rsquo;s incredibly powerful, and there&rsquo;s nothing quite like it.</p>
+</li>
+</ul>
+<h2 id="baseline-rules-for-running-a-model">Baseline rules for running a model</h2>
+<p>While running models locally is possible, consumer hardware is constrained by RAM and GPU for even the most miniature models. The easiest mental model to work with is that Billions of parameters are roughly equivalent to your system&rsquo;s RAM in Gigabytes. An 8B model needs roughly 8G RAM to fit into memory.</p>
+<p>My mental formula is somewhat lossy because 40B models fit 32G of memory, and 72B models fit 64G of memory with some room to spare. This is just the rough estimate that I use.</p>
+<p>Even though you can run models locally, even the smallest models with a significant context window will exceed your machine&rsquo;s available RAM. A 128k context window needs about 64 GB of RAM to load into memory for an 8B parameter model fully, even though the model can easily fit into 8GB of RAM. That doesn&rsquo;t mean the model won&rsquo;t run locally, but it will run closer than it would if you have more than 72 GB of RAM, which your model fully needs to fit.</p>
+<p>I look for three things when I&rsquo;m evaluating a model:</p>
+<ul>
+<li>A number of parameters are measured in Billions.</li>
+<li>Context length
+<ul>
+<li>The input context length, which effectively the model&rsquo;s memory</li>
+<li>The output context length, which is how big the answer can be</li>
+</ul>
+</li>
+<li>The type of model:
+<ul>
+<li><strong>Default Models</strong>  are general-purpose models like GPT-4 and Llama 3.3.</li>
+<li><strong>Vision Models</strong> and process and read visual data like images and videos.</li>
+<li><strong>Tool Models</strong> can call external tools and APIs and perform custom actions to which you give them access.</li>
+<li><strong>Embedding Models</strong> can turn text into vectors or tokens, which helps measure your prompts and other RAG operations.</li>
+</ul>
+</li>
+</ul>
+<p>What about quantization? Quantization can help you scale a model down so that it might fit into memory, but there&rsquo;s always a loss in quality, which defeats the purpose of using the bigger model in my book.</p>
+<h2 id="keeping-up">Keeping up</h2>
+<p>My favorite resource for keeping up is <a href="https://ollama.com/search?o=newest">Ollama&rsquo;s Models page sorted by Newest</a> models. I check it a few times a day and you&rsquo;ll see new models release single-digit hours to days before press releases can catch up.</p>
+<p>I like <a href="https://www.youtube.com/@technovangelist">Matt Williams'</a> YouTube Channel a lot. It&rsquo;s the one channel I come back to, and I find that I always learn something from it. His videos tend to be ten to twenty minutes long, which is about right since the material is so dense.</p>
+<p>Start with his <a href="https://www.youtube.com/watch?v=QfFRNF5AhME">Optimize Your AI Models</a> videos. They&rsquo;re a lot to fit in your brain, but they&rsquo;re a great starting point.</p>
+<p><a href="https://simonwillison.net">Simon Willison&rsquo;s Weblog</a> is good too.</p>
+<h2 id="python">Python</h2>
+<p>I&rsquo;ll have to write a few posts on how I&rsquo;m using LLMs with code, but Simon&rsquo;s <a href="https://llm.datasette.io/en/stable/">LLM</a> is a good general-purpose AI hammer if you need one.</p>
+<p>As of last week, I&rsquo;m using <a href="https://ai.pydantic.dev">Pydantic AI</a> instead of OpenAI&rsquo;s or Anthropic&rsquo;s Python libraries. Pydantic AI will install both of those libraries for you, but I find it to be 100% better and easier to switch between models using it than LangChain (not linked) or anything else I have tried.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/01/22/python-click-djangoclick-and-typer/">Python Click, django-click, and Typer notes</a></h1>
 		
 
@@ -38,7 +105,7 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> click
 
 
-[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>command()
 <span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>argument(<span style="color:#e6db74">&#34;url&#34;</span>, type<span style="color:#f92672">=</span>str)
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(url):
 	do_something(url<span style="color:#f92672">=</span>url)
@@ -47,7 +114,7 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> djclick <span style="color:#66d9ef">as</span> click
 
 
-[<span style="color:#a6e22e">@click</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>click)()
+<span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>command()
 <span style="color:#a6e22e">@click</span><span style="color:#f92672">.</span>argument(<span style="color:#e6db74">&#34;urls&#34;</span>, nargs<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>, type<span style="color:#f92672">=</span>str)
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(urls):
     <span style="color:#66d9ef">for</span> url <span style="color:#f92672">in</span> urls:
@@ -60,7 +127,7 @@
 app <span style="color:#f92672">=</span> typer<span style="color:#f92672">.</span>Typer() 
 
 
-[<span style="color:#a6e22e">@app</span>](https:<span style="color:#f92672">//</span>micro<span style="color:#f92672">.</span>blog<span style="color:#f92672">/</span>app)()
+<span style="color:#a6e22e">@app</span>()
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">command</span>(urls: list[str]): 
     <span style="color:#66d9ef">for</span> url <span style="color:#f92672">in</span> urls:
         do_something(url<span style="color:#f92672">=</span>url)
