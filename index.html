@@ -24,6 +24,44 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2025/03/02/agents-are-cheat-codes/">🤖 &#34;Agents&#34; are Cheat Codes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/03/02/agents-are-cheat-codes/" class="u-url"><time class="dt-published" datetime="2025-03-02 13:34:36 -0600">Mar 2, 2025</time></a>
+
+		<div class="e-content">
+			 <p>Lately, I have been trying to wrap my brain around AI Agents, so as a starting point, I have been using <a href="https://ai.pydantic.dev/agents/">Pydantic AI&rsquo;s Agent</a> class/framework to build &ldquo;Agents&rdquo;.</p>
+<p>&ldquo;Agent&rdquo; is a loaded term. Pydantic AI&rsquo;s usage is more or less a system prompt and a good API around adding tool calls and working with existing LLMs.</p>
+<p>I have written several experimental projects to help me quickly research and find answers to several areas of Django that confuse people, including myself. These ask-one-question bots do their best to fetch the resources they need to answer your questions.</p>
+<p>The three I have published publicly are:</p>
+<ul>
+<li><a href="https://github.com/jefftriplett/django-trademark-agent">Django Trademark Agent</a></li>
+<li><a href="https://github.com/jefftriplett/django-bylaws-agent">Django Bylaws Agent</a></li>
+<li><a href="https://github.com/jefftriplett/django-dep-10-12-agent">Django DEP-10 and DEP-12 Agent</a></li>
+</ul>
+<p>None of these are official resources of the Django Software Foundation, nor should they be considered &ldquo;official&rdquo; or even &ldquo;legal&rdquo; answers to any questions that may arise.</p>
+<p>The pattern I landed on for building the system prompts and pulling remote data has been a practical, quick way for me to get feedback and ask questions based on our existing material. I can change a local copy of the bylaws and then ask the Agent questions to see if my potential changes might be comprehensive enough for the Agent to answer.</p>
+<p>It effectively feels like running tests on governance to see if the Agent picks up on my changes.</p>
+<h2 id="our-cheat-codes">Our Cheat Codes</h2>
+<p>These are cheat codes for a quick one-file Agent that one can quickly stand up and ask questions.</p>
+<ul>
+<li>UV is a cheat code because it can quickly create a one-file Agent with dependencies and the version of Python needed to run the demo baked in.</li>
+<li>Pydantic AI&rsquo;s Agent class is a nice wrapper around a system prompt and can even create a dynamic system prompt. Having a global system prompt has a nice feel to it too.</li>
+<li>Pydantic&rsquo;s <code>BaseModel</code> creates structured data responses as a cheat code for processing unstructured text. If you haven&rsquo;t seen this pattern yet, you can&rsquo;t unsee it.</li>
+<li>The Jina AI for cleaning up HTML into Markdown is an AI I have wanted for a decade+. I use it in dozens of apps for free, saving me hours of work.</li>
+<li>The Python libraries Typer, Rich, and httpx may not seem like they are doing much, and I&rsquo;m underutilizing them, but their Developer Experience (DX) is great, and they just work.</li>
+</ul>
+<h2 id="more-areas-to-explore">More areas to explore</h2>
+<p>Pydantic AI supports dynamic <a href="https://ai.pydantic.dev/agents/#system-prompts">System Prompts</a>, which might save me a few extra templating steps. They didn&rsquo;t really click for me before I was writing this post.</p>
+<p>When I wrote my Django Agents, I had Pydantic AI&rsquo;s <a href="https://ai.pydantic.dev/multi-agent-applications/">Multi-agent Applications</a> feature in mind. In theory, I want to ask my Django Agents a question and have it route my question to the appropriate Agent to get an answer.</p>
+<p><a href="https://ai.pydantic.dev/tools/">Function Tools</a> or Tool Call is what inspired me to try out Pydantic AI. Function Tools are a way to give LLMs the ability to get information outside of their memory and system prompts when needed. I built one for reading and writing to my work calendar to help me manage my schedule. I didn&rsquo;t use them for my suite of Django Agents, but when mixed with more real-time data they could be helpful.</p>
+<p>We could also refactor each Agent using a reusable tool call so we could assemble one Agent that can gather the information needed to answer common Django Governance questions. I don&rsquo;t know if that would be effective. In theory, it might not be a bad fit after looking at their <a href="https://github.com/pydantic/pydantic-ai/blob/main/pydantic_ai_slim/pydantic_ai/common_tools/duckduckgo.py">DuckDuckGoSearchTool</a> example.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/02/19/office-hours-at-a-glance/">🗓️ Office Hours at a Glance</a></h1>
 		
 
@@ -45,7 +83,6 @@
 <p><a href="https://social.jacobian.org/@jacob">Jacob Kaplan-Moss</a> or at least one board member from the DSF hosts these weekly on Wednesdays at 1 PM Eastern Time (US and Canada).</p>
 <p>What&rsquo;s the goal? To work on anything related to the DSF. It&rsquo;s also a good space to ask questions.</p>
 <p>How to join? They are always on Google Meet. Contact Jacob or another DSF member for a meeting gist/invite.</p>
-<hr>
 <h2 id="conference-chats-twice-a-month-meetups">Conference Chats twice a month meetups</h2>
 <p>While these aren&rsquo;t officially &ldquo;Office Hours,&rdquo; I have been a member since day one.</p>
 <p>If you run a conference or event and you are looking for a like-minded group to learn and share with, they host two meetups every month:</p>
