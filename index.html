@@ -24,10 +24,10 @@
 	
 	  <div class="h-entry">
 		
-			<h1><a href="https://micro.webology.dev/2025/04/01/announcing-the-great-django-webring/">💍 Announcing The Great Django Webring</a></h1>
+			<h1><a href="https://micro.webology.dev/2025/04/18/announcing-the-great-django-webring/">💍 Announcing The Great Django Webring</a></h1>
 		
 
-		<a href="https://micro.webology.dev/2025/04/01/announcing-the-great-django-webring/" class="u-url"><time class="dt-published" datetime="2025-04-01 08:49:16 -0500">Apr 1, 2025</time></a>
+		<a href="https://micro.webology.dev/2025/04/18/announcing-the-great-django-webring/" class="u-url"><time class="dt-published" datetime="2025-04-18 10:50:39 -0500">Apr 18, 2025</time></a>
 
 		<div class="e-content">
 			 <p>Blogging is back, so why not bring back Webrings, too?</p>
@@ -92,81 +92,6 @@ Successfully updated from 0.5.1.6 to version 0.5.1.7
 <p>Simon Willison&rsquo;s LLM command also ships with the ability to update itself and even install <a href="https://llm.datasette.io/en/stable/setup.html#installing-plugins">its own plugins</a> by wrapping PIP or UV or whatever magic Simon thought up.</p>
 <p>I don&rsquo;t hate using a DX like <code>django install {package}</code> to install a new package into my application. It would be really cool if we could even add the package into <code>INSTALLED_APPS</code> and make some other suggestion changes if the package could be installed in our urls.py or even explore optional settings that the package might support. I suspect this could even be locally LLM-driven if we wanted to test our docs.</p>
 <p>I also recommend you check out Brett Cannon&rsquo;s <a href="https://github.com/brettcannon/python-launcher">python-launcher</a> app, a Python library wrapper. Brett was writing Rust wrappers to improve Python tooling before it was popular.</p>
-
-		</div>
-	  </div>
-	
-	  <div class="h-entry">
-		
-			<h1><a href="https://micro.webology.dev/2025/03/05/ideas-for-the-levels-of/">🤖 Ideas for &#34;The Levels of Claude&#34; Notes</a></h1>
-		
-
-		<a href="https://micro.webology.dev/2025/03/05/ideas-for-the-levels-of/" class="u-url"><time class="dt-published" datetime="2025-03-05 19:57:07 -0500">Mar 5, 2025</time></a>
-
-		<div class="e-content">
-			 <p>Lately, I have been conversing more with friends, colleagues, clients, and online friends about Claude and coding tools.</p>
-<p>It turns out that everyone considers Claude to be something different when they ask, &ldquo;Have you tried out Claude 3.7 Sonnet?&rdquo; and that could mean through the website or the mobile app or people who are using it to write code or who are developing against one of Claude&rsquo;s many REST APIs. Some people primarily interact with Claude by speaking in their voices while walking outside with their pets.</p>
-<p>I have even struggled to land at a good starting point, so I have been thinking through the various ways to explain how one might use Claude.</p>
-<ul>
-<li>You can access Claude Chat through the website.</li>
-<li>You can access Claude through the mobile app and use voice support.</li>
-<li>You can copy one or more files into Claude.</li>
-<li>You can access Claude through an IDE.</li>
-<li>You use Claude Projects to organize your projects and might even have a support document you give Claude for more context.</li>
-<li>You can access Claude through the Claude Desktop app and use voice support.</li>
-<li>You have enabled MCP plugins/servers within the Claude Desktop app.</li>
-<li>You can access the Claude Code CLI/terminal app.</li>
-<li>You have enabled MCP with the Claude Code CLI/terminal app.</li>
-<li>You are writing your own MCP servers in Python or JavaScript.</li>
-<li>You have registered for Claude API access and are writing code against one of their REST APIs. (more on this later)</li>
-</ul>
-<p>I originally broke this down into five levels of Claude, but there were too many platforms and features that blurred together.</p>
-<h2 id="accessing-claude">Accessing Claude</h2>
-<p>Accessing Claude can be confusing because there are many ways to access it.</p>
-<ul>
-<li>Web interface</li>
-<li>Mobile app</li>
-<li>Desktop app</li>
-<li>CLI/Terminal app</li>
-<li>REST API (could be a third-party app too, that requires a developer token)</li>
-</ul>
-<h2 id="organization-by-experience-level">Organization by experience level</h2>
-<p>If we break these down by user experience or technical proficiency:</p>
-<ul>
-<li><strong>Beginner</strong>: Web interface, mobile app, IDE integrations</li>
-<li><strong>Intermediate</strong>: Desktop app, file uploads, REST API integration</li>
-<li><strong>Advanced</strong>: Claude Code CLI</li>
-<li><strong>Really Advanced</strong>: You are writing custom MCP implementations.</li>
-</ul>
-<h2 id="claudes-developer-apis">Claude&rsquo;s developer APIs</h2>
-<p>Claude&rsquo;s Developer APIs have their vibes and are helpful in various situations. I&rsquo;m not going to deep dive into them, but from a bird&rsquo;s eye view:</p>
-<ul>
-<li>Text Completion API</li>
-<li>Embeddings API</li>
-<li>Messages API</li>
-<li>Claude-in-the-Middle (Tools API and Agents)</li>
-<li>Batch API</li>
-</ul>
-<p>These APIs can also vary based on passing them text, documents, images, or other types of files.</p>
-<p>I&rsquo;m still amazed that I can send an image to Claude and ask it to give me back an HTML file and CSS, and it does a relatively decent job.</p>
-<h2 id="conclusion-claude-as-a-spectrum">Conclusion: Claude as a Spectrum</h2>
-<p>I wasn&rsquo;t sure how to end my notes, but I asked Claude to: &ldquo;Please write a conclusion about Claude being more of a spectrum than just a service.&rdquo; and this is what it told me:</p>
-<blockquote>
-<p>When discussing &ldquo;Claude,&rdquo; we&rsquo;re not just talking about a single AI service but rather a spectrum of capabilities, interfaces, and integration points that serve different user needs, technical abilities, and use cases.</p>
-</blockquote>
-<blockquote>
-<p>What makes this spectrum particularly interesting is how it creates different experiences and understanding of what &ldquo;Claude&rdquo; actually is. For a casual user accessing the web interface, Claude is simply a helpful chat assistant. For a developer using the API or building MCP servers, Claude becomes an extensible AI platform with programmable capabilities.</p>
-</blockquote>
-<blockquote>
-<p>This spectrum explains why conversations about Claude can sometimes feel like people are talking about entirely different products. In a very real sense, they are. The Claude that helps a writer craft a story through the mobile app exists in a different context than the Claude that helps a developer debug code through an IDE integration.</p>
-</blockquote>
-<blockquote>
-<p>As the Claude ecosystem continues to evolve, this spectrum will likely expand further, with new interfaces, capabilities, and integration points creating even more varied experiences. Understanding Claude as a spectrum rather than a singular service helps contextualize these different experiences and provides a framework for navigating the growing complexity of AI assistants.</p>
-</blockquote>
-<blockquote>
-<p>The most powerful aspect of this spectrum may be that it allows Claude to meet users where they are - from the casual web user to the advanced developer building custom AI solutions. This flexibility transforms Claude from merely an AI service into an adaptable AI ecosystem that can evolve alongside user needs and technical capabilities.</p>
-</blockquote>
-<p>It&rsquo;s not half bad.</p>
 
 		</div>
 	  </div>
