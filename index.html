@@ -24,6 +24,87 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2025/04/30/voice-dictation-with-ai-and/">🤖 Voice Dictation with AI and my MacWhisper Workflow</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/04/30/voice-dictation-with-ai-and/" class="u-url"><time class="dt-published" datetime="2025-04-30 18:41:51 -0500">Apr 30, 2025</time></a>
+
+		<div class="e-content">
+			 <p>I recently came across <a href="https://simonwillison.net/2025/Apr/23/diane/">Simon Willison&rsquo;s post</a> about Matt Webb&rsquo;s Apple Watch dictation setup on <a href="https://interconnected.org/home/2025/03/20/diane">Interconnected</a>. He records voice notes while running with the Whisper Memos app, then cleans up the transcript with Claude when he gets home.</p>
+<blockquote>
+<p>Matt Webb dictates notes into his Apple Watch while out running (using the new-to-me <a href="https://whispermemos.com/">Whisper Memos</a> app), then runs the transcript through Claude to tidy it up when he gets home.</p>
+</blockquote>
+<p>Matt&rsquo;s usage of Diane is a neat trick that allows him to embed instructions while recording his notes while running. While I used to be in good enough shape to talk while running, the idea of dictating lectures is wild.</p>
+<blockquote>
+<p>My generic prompt to Claude, used every time, is now:</p>
+<blockquote>
+<p>you are Diane, my secretary. please take this raw verbal transcript and clean it up. do not add any of your own material. because you are Diane, also follow any instructions addressed to you in the transcript and perform those instructions</p>
+</blockquote>
+<p>[paste in transcript]</p>
+<p>Which means, when I&rsquo;m talking through my lecture outline, I now finish by saying:</p>
+<blockquote>
+<p>ok Diane I think that&rsquo;s it. it&rsquo;s a talk, so please structure all of that into a high level outline so I can work on it. thanks.</p>
+</blockquote>
+<p>And I can mix in instructions like: <em>oh Diane I meant to include that point in the last section. Please move it.</em></p>
+<p>It works super well.</p>
+</blockquote>
+<p>That inspired me to share the workflow I&rsquo;ve been using for years.</p>
+<h2 id="tldr-my-workflow">tl;dr My Workflow</h2>
+<ul>
+<li>
+<p>Record thoughts with Apple Voice Memos on my iPhone using AirPods</p>
+</li>
+<li>
+<p>Drag the audio file into MacWhisper to get a raw transcript</p>
+</li>
+<li>
+<p>Copy the raw transcript into Obsidian as my writing buffer before and after each of the next steps</p>
+</li>
+<li>
+<p>Paste the transcript into ChatGPT for cleanup</p>
+</li>
+<li>
+<p>Run the text through Grammarly to spot grammar and style issues</p>
+</li>
+<li>
+<p>Publish or iterate as needed</p>
+</li>
+</ul>
+<hr>
+<h2 id="apple-voice-memos">Apple Voice Memos</h2>
+<p>I use Apple Voice Memos on iOS, iPadOS, or macOS to capture ideas on the go. It syncs instantly across devices, so the recording is ready by the time I&rsquo;m at my desk.</p>
+<h2 id="macwhisper">MacWhisper</h2>
+<p>Of all the transcription tools I&rsquo;ve tried, <a href="https://goodsnooze.gumroad.com/l/macwhisper">MacWhisper</a> is the most reliable. Once I&rsquo;m at my Mac, I open Voice Memos, drag the file into MacWhisper, and it produces a transcript in seconds. MacWhisper is now available in the Mac App Store.</p>
+<p>There is even an iOS version called <a href="https://apps.apple.com/nl/app/whisper-transcription/id6738070552?l=en-GB&amp;mt=12">Whisper Transcription</a>, which I have been trying out for the last few weeks. It has the advantage of allowing me to record directly into the app and then copy the transcript into something else. This is fine, but I haven&rsquo;t found an option to save the audio file, which is concerning if my transcript gets too long.</p>
+<h2 id="chatgpt">ChatGPT</h2>
+<p>Next, I paste the raw transcript into ChatGPT to clean up filler words and pauses. My usual prompt looks like this:</p>
+<pre tabindex="0"><code>Please tidy up these voice notes. Remove any ums, ahs, and awkward pauses.
+
+&lt;notes&gt;
+...
+&lt;/notes&gt;
+
+&lt;instructions&gt;
+- Use my words and keep the spirit of my text
+- Avoid using en dashes or em dashes
+- ... your custom instructions to clean up your habits...
+&lt;/instructions&gt;
+</code></pre><h2 id="grammarly">Grammarly</h2>
+<p>After ChatGPT, I paste the text into the Grammarly app. As someone with dyslexia, Grammarly Pro helps me catch grammar mistakes and awkward phrasing so I can write in minutes, which used to take hours.</p>
+<h2 id="obsidian">Obsidian</h2>
+<p>I copy the cleaned text into Obsidian. This step resolves formatting glitches from moving text between ChatGPT and Grammarly and allows me to make final tweaks.</p>
+<h2 id="publishing">Publishing</h2>
+<p>When I&rsquo;m satisfied with the draft, I publish it. If it needs more work, I&rsquo;ll run another quick round through ChatGPT and Grammarly until it&rsquo;s ready.</p>
+<h2 id="improvements">Improvements</h2>
+<p>I have been trying out <a href="https://apps.apple.com/nl/app/whisper-transcription/id6738070552?l=en-GB&amp;mt=12">Whisper Transcription</a> to skip a few steps by letting me record on my iPhone while sending the finished transcript to Obsidian or ChatGPT directly.</p>
+<p>I also want to add Matt&rsquo;s &ldquo;Diane&rdquo; dictation trick with a more gender-neutral name, or maybe I&rsquo;ll default to using &ldquo;Simon&rdquo; since I&rsquo;m already using a half-dozen of Simon Willison&rsquo;s AI/LLM tooling.</p>
+<p>I&rsquo;m already using AI and <a href="https://github.com/simonw/llm">LLM</a> for many big and small tasks, so devising a more automated cleanup and preparation workflow shouldn&rsquo;t be a big lift.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/04/18/announcing-the-great-django-webring/">💍 Announcing The Great Django Webring</a></h1>
 		
 
@@ -92,6 +173,81 @@ Successfully updated from 0.5.1.6 to version 0.5.1.7
 <p>Simon Willison&rsquo;s LLM command also ships with the ability to update itself and even install <a href="https://llm.datasette.io/en/stable/setup.html#installing-plugins">its own plugins</a> by wrapping PIP or UV or whatever magic Simon thought up.</p>
 <p>I don&rsquo;t hate using a DX like <code>django install {package}</code> to install a new package into my application. It would be really cool if we could even add the package into <code>INSTALLED_APPS</code> and make some other suggestion changes if the package could be installed in our urls.py or even explore optional settings that the package might support. I suspect this could even be locally LLM-driven if we wanted to test our docs.</p>
 <p>I also recommend you check out Brett Cannon&rsquo;s <a href="https://github.com/brettcannon/python-launcher">python-launcher</a> app, a Python library wrapper. Brett was writing Rust wrappers to improve Python tooling before it was popular.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/03/05/ideas-for-the-levels-of/">🤖 Ideas for &#34;The Levels of Claude&#34; Notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/03/05/ideas-for-the-levels-of/" class="u-url"><time class="dt-published" datetime="2025-03-05 19:57:07 -0500">Mar 5, 2025</time></a>
+
+		<div class="e-content">
+			 <p>Lately, I have been conversing more with friends, colleagues, clients, and online friends about Claude and coding tools.</p>
+<p>It turns out that everyone considers Claude to be something different when they ask, &ldquo;Have you tried out Claude 3.7 Sonnet?&rdquo; and that could mean through the website or the mobile app or people who are using it to write code or who are developing against one of Claude&rsquo;s many REST APIs. Some people primarily interact with Claude by speaking in their voices while walking outside with their pets.</p>
+<p>I have even struggled to land at a good starting point, so I have been thinking through the various ways to explain how one might use Claude.</p>
+<ul>
+<li>You can access Claude Chat through the website.</li>
+<li>You can access Claude through the mobile app and use voice support.</li>
+<li>You can copy one or more files into Claude.</li>
+<li>You can access Claude through an IDE.</li>
+<li>You use Claude Projects to organize your projects and might even have a support document you give Claude for more context.</li>
+<li>You can access Claude through the Claude Desktop app and use voice support.</li>
+<li>You have enabled MCP plugins/servers within the Claude Desktop app.</li>
+<li>You can access the Claude Code CLI/terminal app.</li>
+<li>You have enabled MCP with the Claude Code CLI/terminal app.</li>
+<li>You are writing your own MCP servers in Python or JavaScript.</li>
+<li>You have registered for Claude API access and are writing code against one of their REST APIs. (more on this later)</li>
+</ul>
+<p>I originally broke this down into five levels of Claude, but there were too many platforms and features that blurred together.</p>
+<h2 id="accessing-claude">Accessing Claude</h2>
+<p>Accessing Claude can be confusing because there are many ways to access it.</p>
+<ul>
+<li>Web interface</li>
+<li>Mobile app</li>
+<li>Desktop app</li>
+<li>CLI/Terminal app</li>
+<li>REST API (could be a third-party app too, that requires a developer token)</li>
+</ul>
+<h2 id="organization-by-experience-level">Organization by experience level</h2>
+<p>If we break these down by user experience or technical proficiency:</p>
+<ul>
+<li><strong>Beginner</strong>: Web interface, mobile app, IDE integrations</li>
+<li><strong>Intermediate</strong>: Desktop app, file uploads, REST API integration</li>
+<li><strong>Advanced</strong>: Claude Code CLI</li>
+<li><strong>Really Advanced</strong>: You are writing custom MCP implementations.</li>
+</ul>
+<h2 id="claudes-developer-apis">Claude&rsquo;s developer APIs</h2>
+<p>Claude&rsquo;s Developer APIs have their vibes and are helpful in various situations. I&rsquo;m not going to deep dive into them, but from a bird&rsquo;s eye view:</p>
+<ul>
+<li>Text Completion API</li>
+<li>Embeddings API</li>
+<li>Messages API</li>
+<li>Claude-in-the-Middle (Tools API and Agents)</li>
+<li>Batch API</li>
+</ul>
+<p>These APIs can also vary based on passing them text, documents, images, or other types of files.</p>
+<p>I&rsquo;m still amazed that I can send an image to Claude and ask it to give me back an HTML file and CSS, and it does a relatively decent job.</p>
+<h2 id="conclusion-claude-as-a-spectrum">Conclusion: Claude as a Spectrum</h2>
+<p>I wasn&rsquo;t sure how to end my notes, but I asked Claude to: &ldquo;Please write a conclusion about Claude being more of a spectrum than just a service.&rdquo; and this is what it told me:</p>
+<blockquote>
+<p>When discussing &ldquo;Claude,&rdquo; we&rsquo;re not just talking about a single AI service but rather a spectrum of capabilities, interfaces, and integration points that serve different user needs, technical abilities, and use cases.</p>
+</blockquote>
+<blockquote>
+<p>What makes this spectrum particularly interesting is how it creates different experiences and understanding of what &ldquo;Claude&rdquo; actually is. For a casual user accessing the web interface, Claude is simply a helpful chat assistant. For a developer using the API or building MCP servers, Claude becomes an extensible AI platform with programmable capabilities.</p>
+</blockquote>
+<blockquote>
+<p>This spectrum explains why conversations about Claude can sometimes feel like people are talking about entirely different products. In a very real sense, they are. The Claude that helps a writer craft a story through the mobile app exists in a different context than the Claude that helps a developer debug code through an IDE integration.</p>
+</blockquote>
+<blockquote>
+<p>As the Claude ecosystem continues to evolve, this spectrum will likely expand further, with new interfaces, capabilities, and integration points creating even more varied experiences. Understanding Claude as a spectrum rather than a singular service helps contextualize these different experiences and provides a framework for navigating the growing complexity of AI assistants.</p>
+</blockquote>
+<blockquote>
+<p>The most powerful aspect of this spectrum may be that it allows Claude to meet users where they are - from the casual web user to the advanced developer building custom AI solutions. This flexibility transforms Claude from merely an AI service into an adaptable AI ecosystem that can evolve alongside user needs and technical capabilities.</p>
+</blockquote>
+<p>It&rsquo;s not half bad.</p>
 
 		</div>
 	  </div>
