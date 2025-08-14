@@ -24,7 +24,31 @@
 	
 	  <div class="h-entry">
 		
-			<h1><a href="https://micro.webology.dev/2025/08/06/vibeops-using-claude-code-on/">VibeOps: Using Claude Code on Cheap VPS Servers</a></h1>
+			<h1><a href="https://micro.webology.dev/2025/08/13/syncthing-upgrade-notes/">Syncthing 2.0 Upgrade Notes</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/08/13/syncthing-upgrade-notes/" class="u-url"><time class="dt-published" datetime="2025-08-13 22:45:10 -0500">Aug 13, 2025</time></a>
+
+		<div class="e-content">
+			 <p><a href="https://github.com/syncthing/syncthing/releases/tag/v2.0.0">Syncthing 2.0</a> was released last week, and I upgraded my Macs and my Intel NUC. I&rsquo;m pleased with the performance. I never had complaints about it being slow, but the new app is much faster. I like that they&rsquo;re using a SQLite database, which makes it easier to write hacks or tools to check the data.</p>
+<p>Upgrading wasn&rsquo;t terrible. I used <a href="https://brew.sh">Homebrew</a> to upgrade it, which seemed to work initially, but I had problems with the service when I restarted it. I took the following steps: stopped Syncthing, removed it, reinstalled it, and then started the service. I&rsquo;ve never managed to get a service to work correctly on macOS when I write them by hand, so I let Homebrew handle the services. It understands how to write the right templates and format, and gets it right. After running these commands, everything just worked:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">brew services stop syncthing  
+brew remove syncthing  
+brew install syncthing  
+brew services start syncthing
+</code></pre></div><p>One pro tip: once everything has stopped, you can run <code>syncthing</code> manually instead of invoking the service to see it migrate each folder to the new SQLite database format.</p>
+<p>I had over 100 shared folders because I was treating each of my projects and client projects as their separate shares. I&rsquo;ve recently changed that and have been migrating everything into my own &ldquo;Projects&rdquo; folder and keeping client stuff in a &ldquo;Clients&rdquo; folder. That way, everything separates. I have more control over what I have on my home or personal laptop versus what I have on my work computer. This makes a nice separation of work and home life.</p>
+<p>I prefer Syncthing over other tools because it runs well even on ancient hardware. It works on every operating system—I mostly use macOS and Linux, but I&rsquo;ve even run it on a Raspberry Pi. I&rsquo;m currently running it across four or five systems, which makes file sharing seamless. The sync speed is excellent, I&rsquo;m not locked into any services like Dropbox, and I don&rsquo;t have to pay for features I don&rsquo;t need. The usability and speed hit the sweet spot for me.</p>
+<p>My only complaint about Syncthing is the CLI experience for adding folders. Even after years of using it, I haven&rsquo;t figured out if it&rsquo;s possible or if I&rsquo;m just doing it wrong. Maybe this changed in 2.0, but most forum discussions suggest editing the raw XML configuration directly. I only spent a few minutes looking into the 2.0 CLI, and it hasn&rsquo;t clicked yet.</p>
+<hr>
+<p>Written by Jeff. Edited with <a href="https://grammarly.com">Grammarly</a> and <a href="https://claude.ai/code">Claude Code</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/08/06/vibeops-using-claude-code-on/">🤖 VibeOps: Using Claude Code on Cheap VPS Servers</a></h1>
 		
 
 		<a href="https://micro.webology.dev/2025/08/06/vibeops-using-claude-code-on/" class="u-url"><time class="dt-published" datetime="2025-08-06 19:05:47 -0500">Aug 6, 2025</time></a>
@@ -36,10 +60,13 @@
 <p>While trying to install Vibe Tunnel, I ran into a PAM error, so I did what anyone would do with Claude Code available on the server: I let Claude fix it for me. I thought Claude could figure it out, but after 5 to 10 minutes of noble efforts, I found <a href="https://github.com/amantus-ai/vibetunnel/issues/499">issue #499</a> and <a href="https://github.com/amantus-ai/vibetunnel/pull/521">pull request #521</a>, which point to a bigger issue with a potential fix coming soon.</p>
 <p>While I was on my server, I asked Claude to look at my Caddy setup for a bunch of parked domains, and it found some actionable changes and even fixed a few broken paths that weren&rsquo;t obvious. This is exactly the kind of routine server maintenance where having Claude available directly on the server proves helpful.</p>
 <p>I also had Claude check to see if the machine was out-of-date, and I watched it install a month&rsquo;s worth of updates. Claude even wrote a nice summary for me to share in this post:</p>
-<pre tabindex="0"><code>Analysis: The system is running a current Long Term Support release of Ubuntu with extended support until 2029. All installed packages are current with no pending updates available. No maintenance required at this time.
-
-Action Taken: System audit only - no changes were made to the system.
-</code></pre><p>All in all, I am a fan, even if I wouldn&rsquo;t recommend this for any clients or just anyone.</p>
+<blockquote>
+<p>Analysis: The system is running a current Long Term Support release of Ubuntu with extended support until 2029. All installed packages are current with no pending updates available. No maintenance required at this time.</p>
+</blockquote>
+<blockquote>
+<p>Action Taken: System audit only - no changes were made to the system.</p>
+</blockquote>
+<p>All in all, I am a fan, even if I wouldn&rsquo;t recommend this for any clients or just anyone.</p>
 
 		</div>
 	  </div>
