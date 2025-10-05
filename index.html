@@ -24,6 +24,51 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2025/10/04/on-github-copilot-cli-and/">🤖 On GitHub Copilot CLI and prompts as code</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/10/04/on-github-copilot-cli-and/" class="u-url"><time class="dt-published" datetime="2025-10-04 20:57:19 -0500">Oct 4, 2025</time></a>
+
+		<div class="e-content">
+			 <p>I checked out William Vincent&rsquo;s <a href="https://wsvincent.com/copilot-cli-secret-prompts/">The Secret Prompts in GitHub Copilot CLI</a> tonight, and I wanted to share a few tips and what stood out to me.</p>
+<h2 id="github-copilot-cli-uses-claude-sonnet-45-by-default">GitHub Copilot CLI uses Claude Sonnet 4.5 by default</h2>
+<blockquote>
+<p>No luck other than confirming it is using Claude models by default. Apparently, you can change the underlying model, for example, to ChatGPT 5, by updating the environment variable <code>COPILOT_MODEL=gpt-5</code>; however, we will work with the defaults here.</p>
+</blockquote>
+<p>You can Copilot CLI&rsquo;s default model via the <code>/model</code> command and it will also let you pick between three models.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"> Select Model
+
+ Choose the AI model to use <span style="color:#66d9ef">for</span> Copilot CLI. The selected model will be persisted and used <span style="color:#66d9ef">for</span> future sessions.
+
+ ❯ 1. Claude Sonnet 4.5 <span style="color:#f92672">(</span>default<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>current<span style="color:#f92672">)</span>
+   2. Claude Sonnet <span style="color:#ae81ff">4</span>
+   3. GPT-5
+   4. Cancel <span style="color:#f92672">(</span>Esc<span style="color:#f92672">)</span>
+
+ Use ↑/↓ to navigate, Enter to <span style="color:#66d9ef">select</span>, Esc to cancel
+</code></pre></div><p>I&rsquo;m somewhat surprised that GitHub CLI isn&rsquo;t shipping with <code>gpt-5-codex</code> model support yet. From my testing, it appears to be OpenAI&rsquo;s best coding model, but it may be shipping soon.</p>
+<h2 id="the-you-are-trick">The &ldquo;You are&rdquo; trick</h2>
+<blockquote>
+<p>Well, what we &ldquo;really&rdquo; care about are any prompts that start with &ldquo;you are&rdquo; since those are instructions from Copilot CLI to the model.</p>
+</blockquote>
+<p>The &ldquo;you are&rdquo; tip is one I shared with Will and <a href="https://simonwillison.net">Simon Willison</a>, which I have used for a few years when trying to find a tool&rsquo;s system prompt, which is always buried and obfuscated in their JavaScript files.</p>
+<p>Simon and I were invited to Microsoft HQ last month for an AI Insider&rsquo;s summit (I prefer not to use the term influencer), where we were given early access to GitHub Copilot CLI before the public release. The first thing we both did was dive into the system prompt to see what it contained. Every system prompt has &ldquo;You are&rdquo; buried in it somewhere, which makes it much easier to find that paging through 10k lines of JavaScript.</p>
+<h2 id="use-xml-tags-in-your-prompts">Use Xml tags in your prompts</h2>
+<p>Will posted the Copilot CLI&rsquo;s system prompt, and one thing that stood out to me was the various XML-tagged sections, such as <code>&lt;tips_and_tricks&gt;</code> and <code>&lt;style&gt;</code>, which Anthropic has encouraged for years. They documented the technique in the <a href="https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/use-xml-tags">Use XML tags to structure your prompts</a> section of their docs.</p>
+<h2 id="natural-language-prompts-are-becoming-the-universal-programming-interface">Natural language prompts are becoming the universal programming interface</h2>
+<p>I have been experimenting with LLMs since the release of GPT-2. While I understand why it pains many developers to admit this, natural language prompts have become a language-agnostic way to program. Somebody could build the same app I&rsquo;m building using Django with the same prompts in Laravel, Rails, or any other well-documented web framework and underlying programming language.</p>
+<p>For many people who are new to development, this is more obvious:</p>
+<blockquote>
+<p>Prompts are code.</p>
+</blockquote>
+<p>Languages like Python aren&rsquo;t going away, but it&rsquo;s much easier and faster to develop when pairing with an LLM assistant who is always online and can instantly answer any questions that you might have.</p>
+<p>The more I examine tools like GitHub Copilot CLI, the clearer it becomes: understanding how these tools prompt their models matters not just for curiosity&rsquo;s sake, but because knowing how the prompt works helps you work better with the tool. Next time you&rsquo;re using an AI coding assistant, use the &ldquo;You are&rdquo; trick to peek under the hood. You might be surprised by what you find.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/09/24/i-do-not-want-discords/">⛔ I Do Not Want Discord&#39;s Nitro</a></h1>
 		
 
