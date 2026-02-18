@@ -24,6 +24,117 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2026/02/18/my-displays-keep-rearranging-and/">My displays keep rearranging and displayplacer fixed it</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2026/02/18/my-displays-keep-rearranging-and/" class="u-url"><time class="dt-published" datetime="2026-02-18 16:54:47 -0600">Feb 18, 2026</time></a>
+
+		<div class="e-content">
+			 <p>Today I learned about <a href="https://github.com/jakehilborn/displayplacer">displayplacer</a> - &ldquo;macOS command line utility to configure multi-display resolutions and arrangements.&rdquo;</p>
+<p>In December, I upgraded to MacOS Tahoe and picked up the TS4 dock for my work machine.</p>
+<p>While my upgrade was painless, the biggest issue I&rsquo;ve had is with my displays. Every time my displays go to sleep and then I come back from lunch or come back the next day to work, my orientation of my displays changes and it puts them in a random order.</p>
+<p>My displays should be arranged like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>2<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>3<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>
+</code></pre></div><p>But after waking from sleep, they end up like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#f92672">[</span>2<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>1<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>3<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>
+</code></pre></div><p>It&rsquo;s really annoying. It takes a minute to fix and it&rsquo;s just frustrating.</p>
+<p>I tried displayplacer today. I had Claude Code actually run the <code>displayplacer list</code> command. It figured out which displays and which settings needed to be changed. I had it record that and then I tried it out a few times where I manually dragged my displays around, put them in the wrong order, then ran the command, and it just magically worked.</p>
+<p>I saved the working configuration to a shell script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e">#!/usr/bin/env bash
+</span><span style="color:#75715e"></span><span style="color:#75715e"># Restore display layout: 4 monitors (2x 16&#34; 1920x1080, 2x 73&#34; 2048x1280)</span>
+
+displayplacer <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;id:F4AB0D6C-8E85-4E84-B5AB-C5B388536E3D res:1920x1080 hz:60 color_depth:8 enabled:true scaling:off origin:(0,0) degree:0&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;id:C9240C8E-A9D2-418A-89AC-28D3B5DEE5FC res:1920x1080 hz:60 color_depth:8 enabled:true scaling:off origin:(-1920,0) degree:0&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;id:B43E3352-ACB7-4163-A25B-2DDAE0174571 res:2048x1280 hz:60 color_depth:8 enabled:true scaling:off origin:(0,-1280) degree:0&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#34;id:B32F530C-62CF-4F0D-9997-80BF2B812AC8 res:2048x1280 hz:60 color_depth:8 enabled:true scaling:off origin:(-2048,-1280) degree:0&#34;</span>
+</code></pre></div><p>I also tried setting it up as a Stream Deck key and for some reason I couldn&rsquo;t get that to work. But it&rsquo;s fine. I can run a shell script and that takes a lot less time to get it in the right order.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/12/10/trying-out-glm-with-claude/">🤖 Trying Out GLM with Claude Code</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/12/10/trying-out-glm-with-claude/" class="u-url"><time class="dt-published" datetime="2025-12-10 19:43:48 -0600">Dec 10, 2025</time></a>
+
+		<div class="e-content">
+			 <p>My friend <a href="https://treyhunner.com">Trey Hunner</a> showed me the GLM set of models before Thanksgiving. While traveling to see family, I somehow messed up my Claude Code setup because of a wrapper I have with <a href="https://mise.jdx.dev">mise-en-place</a>. I couldn&rsquo;t use it for a while, and that made me realize I really need a backup for Claude Code.</p>
+<h2 id="why-glm">Why GLM?</h2>
+<p><a href="https://z.ai">Z.AI</a>&rsquo;s GLM model is better than Gemini but not quite as good as Claude Code. It&rsquo;s really fast (about twice as fast as Claude Code), seems like 90+ percent as good, and it&rsquo;s really cheap. You can get an annual subscription for around $26-28 for the first year, and I&rsquo;ve read online that it&rsquo;s very hard to hit the limit even on the lowest tier subscription.</p>
+<p>This is a great option for folks who can&rsquo;t quite justify the $100/mo Claude plan but occasionally hit limits on the $20/mo Claude plan. I actually subscribe to the $100/mo plan, but I ended up getting the GLM Pro Plan because I like the amount of usage it gives me. The plan I&rsquo;m on has five times as much token usage as the base tier.</p>
+<h2 id="running-both-side-by-side">Running Both Side by Side</h2>
+<p>There&rsquo;s a <a href="https://github.com/JoeInnsp23/claude-glm-wrapper">wrapper tool</a> that lets you use Z.AI&rsquo;s models as Claude Code&rsquo;s backend, so you can run both Claude and Z.AI&rsquo;s GLM in two different windows. Having a reasonable backup that I can switch between or run in parallel is nice.</p>
+<p>I never find speed to be an issue with Claude Code, but I&rsquo;m definitely a fan of having options.</p>
+<h2 id="api-access">API Access</h2>
+<p>Claude doesn&rsquo;t include API key access without paying extra. GLM solves this problem by giving you a raw API for a set price per month. Their API is OpenAI compatible, so I can work on agentic scripts using Open Coder or other applications without paying extra for Anthropic tokens.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>To get started, run:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bunx claude-glm-installer
+</code></pre></div><p>This will give you bash aliases that let you run various GLM models while still letting Claude default to the Anthropic backend:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ccg              <span style="color:#75715e"># Claude Code with GLM-4.6 (latest)</span>
+ccg45            <span style="color:#75715e"># Claude Code with GLM-4.5</span>
+ccf              <span style="color:#75715e"># Claude Code with GLM-4.5-Air (faster)</span>
+cc               <span style="color:#75715e"># Regular Claude Code</span>
+</code></pre></div><p>Trey also told me about <a href="https://github.com/musistudio/claude-code-router">claude-code-router</a>, which lets you change models on the fly without restarting Claude Code. This might work well if you want to switch between models mid-session.</p>
+<p>If you find yourself running out of Claude Code tokens a couple of times a week or even a couple of times a day, it might be worth checking out GLM as a backup or alternative.</p>
+<p>If you want to try out Z.AI&rsquo;s GLM models, please use <a href="https://z.ai/subscribe?ic=GLMN4NLXLV">my invite link</a> (affiliate) or feel free to use <a href="https://z.ai/subscribe?utm_medium=edm&amp;utm_content=blackfriday&amp;_channel_track_key=PJg2GPj2">Trey Hunner&rsquo;s invite link</a> (affiliate) instead.</p>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://www.reddit.com/r/ClaudeCode/comments/1nv64g5/i_made_a_tool_to_use_zais_glm_models_with_claude/">Claude GLM Installer tool on Reddit</a></li>
+<li><a href="https://github.com/JoeInnsp23/claude-glm-wrapper">claude-glm-wrapper on GitHub</a></li>
+<li><a href="https://github.com/musistudio/claude-code-router">claude-code-router on GitHub</a></li>
+</ul>
+<hr>
+<p>Written by Jeff. Edited with <a href="https://grammarly.com">Grammarly</a> and <a href="https://claude.ai/code">Claude Code</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2025/11/22/how-i-accidentally-spent-over/">🤖 How I Accidentally Spent Over 62 Million OpenAI Tokens</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2025/11/22/how-i-accidentally-spent-over/" class="u-url"><time class="dt-published" datetime="2025-11-22 23:01:54 -0600">Nov 22, 2025</time></a>
+
+		<div class="e-content">
+			 <p>I&rsquo;ve been fighting a runaway <a href="https://openai.com">OpenAI</a> bill for the last few weeks. I was worried I was leaking one of my API keys in a non-obvious way, possibly in one of my public projects.</p>
+<p>Two weeks ago, I deleted all my keys and contacted OpenAI support. I created new keys for every project, making it easier to track usage and identify any leaks. I had already been doing this, but I was a bit lax on a few projects while migrating from <a href="https://www.digitalocean.com">Digital Ocean</a> to <a href="https://www.hetzner.com">Hetzner</a>. More on that migration soon.</p>
+<p>Fast forward two weeks, and OpenAI notified me again that I hit my very low recharge threshold. With granular keys in place, it only took a minute to narrow down the culprit: my <a href="https://djangotv.com">DjangoTV.com</a> project.</p>
+<p>I use the <a href="https://platform.openai.com/docs/api-reference/introduction">OpenAI API</a> to help parse presenter names and clean up titles whenever we add new videos. I had recently added <a href="https://djangotv.com/videos/djangocon-us/2025/">DjangoCon US</a> videos and <a href="https://djangotv.com/videos/wagtail-space/2025/">Wagtail Space</a> videos during the last two weeks, both on the same day our LLM usage spiked.</p>
+<p>I checked my <a href="https://github.com/django-q2/django-q2">Django-Q2</a> logs and noticed several tasks failing because they were timing out after 90 seconds. The task accepts a list of video IDs and loops through them, parsing each one using <a href="https://ai.pydantic.dev">Pydantic AI</a> and the OpenAI API. When I ran it from the command line, I never hit a timeout. But when I created a Django Admin Action to bulk process videos, I was trying to process them all in one call instead of fanning them out into individual tasks.</p>
+<h2 id="what-went-wrong">What Went Wrong?</h2>
+<p>I didn&rsquo;t have just one bug - I had two, possibly three bugs that weren&rsquo;t obvious at the time:</p>
+<ol>
+<li><strong>Timeout issues</strong>: Tasks were timing out after 90 seconds when processing large batches</li>
+<li><strong>Bulk processing</strong>: Processing all videos in one call instead of individual async tasks</li>
+<li><strong>Infinite retries</strong>: I failed to set a maximum number of retry attempts. I assumed that not having a default meant there was a fixed number of retries, not infinite</li>
+</ol>
+<p>That third bug was the killer. My job ran for over 24 hours, burning through over 32 million tokens in the process. In total, I spent over 62 million tokens in November before I found and fixed the issue. Thankfully, my out-of-pocket costs were more than reasonable.</p>
+<h2 id="what-changed">What Changed?</h2>
+<p>I could blame this on vibecoding since DjangoTV is &gt;99% vibe coded, but the project was built using sensible defaults and this wasn&rsquo;t obvious at the time.</p>
+<p>Here&rsquo;s what I changed:</p>
+<ul>
+<li>Set <code>max_attempts</code> to limit retries</li>
+<li>Kept my 90 second <code>timeout</code></li>
+<li>Spaced out <code>retry</code> attempts to a few minutes between tries</li>
+<li>Adjusted my <code>parse_presenters_with_ai</code> and <code>parse_titles_with_ai</code> Django Admin Actions to queue up one <code>async_task</code> per Video instead of processing them all in one call</li>
+</ul>
+<p>Sometimes the most expensive bugs are the ones that combine multiple small issues into one perfect storm. Granular API keys for tracking, sensible retry limits, and proper task queuing are now non-negotiable in my projects.</p>
+<p>Computers!</p>
+<hr>
+<p>Written by Jeff. Edited with <a href="https://grammarly.com">Grammarly</a> and <a href="https://claude.ai/code">Claude Code</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2025/11/19/the-vibe-coding-keyboard-how/">The &#34;Vibe Coding Keyboard&#34; How I Made My Walk-and-Talk Setup Even More Awesome</a></h1>
 		
 
@@ -37,7 +148,7 @@
 <h3 id="why-a-dedicated-keyboard">Why a Dedicated Keyboard?</h3>
 <p>I already had an Apple Magic Keyboard that I loved. It&rsquo;s sleek and all, but I kept running into a minor but annoying problem: I was running out of keys to assign to all my voice-control shortcuts. I tried using the function key as a makeshift &ldquo;vibe&rdquo; key, but it just wasn&rsquo;t cutting it.</p>
 <p>So I went looking for the smallest possible external keyboard I could find. I wanted something that would just plug in like a regular HID keyboard, no extra drivers or fancy setup. I originally tried to find a two-key keyboard, but I couldn&rsquo;t find any that were USB-C. So I went with the <a href="https://www.amazon.com/dp/B0BW15CPTY">BTXETUEL 4-Key Mechanical Keyboard</a> instead, and it turned out to be perfect. Its small enough that it doesn&rsquo;t take up much space, and having four keys actually gives me a bit more flexibility than I originally thought I needed.</p>
-<img src="uploads/2025/b388258f45.png" alt="The BTXETUEL 4-Key Mechanical Keyboard vibing">
+<!-- raw HTML omitted -->
 <h3 id="setting-up-the-vibe-keys">Setting Up the Vibe Keys</h3>
 <p>Here&rsquo;s how I configured it:</p>
 <ul>
@@ -1546,12 +1657,10 @@ django --version
 
 		<div class="e-content">
 			 <p>We could all use an &ldquo;Animated This is Fine ZOOM Background&rdquo; video in times like these.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/oEg-9RvcnlY?si=fMLTEHqVYQGVUMnQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- raw HTML omitted -->
 <p>It&rsquo;s not obvious how to download a video from YouTube.</p>
 <p>I tend to shy away from this outside of this background video explicitly created to be downloaded, so I came up with this one-liner using <a href="https://docs.astral.sh/uv/">UV</a> and <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>, which will pull the video.</p>
-<code>
-$ uv run yt-dlp --format=mp4 https://www.youtube.com/watch?v=oEg-9RvcnlY
-</code>
+<!-- raw HTML omitted -->
 <p>Hat tip to <a href="https://mclare.dev">Maryanne Wachter</a> for finding and recommending this background.</p>
 
 		</div>
@@ -2132,7 +2241,7 @@ pre-commit-uv
 
 		<div class="e-content">
 			 <p>My ThermoWorks Signals thermometer&rsquo;s battery was dead, so I connected it to my Anker 737 Power Bank (24,000mAh for the curious) to get me by.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/img-2150.jpg" width="450" height="600" alt="">
+<!-- raw HTML omitted -->
 <p>Previously, I mounted a Wyze camera on a tripod and pointed it toward my thermometer because its Bluetooth connection wasn&rsquo;t strong enough. WiFi worked fine for the camera, but our smoker is in our backyard and has to go through two external walls to reach any of our devices.</p>
 <p>This worked well during the early pandemic when I was working from home. I could check the camera from my upstairs office or couch without worrying about the weather. As a bonus, I could see the front panel of my Pitbos Smoker to monitor it in case it ran out of wood pellets or the heat source went out. I could have bought the fancy ThermoWorks Signals thermometer, but a $20 Wyze Camera worked better.</p>
 <p>Today, I have the fancy thermometer, and I still should have connected the Wyze cam because the smoker ran out of pellets, which delayed dinner by 45 minutes.</p>
@@ -2462,7 +2571,7 @@ console<span style="color:#f92672">.</span>print(<span style="color:#e6db74">&#3
 			 <p>🎻 Happy Tiny Desk Concert Wednesday, everyone!</p>
 <p>If you are new to Sierra Ferrell, you are in a treat.</p>
 <p>If you are already a fan, you&rsquo;ll understand what I mean and still be in for a treat.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/OO6QUgGMp2A?si=bVfISgQvlccFHAhs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- raw HTML omitted -->
 <p>I dislike Google but make exceptions for NPR, Tiny Desk Concert, and Sierra Ferrell.</p>
 <p><a href="https://www.youtube.com/watch?v=OO6QUgGMp2A">www.youtube.com/watch</a></p>
 
@@ -3574,7 +3683,7 @@ $ just up
 <p>I wrote the tool to help me sort out Mastodon posts that I might bookmark to follow up on or write about. I bookmark posts on the go or even from bed, and when I have time, I will pull them back up.</p>
 <p>The Mastodon Bookmark exporter tool reads your Mastodon bookmarks and exports the latest posts to a markdown/frontmatter file.</p>
 <p>I&rsquo;m releasing the project as a <a href="https://gist.github.com/jefftriplett/623039d2fd09b959eadde6a496ade47a">gist</a> under the <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial License</a> for personal reasons. If you have licensing questions, contact me directly or through <a href="https://www.revsys.com">www.revsys.com</a> for commercial inquiries, and we can work something out.</p>
-<script src="https://gist.github.com/jefftriplett/623039d2fd09b959eadde6a496ade47a.js"></script>
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -3880,7 +3989,7 @@ $ just up
 <p>I remembered Daniel Roy Greenfeld&rsquo;s <a href="https://daniel.feldroy.com/posts/2024-05-rapidly-creating-smoke-tests-for-django-views">Rapidly creating smoke tests for Django views</a> from a few weeks ago, where he made a management command to print out a bunch of smoke tests.</p>
 <p>I decided to try the same technique by passing a string path to a Django ModelForm and printing out my form template.</p>
 <p><strong>Edit:</strong> <a href="https://micro.blog">micro.blog</a> did not like the templates in templates from my Python script, so I had to swap out the inline example with a gist. Sorry about that.</p>
-<script src="https://gist.github.com/jefftriplett/3ca8bb4a4b97bdecec3a257ff5cd1cf9.js"></script>
+<!-- raw HTML omitted -->
 <p>This template could be better, but it was good enough. I tested it on a few of the forms I&rsquo;m using on <a href="https://jobs.django-news.com">Django News Jobs</a>, and it&rsquo;s an improvement over what I started with.</p>
 <p>Something was in the water because when I checked our company Slack, Frank Wiles showed me his new <a href="https://github.com/frankwiles/make-management-command">make-management-command</a> project, which takes a similar approach to creating the folders and files needed to create a new management command.</p>
 
@@ -4370,7 +4479,7 @@ $ just up
 
 		<div class="e-content">
 			 <p>🥟 PierogiCon was a success.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/3d42ceee76.jpg" width="600" height="450" alt="">
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -4657,11 +4766,11 @@ At BK, have it your way
 <p>You are missing out if Liberty Hall is not on your bucket list of live music venues. We are spoiled here in Lawrence, Kansas, and this venue is one of the many reasons. This was a makeup show from when Jason had a virus and lost his voice a few months back. </p>
 <p>I was lucky to meet half of the 400 Unit, the road manager, and several people who worked behind the scenes when their last show was called off. They were super friendly, and it was nice to see people who genuinely liked each other smiling and playing together on stage. </p>
 <p>I&rsquo;m thankful they allowed us to see them perform tonight. </p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/1102170060.jpg" width="600" height="450" alt="Jason Isbell's name on the Liberty Hall Marquee">
+<!-- raw HTML omitted -->
 <p>Seeing a band&rsquo;s name on the Liberty Hall Marquee still gives me chills after they perform. </p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/cd5eba802d.jpg" width="600" height="450" alt="Jason Isbell and the 400 Unit play at Liberty Hall">
-<img src="https://cdn.uploads.micro.blog/137490/2024/a57a98b9ea.jpg" width="600" height="450" alt="Jason Isbell and the 400 Unit play at Liberty Hall">
-<img src="https://cdn.uploads.micro.blog/137490/2024/28b139b39b.jpg" width="600" height="450" alt="A close up photo of Jason Isbell singing and playing the guitar">
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -4676,7 +4785,7 @@ At BK, have it your way
 		<div class="e-content">
 			 <p>We have been under a Tornado Watch since I left work today until about 11 PM tonight. My youngest isn&rsquo;t feeling well, so I&rsquo;m not in the mood for a long post tonight. A Tornado Watch means the conditions are favorable for a Tornado. A Tornado Warning means taking shelter because they have confirmed the spotting of a Tornado. </p>
 <p>Last Tuesday, I was stuck downtown for 90 minutes while the sirens were going off because we had a Tornado Warning North of Lawrence, KS, while my family was safe in our basement. Luckily, everyone was safe and sound.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/image.png" width="276" height="600" alt="iPhone Weather app screen showing its 68F with a Thunderstorm with a Tornado Watch">
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -4712,11 +4821,11 @@ At BK, have it your way
 <p>If you are a music nerd, I highly recommend the first video for a piece of music history. There&rsquo;s a lot of music history packed in there.</p>
 <h2 id="despite-youtube">Despite YouTube</h2>
 <p><a href="https://www.youtube.com/watch?v=ZpuuIpsgaPQ">Pearl Jam: The ‘Dark Matter’ Interview | Apple Music</a></p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ZpuuIpsgaPQ?si=1O0IYMVbDk6RKa6N" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- raw HTML omitted -->
 <h2 id="despite-bill-simmons">Despite Bill Simmons</h2>
 <p>Be sure to listen to them talk about Torpedo typewriters and avocados.</p>
 <p><a href="https://www.youtube.com/watch?v=84bhhu32PII">Eddie Vedder and Jeff Ament sit down with Bill Simmons | The Bill Simmons Podcast</a></p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/84bhhu32PII?si=qO0v9mKZV_lu0277" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- raw HTML omitted -->
 <p>#PearlJam #DarkMatter</p>
 
 		</div>
@@ -5027,7 +5136,7 @@ staticfiles/dist/
 <p>If Firefox sparks joy, I encourage you to use it. I continue to get &ldquo;the emperor has no clothes&rdquo; vibes from their company, even when I want to like their products.</p>
 <h2 id="share-your-thoughts">Share your thoughts</h2>
 <p>If you have thoughts, I&rsquo;m on <a href="https://mastodon.social/@webology/112343674364725570">Mastodon</a>, and I&rsquo;d love to know what config options worked best for you.</p>
-<iframe src="https://mastodon.social/@webology/112343674364725570/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://mastodon.social/embed.js" async="async"></script> 
+<!-- raw HTML omitted -->
 <p>#Enshittification</p>
 
 		</div>
@@ -5453,7 +5562,7 @@ repos:
 
 		<div class="e-content">
 			 <p>I saw this <a href="https://mastodon.social/@nanorepublica@indiehackers.social/112226584167045805">Mastodon post</a> last week and thought it worth sharing.</p>
-<iframe src="https://indiehackers.social/@nanorepublica/112226584130287024/embed" width="400" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
+<!-- raw HTML omitted -->
 <blockquote>
 <p>Weekend <a href="https://mastodon.social/tags/django">#django</a> question/poll</p>
 <p>How often do you use <code>startproject</code> &amp; <code>startapp</code> or something else?</p>
@@ -5554,7 +5663,7 @@ repos:
 <p>I thought it was just me, but the pattern seems to be like code blocks in rst files no longer get formatted.</p>
 <p><a href="https://mastodon.social/@webology/112249549385519057">https://mastodon.social/@webology/112249549385519057</a></p>
 </blockquote>
-<iframe src="https://mastodon.social/@webology/112249549385519057/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe>
+<!-- raw HTML omitted -->
 <p>This led to several friends chiming in and one link to this <a href="https://github.com/orgs/community/discussions/113792">open GitHub issue</a> thanks to <a href="https://mastodon.social/@FunkyBob@chaos.social/112249599598006182">Funky Bob</a></p>
 <p>The story&rsquo;s moral is that writing software is hard; even GitHub makes mistakes and breaks things.</p>
 <p>If a trillion-dollar tech company can break things for weeks, cut yourself some slack the next time you stumble on a production.</p>
@@ -5939,7 +6048,7 @@ nodejs 20.10.0
 <p>🤷</p>
 <h2 id="updates">Updates</h2>
 <p>This <a href="https://mastodon.social/@davidism@mas.to/112198968259149635">post by David Lord</a> is worth a star.</p>
-<iframe src="https://mas.to/@davidism/112198968229660761/embed" width="400" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -6068,11 +6177,11 @@ brew info xz
 <p>(Links are in the parts list)</p>
 <p>While I can&rsquo;t recommend that you build your backup drive, I did out of necessity because I could not find a reasonably priced solution. I was happy with the large, clunky Western Digital external drives, but they were so loud I started looking for noiseless solutions.</p>
 <p>After reading many reviews, I settled on the Sabrent USB-C enclosure because it is small and barely bigger than the NVMe drives. The machine powers these drives, meaning they only need one USB-C cable to connect and power them.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/1-fullsizerender.jpg" width="600" height="450" alt="Sabrent USB-C drive enclosure">
+<!-- raw HTML omitted -->
 <p>Based on reading review websites, I landed on the Samsung 970 EVO series drives. My first drive was a 250G drive, but I moved to 1 TB and 2 TB drives because I found them for &lt;$100 over the holiday sales.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/2-img-1192.jpg" width="450" height="600" alt="Sabrent USB-C drive enclosure open to show a Samsung 970 EVO NVMe drive">
+<!-- raw HTML omitted -->
 <p>My go-to research tool for buying almost anything is <a href="https://camelcamelcamel.com">camelcamelcamel</a>. The website is free to use, and it can show you historical information so that you know if you are paying average, above, or below cost for a production on Amazon. Registering an account with them can create a price alert and get an email during a periodic sale.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/3-img-1194.jpg" width="600" height="450" alt="Sabrent USB-C drive enclosure next to an Apple Watch for scale.">
+<!-- raw HTML omitted -->
 <p><strong>Pro tip:</strong> When you have two young kids who keep you home on the weekends, you quickly learn that Friday nights are the cheapest day to buy just about anything. So even if camelcamelcamel doesn&rsquo;t alert you, check out the website and on Amazon, and you&rsquo;ll see a trend. Once again, being a parent who is home on a Friday night is an excellent life hack.</p>
 <h3 id="features-of-building-your-own">Features of building your own</h3>
 <ul>
@@ -6172,7 +6281,7 @@ docker-compose.override.yml
 			 <p>I am several weeks into working on a project with my colleague, Lacey Henschel. Today, while reviewing one of her pull requests, I was reminded how to test a Django Signal via mocking.</p>
 <p>Testing Django signals is valuable to me because I need help remembering how to test a signal, and even with lots of effort, it never works. So bookmark this one, friends. It works.</p>
 <p>Thankfully, she wrote it up in one of her <a href="https://github.com/williln/til/blob/main/django/how_i_added_django_activity_stream_with_test.md">TIL: How I set up <code>django-activity-stream</code>, including a simple test</a></p>
-<iframe src="https://hachyderm.io/@lacey/112157634161607539/embed" width="400" allowfullscreen="allowfullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
+<!-- raw HTML omitted -->
 <p><a href="https://mastodon.social/@lacey@hachyderm.io">https://mastodon.social/@lacey@hachyderm.io</a></p>
 
 		</div>
@@ -6389,10 +6498,10 @@ docker-compose.override.yml
 			 <p>A few years back, I had a productivity conversation with <a href="https://kjaymiller.com">Jay Miller</a> about <a href="https://www.alfredapp.com">Alfred</a> plugins, which led to him sharing his <a href="https://github.com/kjaymiller/Bunch_Alfred">Bunch_Alfred</a> plugin. At the time, I played around with the <a href="https://bunchapp.co">Bunch.app</a>, a macOS automation tool, and Alfred&rsquo;s support was interesting.</p>
 <p>I created my Alfred plugin to run <a href="https://github.com/casey/just">Just</a> command runner commands through my Alfred setup. However, I never got around to packing or writing the plugin&rsquo;s documentation.</p>
 <p>My Alfred plugin runs <a href="https://www.alfredapp.com/help/workflows/inputs/script-filter/">Script Filter Input</a>, which reads from a centrally located <code>justfile</code> and generates JSON output of all of the possible options. This will be displayed, and Alfred will run that command, whichever option you select.</p>
-<img src="https://cdn.uploads.micro.blog/137490/2024/screenshot-2024-03-19-at-12.37.56-pm.png" width="600" height="403" alt="Alfred plugin showing a Just command with a list of recipe options to pick from.">
+<!-- raw HTML omitted -->
 <p>I was always unhappy with how the JSON document was generated from my commands, so I dusted off the project over lunch and re-engineered it by adding <a href="https://github.com/pydantic/pydantic">Pydantic</a> support.</p>
 <p>Alfred just announced support for a new User Interface called <a href="https://www.alfredapp.com/help/workflows/user-interface/text/">Text View</a>, which could make text and markdown output from Python an exciting way to handle snippets and other productive use cases. I couldn&rsquo;t quite figure it out over lunch, but now I know it&rsquo;s possible, and I might figure out how to convert my Justfile Alfred plugin to generate better output.</p>
-<script src="https://gist.github.com/jefftriplett/e7d4eade12e30001065eed2636010772.js"></script>
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -6487,7 +6596,7 @@ docker-compose.override.yml
 <li>Remove, slice, and enjoy!</li>
 </ol>
 <h2 id="the-results">The results</h2>
-<img src="https://cdn.uploads.micro.blog/137490/2024/image.jpg" width="600" height="498" alt="A cooked tortilla pizza topped with ground beef, veggies, and cheese.">
+<!-- raw HTML omitted -->
 <p>Overall, it was good, even if my photo does not reflect the taste. I have historically made my pizza dough, but for a quick fix, this was much better than the pizza dough that comes in a tube.</p>
 <p>Clean-up was easy because I prepared mine on pre-cut parchment paper, which I slid on top of my pizza stone in my oven.</p>
 <h2 id="other-recipes">Other recipes</h2>
@@ -6544,7 +6653,7 @@ docker-compose.override.yml
 <h2 id="5-a-long-read-for-the-weekend">5. A long read for the weekend</h2>
 <p>This exhaustive review of the <a href="https://hugo.blog/2024/03/11/vision-pro/">Vision Pro</a> is everything I have been looking for and more to get a feel for what the Vision Pro can do.</p>
 <h2 id="have-thoughts">Have thoughts?</h2>
-<iframe src="https://mastodon.social/@webology/112102679318546214/embed" class="mastodon-embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script src="https://mastodon.social/embed.js" async="async"></script>
+<!-- raw HTML omitted -->
 
 		</div>
 	  </div>
@@ -7999,7 +8108,7 @@ into Django, includes a live reload server, and enables <code>python manage.py t
 <h2 id="jon-stewart-is-back-on-the-daily-show">Jon Stewart is back on The Daily Show</h2>
 <p>The last time I could watch Jon Stewart on The Daily Show over lunch goes back almost a decade. Somehow, here we are again, yet midway through the episode, nothing has changed. Welcome back, Jon.</p>
 <p><a href="https://www.youtube.com/watch?v=NpBPm0b9deQ">www.youtube.com/watch</a></p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NpBPm0b9deQ?si=yPCb41JtBjEr84uY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<!-- raw HTML omitted -->
 <p>I also liked <a href="https://www.youtube.com/watch?v=zHLLxc2nuNM">this interview</a> with Jon Stewart on why he&rsquo;s back.</p>
 <h2 id="levar-burtons-banned-book-rainbow">Levar Burton&rsquo;s Banned Book Rainbow</h2>
 <p>I never thought I&rsquo;d <a href="https://www.instagram.com/p/C3CJlOtrql7/">share a video post</a> from Instagram, yet here we are.</p>
@@ -8370,25 +8479,8 @@ The more repetitive a task is, the more likely I will write a Python script or <
     job_listings <span style="color:#f92672">=</span> JobListing<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>all()<span style="color:#f92672">.</span>active()<span style="color:#f92672">.</span>order_by(<span style="color:#e6db74">&#34;-published&#34;</span>)
     print(queryset_to_markdown(job_listings, fields<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;title&#34;</span>, <span style="color:#e6db74">&#34;employer_name&#34;</span>]))
 </code></pre></div><p>Running <code>python manage.py table</code> gave me the following table. Please note: I removed the <code>employer_name</code> column to fit the output in my article.</p>
-<pre>
-| title                                               |
-|-----------------------------------------------------|
-| Software Engineer (Terraso)                         |
-| Django Fellow                                       |
-| Senior Django Developer for Boutique Digital Agency |
-| Software Engineer                                   |
-| Business Systems Analyst                            |
-| Python Django E-Commerce Full Stack                 |
-| Principal Software Engineer                         |
-| Michigan Online, Software Engineer                  |
-| Full Stack Python Developer                         |
-| Senior Backend Developer - Supportsite Team         |
-| Python Backend Developer                            |
-| Python / Django Developer (f/m/d)                   |
-| Full Stack Python Developer                         |
-| Software Engineer - Ubuntu Systems Management       |
-| Senior Python/Django Engineer                       |
-</pre>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <p>Overall, I&rsquo;m happy with this approach. Django is an excellent framework for quickly prototyping and solving these problems.</p>
 <p>I decided to write a management command instead of a view because markdown tables are very readable from the command line. I plan to convert it to a Django view to automate embedding tables like this into other projects.</p>
 
