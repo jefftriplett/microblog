@@ -24,6 +24,115 @@
 	
 	  <div class="h-entry">
 		
+			<h1><a href="https://micro.webology.dev/2026/02/26/how-i-use-djangosimplenav-for/">How I Use django-simple-nav for Dashboards, Command Palettes, and More</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2026/02/26/how-i-use-djangosimplenav-for/" class="u-url"><time class="dt-published" datetime="2026-02-26 20:56:51 -0600">Feb 26, 2026</time></a>
+
+		<div class="e-content">
+			 <p>I first got exposed to <a href="https://github.com/westerveltco/django-simple-nav">django-simple-nav</a> while working with <a href="https://github.com/joshuadavidthomas">Josh Thomas</a> at <a href="https://github.com/westerveltco">the Westervelt Corporation</a> over the last two or three years. It quickly became a go-to library in my toolkit. django-simple-nav lets you define nav items and groupings in Python, then hand them off to a Django template to render. I use it for sidebars, headers, dashboards, and other spots where I need a menu.</p>
+<p>Since then, I have also started using it on a lot of personal projects. It has been a great fit every time.</p>
+<h2 id="defining-nav-items-once-and-reusing-them-everywhere">Defining nav items once and reusing them everywhere</h2>
+<p>Recently I wanted to reuse parts of a menu nav without having to update a bunch of different files. I had a dashboard with a sidebar full of links, and I also wanted a command palette that could search across all those same options when you hit Command-K from any page. django-simple-nav was a natural fit because you define your items once in Python and render them with whatever template you want.</p>
+<p>Here is an example of what that looks like in Python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> django_simple_nav.nav <span style="color:#f92672">import</span> Nav
+<span style="color:#f92672">from</span> django_simple_nav.nav <span style="color:#f92672">import</span> NavGroup
+<span style="color:#f92672">from</span> django_simple_nav.nav <span style="color:#f92672">import</span> NavItem
+
+NAV_ITEMS <span style="color:#f92672">=</span> [
+    NavItem(title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Home&#34;</span>, url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;home&#34;</span>),
+    NavItem(title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Dashboard&#34;</span>, url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;dashboard&#34;</span>),
+    NavGroup(
+        title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Admin &amp; Tools&#34;</span>,
+        items<span style="color:#f92672">=</span>[
+            NavItem(title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Admin&#34;</span>, url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin:index&#34;</span>, permissions<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;is_staff&#34;</span>]),
+        ],
+    ),
+    NavItem(title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Login&#34;</span>, url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;login&#34;</span>),
+    NavItem(title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Logout&#34;</span>, url<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;logout&#34;</span>),
+]
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DashboardNav</span>(Nav):
+    template_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nav/dashboard.html&#34;</span>
+    items <span style="color:#f92672">=</span> NAV_ITEMS
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CommandPaletteNav</span>(Nav):
+    template_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nav/command_palette.html&#34;</span>
+    items <span style="color:#f92672">=</span> NAV_ITEMS
+
+</code></pre></div><h2 id="flexible-urls-and-named-routes">Flexible URLs and named routes</h2>
+<p>A few things to notice here. When you create a nav item and you have a URL, you can either use the URL&rsquo;s name or you can give it the path to it and it will figure out what it is. So if I want a nav item for the Django admin, I can use <code>&quot;admin:index&quot;</code> as the URL.</p>
+<h2 id="handling-permissions-without-template-logic">Handling permissions without template logic</h2>
+<p>Another nice feature is the <code>permissions</code> parameter. The Admin link uses <code>permissions=[&quot;is_staff&quot;]</code>, which means it only shows up for staff users. You can use this to hide things based on whether someone is staff, a superuser, or has specific Django permissions. This makes it nice to keep all of your nav options in one place without having to write special conditional logic in your templates to show or hide items for different users.</p>
+<h2 id="rendering-a-dashboard-nav-with-django-templates">Rendering a dashboard nav with Django templates</h2>
+<p>The other thing to notice is the two Nav classes at the bottom: <code>DashboardNav</code> and <code>CommandPaletteNav</code>. They both use the same <code>NAV_ITEMS</code> list but point to different templates. This is where the reuse really shines.</p>
+<p>Here is an example nav template at <code>templates/nav/dashboard.html</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">nav</span>&gt;
+  {% for item in items %}
+    {% if item.items %}
+      &lt;<span style="color:#f92672">span</span>&gt;{{ item.title }}:
+        {% for subitem in item.items %}
+          &lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ subitem.url }}&#34;</span><span style="color:#960050;background-color:#1e0010">{%</span> <span style="color:#a6e22e">if</span> <span style="color:#a6e22e">subitem</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#a6e22e">active</span> <span style="color:#960050;background-color:#1e0010">%}</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;active&#34;</span><span style="color:#960050;background-color:#1e0010">{%</span> <span style="color:#a6e22e">endif</span> <span style="color:#960050;background-color:#1e0010">%}</span>&gt;
+            {{ subitem.title }}
+          &lt;/<span style="color:#f92672">a</span>&gt;
+        {% endfor %}
+      &lt;/<span style="color:#f92672">span</span>&gt;
+    {% else %}
+      &lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ item.url }}&#34;</span><span style="color:#960050;background-color:#1e0010">{%</span> <span style="color:#a6e22e">if</span> <span style="color:#a6e22e">item</span><span style="color:#960050;background-color:#1e0010">.</span><span style="color:#a6e22e">active</span> <span style="color:#960050;background-color:#1e0010">%}</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;active&#34;</span><span style="color:#960050;background-color:#1e0010">{%</span> <span style="color:#a6e22e">endif</span> <span style="color:#960050;background-color:#1e0010">%}</span>&gt;
+        {{ item.title }}
+      &lt;/<span style="color:#f92672">a</span>&gt;
+    {% endif %}
+  {% endfor %}
+&lt;/<span style="color:#f92672">nav</span>&gt;
+</code></pre></div><p>Then in your base template, you can render it with the template tag:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">{% load django_simple_nav %}
+
+{% django_simple_nav &#34;myapp.nav.DashboardNav&#34; %}
+</code></pre></div><h2 id="building-a-command-palette-from-the-same-nav-items">Building a command palette from the same nav items</h2>
+<p>Because the <code>CommandPaletteNav</code> class uses the same <code>NAV_ITEMS</code> list but with a different template, we can render the same nav data as JSON for a command palette. Here is an example template at <code>templates/nav/command_palette.html</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">{% load django_simple_nav %}
+
+&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;application/json&#34;</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;command-palette-data&#34;</span>&gt;
+[{<span style="color:#f92672">%</span> <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">item</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">items</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">items</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">subitem</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">items</span> <span style="color:#f92672">%</span>}
+  {<span style="color:#e6db74">&#34;title&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;{{ subitem.title }}&#34;</span>, <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;{{ subitem.url }}&#34;</span>, <span style="color:#e6db74">&#34;group&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;{{ item.title }}&#34;</span>}{<span style="color:#f92672">%</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">not</span> <span style="color:#a6e22e">forloop</span>.<span style="color:#a6e22e">last</span> <span style="color:#a6e22e">or</span> <span style="color:#a6e22e">not</span> <span style="color:#a6e22e">forloop</span>.<span style="color:#a6e22e">parentloop</span>.<span style="color:#a6e22e">last</span> <span style="color:#f92672">%</span>},{<span style="color:#f92672">%</span> <span style="color:#a6e22e">endif</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#a6e22e">endfor</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">%</span>}
+  {<span style="color:#e6db74">&#34;title&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;{{ item.title }}&#34;</span>, <span style="color:#e6db74">&#34;url&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;{{ item.url }}&#34;</span>}{<span style="color:#f92672">%</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">not</span> <span style="color:#a6e22e">forloop</span>.<span style="color:#a6e22e">last</span> <span style="color:#f92672">%</span>},{<span style="color:#f92672">%</span> <span style="color:#a6e22e">endif</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#a6e22e">endif</span> <span style="color:#f92672">%</span>}{<span style="color:#f92672">%</span> <span style="color:#a6e22e">endfor</span> <span style="color:#f92672">%</span>}
+]
+&lt;/<span style="color:#f92672">script</span>&gt;
+</code></pre></div><p>This also lent itself well when I was trying to do something quickly with Claude. I don&rsquo;t know how to build a command palette, but I was able to just have Claude create one. I asked it to use HTMX to keep everything pretty lightweight.</p>
+<h2 id="final-thoughts">Final thoughts</h2>
+<p>All in all, django-simple-nav is a nice library to have in your toolkit. I like using it for headers, menus, dashboard navigation links, and even footer text. If you need flexible, reusable navigation in Django, give it a look.</p>
+<hr>
+<p>Written by Jeff. Edited with <a href="https://grammarly.com">Grammarly</a> and <a href="https://claude.ai/code">Claude Code</a>.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
+			<h1><a href="https://micro.webology.dev/2026/02/19/jordan-bairds-ice-beta-fixed/">Jordan Baird&#39;s Ice beta fixed my macOS Tahoe menu bar issues</a></h1>
+		
+
+		<a href="https://micro.webology.dev/2026/02/19/jordan-bairds-ice-beta-fixed/" class="u-url"><time class="dt-published" datetime="2026-02-19 08:00:00 -0600">Feb 19, 2026</time></a>
+
+		<div class="e-content">
+			 <p>If you use a Mac, you&rsquo;ve probably noticed that the menu bar fills up with icons pretty quickly. <a href="https://www.macbartender.com">Bartender</a> and <a href="https://github.com/jordanbaird/Ice">Ice</a> (sadly, now an unfortunate name) are apps that let you manage and hide unwanted icons from your macOS menu bar so it stays clean and uncluttered.</p>
+<p>About a year ago, I switched from Bartender to Ice, which just happens to be open source, because there was <a href="https://micro.webology.dev/2024/06/04/bartender-mac-app.html">some drama</a>. Since then, I&rsquo;ve been very happy with Ice.</p>
+<p>A couple of months ago, I upgraded to macOS Tahoe, and my menu bar stopped working correctly. The icon colors were all this weird shade of blue, so I couldn&rsquo;t customize anything. After months of trying to figure it out, I noticed that it had been a while since Ice released a new version. That&rsquo;s how open source goes sometimes.</p>
+<p>I was getting to the point of deciding whether to go back to Bartender or stick with Ice. Today, I noticed that there&rsquo;s a Homebrew package for <code>jordanbaird-ice@beta</code>. I decided to give it a try, removed the old version, installed the beta, and to my surprise and delight, the problem was fixed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># remove the stable version</span>
+brew remove jordanbaird-ice
+
+<span style="color:#75715e"># install the beta</span>
+brew install jordanbaird-ice@beta
+</code></pre></div><p>I&rsquo;m hoping there&rsquo;s a more official release soon. The new Bartender looks good too, so if Ice doesn&rsquo;t keep getting updated, I might switch back. If you&rsquo;ve run into this same issue, give the beta a try and let me know how it goes. And if you know of any alternatives to Bartender and Ice, I&rsquo;d love to hear about those too.</p>
+
+		</div>
+	  </div>
+	
+	  <div class="h-entry">
+		
 			<h1><a href="https://micro.webology.dev/2026/02/18/my-displays-keep-rearranging-and/">My displays keep rearranging and displayplacer fixed it</a></h1>
 		
 
